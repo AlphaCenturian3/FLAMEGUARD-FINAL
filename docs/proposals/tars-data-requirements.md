@@ -3,9 +3,9 @@
 **Status:** proposal from `feat/nasa-data-tars`, for review by the backend owner (`feat/backend-science`). Not approved. Nothing here changes `contracts/` or `backend/`.
 **Date:** 2026-11-14
 
-## Proposed definition (needs team approval; closes spec §8 item 3 if accepted)
+## Definition
 
-**TARS = Traceable Aerospace Research System.** TARS is an evidence-grounded research assistant. It explains NASA combustion investigations, compares compatible experimental findings, and communicates source-backed fire-safety relevance with explicit uncertainty.
+**TARS = Traceable Analysis and Research Support.** This is the name decided by the Command Center (decision C1, recorded in the contract v0.2.0 proposal, PR #1); this document follows it. An earlier draft here proposed "Traceable Aerospace Research System", which is withdrawn. TARS is an evidence-grounded research assistant. It explains NASA combustion investigations, compares compatible experimental findings, and communicates source-backed fire-safety relevance with explicit uncertainty.
 
 In the current contract TARS is the assistant behind `POST /api/assistant/ask` (planned, returns 501 today). The backend owns its implementation. The data workstream owns the evidence it may draw on.
 
@@ -25,7 +25,7 @@ In the current contract TARS is the assistant behind `POST /api/assistant/ask` (
 
 - `data/curated/flex_tp2015216046_table_ix_001_010.csv`: 10 FLEX tests, `measured`, all cells verified against the PDF.
 - Manifest entry `nasa-tp-2015-216046.table-ix.flex-001-010`, with 7 verbatim quotes (table title, A.1 dash definition, contamination, shutter speed, two figure captions).
-- `data/curated/flex_tp2015216046_table_ix_001_010.flags.csv`: 43 source-cited usage flags (`interpretation`).
+- `data/curated/interpretations/quality/flex_tp2015216046_table_ix_001_010.flags.csv`: 43 source-cited usage flags (`interpretation`).
 - `data/docs/flex_table_ix.md`: data dictionary and caveats.
 
 ## Open questions for the backend owner

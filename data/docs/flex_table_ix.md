@@ -74,7 +74,7 @@ A.1 also states that extinction diameters were **extrapolated** by the authors w
 
 ## Exclusion and caution flags
 
-Usage flags are in a separate file, `data/curated/flex_tp2015216046_table_ix_001_010.flags.csv`, with manifest id `nasa-tp-2015-216046.table-ix.flex-001-010.flags` and `evidence_class: interpretation`. They are FlameGuard-SI's judgments, so they are kept apart from the `measured` file, and **no measured value was changed or removed**. Each flag names the test, the field (`*` = whole row), a reason, and a printed page plus a verbatim quote from the report. `tools/verify_flex_table_ix.py` checks every quote against the PDF.
+Usage flags are in a separate file, `data/curated/interpretations/quality/flex_tp2015216046_table_ix_001_010.flags.csv`, with manifest id `nasa-tp-2015-216046.table-ix.flex-001-010.flags` and `evidence_class: interpretation`. They are FlameGuard-SI's judgments, so they are kept apart from the `measured` file, and **no measured value was changed or removed**. Each flag names the test, the field (`*` = whole row), a reason, and a printed page plus a verbatim quote from the report. `tools/verify_flex_table_ix.py` checks every quote against the PDF.
 
 | `ranking_use` | Meaning for rankings, comparisons and the assistant |
 |---|---|
