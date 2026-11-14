@@ -30,7 +30,7 @@ The raw PDF is never committed (spec §2.4), so **GitHub CI cannot compare the C
 | Cell-by-cell CSV vs PDF (150 cells), PDF SHA-256, every manifest and flag quote verbatim on its cited page (`tools/verify_flex_table_ix.py`) | **Local only** (needs the PDF in `data/raw/` and PyMuPDF) | Yes |
 | Visual check of every cell against a 250-dpi render | **Manual, local** | Yes |
 
-A green CI run therefore shows that the files are internally consistent and match their registered checksums. It does **not** re-prove the transcription. Re-run `tools/verify_flex_table_ix.py` locally after any edit to the CSV, the flags or the manifest quotes, and paste its output in the PR. Last local run: 2026-11-14, passed (150 cells, 7 manifest quotes, 45 flags, 20 quotes inside flag reasons).
+A green CI run therefore shows that the files are internally consistent and match their registered checksums. It does **not** re-prove the transcription. Re-run `tools/verify_flex_table_ix.py` locally after any edit to the CSV, the flags or the manifest quotes, and paste its output in the PR. Last local run: 2026-11-14, passed (150 cells, 7 manifest quotes, 45 flags, 22 quotes inside flag reasons).
 
 ### Cited pages: printed vs PDF
 
@@ -110,7 +110,7 @@ The flags (45 in total: 1 `exclude`, 9 `not_available`, 35 `caution`). Flag ids 
   - FLEX-008 initial diameter and burning rate: soot noise.
   - FLEX-001 outcome: printed Disruption, but the caption says it probably coincided with extinction.
   - FLEX-010 initial diameter (F044, S-2): saturated HiBMs image; the size depended on the image quad-slice (Figure 14 caption, p. 38).
-  - FLEX-010 burn time (F045, S-3, `derivation_unverified`): the droplet left all camera fields of view early, and the report does not state how 13.6 s was obtained. **Derivation not verified; the printed value is kept and is not judged incorrect.**
+  - FLEX-010 burn time (F045, S-3, `derivation_unverified`): per the Figure 14 caption, the droplet "quickly moved west out of the fields of view (FOVs)" of all three cameras and "was in the HiBMs FOV for only a short time", and the report does not state how 13.6 s was obtained. **Derivation not verified; the printed value is kept and is not judged incorrect.**
 - **Contamination:** every row (`contamination_caveat`). The reason now also quotes the authors' p. 17 assertions that burning-rate constants, droplet history, flame size and flame history were "minimally influenced by the contaminant" (S-5). These are the authors' assessments, so the caution stays. Methanol disruption FLEX-001 is flagged as probably contaminant-driven; heptane disruptions FLEX-007, -008 and -009 as possibly contaminant-driven.
 - **Calibration:** FLEX-002 to FLEX-006.
 
