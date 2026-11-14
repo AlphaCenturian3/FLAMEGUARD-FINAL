@@ -4,14 +4,45 @@
   "title": "Source",
   "description": "A citation to a NASA or other primary source. Quotes must be exact.",
   "type": "object",
-  "required": ["title", "url", "retrieved"],
+  "required": [
+    "title",
+    "url",
+    "retrieved"
+  ],
   "additionalProperties": false,
   "properties": {
-    "title": {"type": "string", "minLength": 1},
-    "url": {"type": "string", "minLength": 1},
-    "page": {"type": ["string", "integer", "null"]},
-    "quote": {"type": ["string", "null"], "description": "Exact text from the source; null if none."},
-    "retrieved": {"type": "string", "format": "date"},
-    "archive_id": {"type": ["string", "null"], "description": "PSI dataset ID, NTRS ID, etc."}
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "url": {
+      "$ref": "common.schema.json#/$defs/http_url"
+    },
+    "page": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "quote": {
+      "$ref": "common.schema.json#/$defs/text_or_null",
+      "description": "Exact text from the source; null if none."
+    },
+    "retrieved": {
+      "$ref": "common.schema.json#/$defs/iso_date"
+    },
+    "archive_id": {
+      "$ref": "common.schema.json#/$defs/text_or_null",
+      "description": "PSI dataset ID, NTRS ID, etc."
+    }
   }
 }

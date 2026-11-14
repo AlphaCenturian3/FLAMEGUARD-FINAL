@@ -4,11 +4,27 @@
   "investigation_id": "fixture-investigation-1",
   "evidence_class": "measured",
   "statement": "FIXTURE PLACEHOLDER. Not NASA data. Shape example only.",
-  "value": null,
-  "unit": null,
-  "uncertainty": null,
+  "quantity": "flame_spread_rate",
+  "value": 1.0,
+  "unit": "mm/s",
+  "value_status": "reported",
+  "uncertainty": "FIXTURE: +/- 0.1 mm/s, as printed in the fixture source",
+  "conditions": {
+    "gravity_environment": "microgravity",
+    "oxygen_mole_fraction": null,
+    "pressure_kpa": null,
+    "flow_velocity_mm_s": null,
+    "flow_configuration": null,
+    "diluent": null,
+    "fuel_or_material": null,
+    "sample_geometry": null
+  },
+  "fire_safety_topics": [
+    "material_flammability"
+  ],
   "provenance": {
     "manifest_id": "fixture-dataset-1",
+    "locator": "FIXTURE table 0, row 0",
     "sources": [
       {
         "title": "FIXTURE PLACEHOLDER SOURCE",

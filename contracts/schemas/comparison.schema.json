@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comparison.schema.json",
+  "title": "Comparison",
+  "description": "GET /api/compare?quantity=<key>&investigation_ids=a,b. Measured findings only. No unit conversion, interpolation or gap filling.",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "quantity",
+    "unit",
+    "rows",
+    "comparable",
+    "non_comparable_reasons"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {
+      "type": "boolean"
+    },
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "quantity": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "investigation_id",
+          "finding_id",
+          "evidence_class",
+          "value",
+          "value_status",
+          "conditions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "investigation_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "finding_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "evidence_class": {
+            "const": "measured"
+          },
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "value_status": {
+            "$ref": "common.schema.json#/$defs/value_status"
+          },
+          "conditions": {
+            "$ref": "conditions.schema.json"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "common.schema.json#/$defs/value_matches_status"
+          }
+        ]
+      }
+    },
+    "comparable": {
+      "type": "boolean"
+    },
+    "non_comparable_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "quantity_rules.schema.json"
+    },
+    {
+      "if": {
+        "properties": {
+          "comparable": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "non_comparable_reasons": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "comparable": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rows": {
+            "minItems": 2,
+            "items": {
+              "properties": {
+                "value_status": {
+                  "const": "reported"
+                }
+              }
+            }
+          },
+          "non_comparable_reasons": {
+            "maxItems": 0
+          }
+        }
+      },
+      "description": "Comparable needs at least two rows, all with reported values, and no reasons."
+    }
+  ]
+}

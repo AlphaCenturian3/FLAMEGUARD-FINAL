@@ -5,12 +5,20 @@
   "acronym": null,
   "platform": null,
   "objectives": [],
-  "relevant_environments": ["spacecraft"],
+  "relevant_environments": [
+    "spacecraft"
+  ],
+  "datasets": [
+    "fixture-dataset-1"
+  ],
   "sources": [
     {
       "title": "FIXTURE PLACEHOLDER SOURCE",
       "url": "https://example.invalid/fixture",
-      "retrieved": "2026-11-14"
+      "page": null,
+      "quote": null,
+      "retrieved": "2026-11-14",
+      "archive_id": null
     }
   ]
 }

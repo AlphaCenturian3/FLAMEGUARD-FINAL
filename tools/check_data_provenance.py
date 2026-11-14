@@ -14,10 +14,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SIMULATION_LABEL = "Fluid and thermal transport model. No combustion chemistry."
+# Must match the path patterns in contracts/schemas/data_manifest.schema.json.
 ALLOWED_DIRS = {
-    "measured": ("data/curated/",),
-    "interpretation": ("data/curated/",),
-    "illustrative_simulation": ("data/simulated/",),
+    "measured": "data/curated/",
+    "interpretation": "data/curated/interpretations/",
+    "illustrative_simulation": "data/simulated/",
 }
 
 
@@ -27,6 +28,18 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: fh.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _reject_constant(name: str):
+    raise ValueError(f"non-standard JSON number {name}")
+
+
+def load_strict_json(path: Path):
+    """Parse JSON, refusing NaN and Infinity (contract rule S0).
+
+    Python's json module accepts them by default, and NaN passes JSON Schema bounds.
+    """
+    return json.loads(path.read_text(encoding="utf-8"), parse_constant=_reject_constant)
 
 
 def check_manifest(manifest: dict, root: Path = ROOT) -> list[str]:
@@ -51,14 +64,23 @@ def check_manifest(manifest: dict, root: Path = ROOT) -> list[str]:
             continue
         if d.get("fixture"):
             errors.append(f"{did}: fixtures belong in tests/fixtures, not the manifest")
-        if not path.startswith(ALLOWED_DIRS[cls]) or ".." in Path(path).parts:
-            errors.append(f"{did}: {cls} data must live under {ALLOWED_DIRS[cls][0]}")
+        misplaced = not path.startswith(ALLOWED_DIRS[cls]) or ".." in Path(path).parts
+        if cls == "measured" and path.startswith(ALLOWED_DIRS["interpretation"]):
+            misplaced = True
+        if misplaced:
+            errors.append(f"{did}: {cls} data must live under {ALLOWED_DIRS[cls]}")
 
         file = root / path
         if not file.is_file():
             errors.append(f"{did}: file not found: {path}")
-        elif _sha256(file) != d.get("sha256"):
-            errors.append(f"{did}: sha256 mismatch for {path}")
+        else:
+            if _sha256(file) != d.get("sha256"):
+                errors.append(f"{did}: sha256 mismatch for {path}")
+            if file.suffix == ".json":
+                try:
+                    load_strict_json(file)
+                except ValueError as exc:
+                    errors.append(f"{did}: invalid JSON in {path}: {exc}")
 
         if cls == "measured":
             sources = d.get("sources") or []
@@ -104,7 +126,7 @@ def tracked_raw_files(root: Path = ROOT) -> list[str]:
 
 
 def main() -> int:
-    manifest = json.loads((ROOT / "data" / "manifest.json").read_text())
+    manifest = load_strict_json(ROOT / "data" / "manifest.json")
     errors = check_manifest(manifest)
     errors += [f"raw NASA file tracked by git: {f}" for f in tracked_raw_files()]
     if errors:

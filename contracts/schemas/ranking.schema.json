@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ranking.schema.json",
+  "title": "Ranking",
+  "description": "GET /api/rankings?context=<environment>. Every score is the weighted sum of listed criterion scores, each traced to finding ids. Simulations are never inputs.",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "context",
+    "criteria_version",
+    "criteria",
+    "items",
+    "excluded",
+    "generated_by"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {
+      "type": "boolean"
+    },
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "context": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "criteria_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version of the frozen criteria file (config/ranking_criteria_v<N>.json)."
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "description",
+          "weight"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rank",
+          "investigation_id",
+          "score",
+          "criterion_scores",
+          "rationale"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "investigation_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "criterion_scores": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "criterion_id",
+                "score",
+                "inputs"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "criterion_id": {
+                  "$ref": "common.schema.json#/$defs/id"
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "finding_id",
+                      "evidence_class"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "finding_id": {
+                        "$ref": "common.schema.json#/$defs/id"
+                      },
+                      "evidence_class": {
+                        "$ref": "common.schema.json#/$defs/non_simulation_class"
+                      }
+                    }
+                  }
+                }
+              },
+              "if": {
+                "properties": {
+                  "score": {
+                    "exclusiveMinimum": 0
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "inputs": {
+                    "minItems": 1
+                  }
+                }
+              },
+              "description": "A non-zero criterion score must cite at least one input finding."
+            }
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "investigation_id",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "investigation_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "generated_by": {
+      "const": "FlameGuard-SI"
+    }
+  }
+}
