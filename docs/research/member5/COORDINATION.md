@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14 20:10 UTC. PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3.
+**Last updated:** 2026-11-14 (after coordinator decisions A and B). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3.
 
 PR #3 adds only new files:
 
@@ -16,6 +16,18 @@ PR #3 adds only new files:
 | **Formal approval** | A member's own **Approve** review, or the approval comment text, on PR #1 at the final SHA, from their own GitHub account | **Yes**, and only this |
 | **Owner answer** | A comment by the authorized owner on GitHub (for example Member 1's answers on PR #3) | No. It is the owner's stated position, binding once CP1 is approved |
 | **Coordinator decision / recommendation** | "Command Center" (ChatGPT coordination) or Member 5 proposals, including the decisions written into PR #1 | No. It is not an approval by any member |
+
+## 0. Coordinator positions (instructions and recommendations, NOT team approvals)
+
+These come from Member 5's coordinator (ChatGPT) and were relayed to the executor on 2026-11-14. They direct Member 5's own actions. They are **not** formal GitHub approvals by any member, and they do not override a member's own decision.
+
+| Ref | Coordinator position | Kind | Effect on PR #3 / CP1 |
+|---|---|---|---|
+| A | **Do not submit Member 5's approval of PR #1 at `ca128d0`.** Member 4's existence and GitHub identity must be confirmed by the team first. Then C5 and Member 2's identity are resolved, the candidate SHA is updated if needed, and each authorized member submits their own Approve review. | Instruction to Member 5 | No Member 5 approval has been or will be submitted on Member 5's behalf by the executor. |
+| A.1 | The coordinator's guidance is not a Member 5 approval; nobody may impersonate a reviewer | Instruction | Recorded; followed |
+| A.2 | The established roster includes Member 4 (QA, Testing and Judge Demo) | Coordinator position | Conflicts with `ca128d0` ("There is no Member 4"); team confirmation needed (§2) |
+| B | **Apply Member 1's six-card review now** on the Member 5 branch; keep the FLEX card pending; present three cards as research context; preserve sources, uncertainty and extrapolation warnings; commit separately; keep rankings disabled; no contract change, merge or rebase | Instruction to Member 5 | Applied in commit `2754d91` (§3, card table) |
+| — | Ownership boundary: Member 1 production ranking and compare; Member 5 interpretation, criteria and independent research-integrity tests; Member 3 provenance and measured-data import; Member 4 independent integration QA (pending identity) | Recommendation | Matches the `ca128d0` candidate except for Member 4 |
 
 ## 1. CP1 decision matrix (final candidate: PR #1 at `ca128d0149659fd4ee7dee9e6322297d685c7597`)
 
@@ -66,18 +78,18 @@ Member 1's answers were posted on PR #3 by `AlphaCenturian3` at 20:01 UTC, revie
 | D-11 | QA reviewer | Team | M1: no Member 4. The 80 tests are reviewed by M1 (runtime overlap) and M3 (quotes and sources) | **Depends on the roster** (§2) |
 | D-12 | Register → `data/curated/investigations.json` | M3 | no answer yet | M3 |
 
-### Member 1's scientific review of the 6 cards (owner answer; changes not yet applied)
+### Member 1's scientific review of the 6 cards (owner answer), applied in `2754d91`
 
-| Card | Member 1 verdict | Change requested |
-|---|---|---|
-| `card-ventilation-flow` | accept as R3 once Member 3 curates `m5-bass2-flow-flareup` as a measured qualitative finding | Keep only the observational clause |
-| `card-detection-monitoring` | accept with change | Use the source's own framing; note that Saffire was a large uncrewed vehicle, not a habitat atmosphere |
-| `card-fuel-extinction-suppression` | accept with change, later | State that FLEX tested extinction in pre-diluted atmospheres, not a suppressant discharged onto a fire; R3 after the C4 vocabulary PR |
-| `card-material-selection` | research context, not R3 | Present as an open research question |
-| `card-lunar-partial-gravity` | research context, not R3 | Keep it labelled as a hypothesis |
-| `card-martian-extrapolation` | research context, not R3 | Name the white paper's authors as the source |
+| Card | Member 1 verdict | `presentation` | What was changed |
+|---|---|---|---|
+| `card-ventilation-flow` | accept as R3 once Member 3 curates `m5-bass2-flow-flareup` | `accepted_pending_curation` | Evidence quote trimmed to "they can flare up quickly with a sudden increase in air flow speed." The authors' evaluation ("not particularly dangerous…") and the unquoted "dim and stable" detail were removed |
+| `card-detection-monitoring` | accept with change | `accepted_pending_curation` | "Larger signal" (a cross-unit comparison) replaced by the Saffire authors' framing; title reworded; limitation added: large uncrewed Cygnus vehicle, not a crewed habitat atmosphere |
+| `card-fuel-extinction-suppression` | accept with change, later | `pending_measured_data` | States that FLEX tested extinction in inert-gas pre-diluted atmospheres, not discharged suppressants (attributed to Member 1, **not yet checked by Member 5 against the FLEX report**); `pending_on` = PR #4 data plus the C4 vocabulary PR |
+| `card-material-selection` | research context, not R3 | `research_context` | Retitled as an open question; `open_question` added; interpretation draws no conclusion |
+| `card-lunar-partial-gravity` | research context, not R3 | `research_context` | Title begins "Hypothesis under test"; `open_question` added; white-paper authors named |
+| `card-martian-extrapolation` | research context, not R3 | `research_context` | White paper attributed to Liao, Carmignani, Niehaus and Gollner (hosted on a NASA website, not NASA-authored); `open_question` added |
 
-`review_status` stays `draft_pending_scientific_review` until Member 5 applies these changes and sets it.
+All six cards keep their verified sources, limitations and extrapolation warnings. `review_status` is now `member1_changes_applied`. It becomes `reviewed_by_member1` only when Member 1 confirms the new wording. The validator (`insights.py`) enforces the presentation rules: research-context cards need an open question and cannot present an experimental result; pending cards must name what they wait for.
 
 ## 4. Ranking status
 
@@ -91,7 +103,7 @@ Member 1's answers were posted on PR #3 by `AlphaCenturian3` at 20:01 UTC, revie
 
 1. Re-check against `main`, then rebase PR #3 (no force-push to anyone else's branch).
 2. Apply the alignment: `backend/flameguard/research/` → `research/`, keep `tests/research/`, and wait for Member 1's `pythonpath` PR.
-3. Apply D-03, D-04 and D-05 adjustments and the card changes above; meet the D-01 conditions; get M1 and M3 approval of `config/ranking_criteria_v1.json`.
+3. Apply the D-03, D-04 and D-05 adjustments to the reference implementation (the card changes are already applied in `2754d91`); meet the D-01 conditions; get M1 and M3 approval of `config/ranking_criteria_v1.json`.
 4. Rerun ruff, pytest, the provenance check and `verify_sources`; request a fresh review.
 
 CP1 rebase readiness so far (trial merges only, nothing pushed): `29c7078` had no conflicts and 191 tests passed; `b89604a` had no conflicts and 209 tests passed; **`ca128d0` (final candidate) had no conflicts, 220 tests passed and ruff was clean**.
