@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "investigation.schema.json",
+  "title": "Investigation",
+  "type": "object",
+  "required": ["id", "name", "sources"],
+  "properties": {
+    "fixture": {"type": "boolean"},
+    "id": {"type": "string", "minLength": 1},
+    "name": {"type": "string", "minLength": 1},
+    "acronym": {"type": ["string", "null"]},
+    "platform": {"type": ["string", "null"], "description": "e.g. ISS, drop tower, parabolic flight"},
+    "objectives": {"type": "array", "items": {"type": "string"}},
+    "relevant_environments": {
+      "type": "array",
+      "items": {"enum": ["spacecraft", "space_station", "lunar_base", "martian_base", "pressurized_rover", "earth"]}
+    },
+    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "source.schema.json"}}
+  }
+}

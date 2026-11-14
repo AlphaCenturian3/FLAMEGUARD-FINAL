@@ -1,0 +1,16 @@
+{
+  "fixture": true,
+  "id": "fixture-investigation-1",
+  "name": "FIXTURE PLACEHOLDER INVESTIGATION",
+  "acronym": null,
+  "platform": null,
+  "objectives": [],
+  "relevant_environments": ["spacecraft"],
+  "sources": [
+    {
+      "title": "FIXTURE PLACEHOLDER SOURCE",
+      "url": "https://example.invalid/fixture",
+      "retrieved": "2026-11-14"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "health.schema.json",
+  "title": "Health",
+  "type": "object",
+  "required": ["status", "service", "contract_version"],
+  "additionalProperties": false,
+  "properties": {
+    "status": {"const": "ok"},
+    "service": {"const": "flameguard-si"},
+    "contract_version": {"type": "string"}
+  }
+}

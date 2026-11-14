@@ -1,0 +1,42 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Raw NASA data stays local until rights are reviewed (spec §2.4)
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+*.nef
+*.NEF
+*.mp4
+*.MP4
+*.mov
+*.avi
+*.zip
+*.tar
+*.tar.gz
+*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Node (frontend tooling, if added)
+node_modules/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp

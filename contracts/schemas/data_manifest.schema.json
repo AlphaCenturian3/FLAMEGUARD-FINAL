@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "data_manifest.schema.json",
+  "title": "DataManifest",
+  "type": "object",
+  "required": ["manifest_version", "datasets"],
+  "additionalProperties": false,
+  "properties": {
+    "manifest_version": {"type": "string"},
+    "datasets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "evidence_class", "sha256", "description"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$"},
+          "path": {"type": "string", "description": "Relative to repository root; under data/curated or data/simulated."},
+          "evidence_class": {"enum": ["measured", "interpretation", "illustrative_simulation"]},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "description": {"type": "string", "minLength": 1},
+          "sources": {"type": "array", "items": {"$ref": "source.schema.json"}},
+          "rights_status": {"enum": ["public_domain_confirmed", "permitted_with_citation", "under_review", "restricted"]},
+          "derived_from": {"type": "array", "items": {"type": "string"}},
+          "method": {"type": "string"},
+          "model": {"type": "string"},
+          "model_version": {"type": "string"},
+          "label": {"type": "string"}
+        }
+      }
+    }
+  }
+}

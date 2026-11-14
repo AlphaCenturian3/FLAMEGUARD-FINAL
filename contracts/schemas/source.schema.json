@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "source.schema.json",
+  "title": "Source",
+  "description": "A citation to a NASA or other primary source. Quotes must be exact.",
+  "type": "object",
+  "required": ["title", "url", "retrieved"],
+  "additionalProperties": false,
+  "properties": {
+    "title": {"type": "string", "minLength": 1},
+    "url": {"type": "string", "minLength": 1},
+    "page": {"type": ["string", "integer", "null"]},
+    "quote": {"type": ["string", "null"], "description": "Exact text from the source; null if none."},
+    "retrieved": {"type": "string", "format": "date"},
+    "archive_id": {"type": ["string", "null"], "description": "PSI dataset ID, NTRS ID, etc."}
+  }
+}

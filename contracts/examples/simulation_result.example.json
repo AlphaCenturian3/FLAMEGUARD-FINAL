@@ -1,0 +1,11 @@
+{
+  "fixture": true,
+  "id": "fixture-sim-1",
+  "evidence_class": "illustrative_simulation",
+  "label": "Fluid and thermal transport model. No combustion chemistry.",
+  "model": "fixture-model",
+  "model_version": "0.0.0",
+  "verification_status": "unverified",
+  "parameters": {},
+  "outputs": {}
+}

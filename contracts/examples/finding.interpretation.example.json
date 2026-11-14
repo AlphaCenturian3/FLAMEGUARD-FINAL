@@ -1,0 +1,12 @@
+{
+  "fixture": true,
+  "id": "fixture-finding-interp-1",
+  "investigation_id": "fixture-investigation-1",
+  "evidence_class": "interpretation",
+  "statement": "FIXTURE PLACEHOLDER interpretation. Not a real analysis.",
+  "provenance": {
+    "derived_from": ["fixture-finding-measured-1"],
+    "method": "fixture-method v0",
+    "generated_by": "FlameGuard-SI"
+  }
+}
