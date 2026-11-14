@@ -3,10 +3,23 @@
   "$id": "assistant_request.schema.json",
   "title": "AssistantRequest",
   "type": "object",
-  "required": ["question"],
+  "required": [
+    "question"
+  ],
   "additionalProperties": false,
   "properties": {
-    "question": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "investigation_ids": {"type": "array", "items": {"type": "string"}, "maxItems": 20}
+    "question": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "investigation_ids": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    }
   }
 }

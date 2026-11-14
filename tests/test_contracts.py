@@ -17,7 +17,8 @@ EXAMPLE_SCHEMA = {
     "finding.measured_missing.example.json": "finding.schema.json",
     "finding.interpretation.example.json": "finding.schema.json",
     "investigation.example.json": "investigation.schema.json",
-    "investigation_list.example.json": "list_envelope.schema.json",
+    "investigation_list.example.json": "investigation_list.schema.json",
+    "finding_list.example.json": "finding_list.schema.json",
     "comparison.example.json": "comparison.schema.json",
     "ranking.example.json": "ranking.schema.json",
     "assistant_request.example.json": "assistant_request.schema.json",
@@ -30,7 +31,6 @@ NON_SCIENTIFIC = {
     "health.example.json",
     "error.not_implemented.example.json",
     "assistant_request.example.json",
-    "investigation_list.example.json",
 }
 
 
@@ -51,7 +51,9 @@ def test_every_schema_has_an_example():
     assert {p.name for p in SCHEMAS.glob("*.schema.json")} - set(EXAMPLE_SCHEMA.values()) == {
         "source.schema.json",  # embedded in finding/investigation examples
         "conditions.schema.json",  # embedded in finding/comparison examples
-        "data_manifest.schema.json",  # exercised by data/manifest.json
+        "data_manifest.schema.json",  # exercised by data/manifest.json and test_provenance
+        "common.schema.json",  # shared definitions only
+        "quantity_rules.schema.json",  # applied inside finding and comparison
     }
 
 
@@ -62,7 +64,12 @@ def test_example_validates(validator_for, example, schema):
 
 @pytest.mark.parametrize("example", sorted(set(EXAMPLE_SCHEMA) - NON_SCIENTIFIC))
 def test_scientific_examples_are_marked_fixture(example):
-    assert _load(example)["fixture"] is True
+    doc = _load(example)
+    if "items" in doc and "fixture" not in doc:  # list envelope: every item is a fixture
+        assert doc["items"]
+        assert all(item["fixture"] is True for item in doc["items"])
+    else:
+        assert doc["fixture"] is True
 
 
 @pytest.mark.parametrize("example", sorted(set(EXAMPLE_SCHEMA)))
@@ -218,3 +225,25 @@ def test_label_and_version_constants_match_contract():
     assert f"**Spec version:** {CONTRACT_VERSION}" in spec
     vocab = json.loads((ROOT / "contracts" / "vocabulary.json").read_text())
     assert vocab["vocabulary_version"] == CONTRACT_VERSION
+
+
+def test_quantity_rules_match_vocabulary_exactly():
+    rules = json.loads((SCHEMAS / "quantity_rules.schema.json").read_text())
+    assert rules["properties"]["quantity"]["enum"] == [*VOCAB, None]
+    by_key = {}
+    for rule in rules["allOf"]:
+        const = rule["if"]["properties"]["quantity"].get("const")
+        if const is None:
+            continue
+        then = rule["then"]["properties"]
+        number = then["value"]["anyOf"][0]
+        bounds = {k: v for k, v in number.items() if k != "type"}
+        by_key[const] = {"unit": then["unit"]["const"], **bounds}
+    expected = {k: {f: v for f, v in q.items() if f != "description"} for k, q in VOCAB.items()}
+    assert by_key == expected
+
+
+def test_list_totals_match_items():
+    for name in ("investigation_list.example.json", "finding_list.example.json"):
+        doc = _load(name)
+        assert doc["total"] == len(doc["items"])

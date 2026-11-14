@@ -8,49 +8,46 @@
     "name",
     "sources"
   ],
+  "additionalProperties": false,
   "properties": {
     "fixture": {
       "type": "boolean"
     },
     "id": {
-      "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+      "$ref": "common.schema.json#/$defs/id"
     },
     "name": {
       "type": "string",
       "minLength": 1
     },
     "acronym": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "$ref": "common.schema.json#/$defs/text_or_null"
     },
     "platform": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "$ref": "common.schema.json#/$defs/text_or_null",
       "description": "e.g. ISS, drop tower, parabolic flight"
     },
     "objectives": {
       "type": "array",
       "items": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1
       }
     },
     "relevant_environments": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
-        "enum": [
-          "spacecraft",
-          "space_station",
-          "lunar_base",
-          "martian_base",
-          "pressurized_rover",
-          "earth"
-        ]
+        "$ref": "common.schema.json#/$defs/environment"
       }
+    },
+    "datasets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      },
+      "description": "Manifest ids holding this investigation's measured findings."
     },
     "sources": {
       "type": "array",
@@ -58,13 +55,6 @@
       "items": {
         "$ref": "source.schema.json"
       }
-    },
-    "datasets": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Manifest ids holding this investigation's measured findings."
     }
   }
 }

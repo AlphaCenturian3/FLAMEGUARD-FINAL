@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common.schema.json",
+  "title": "Common definitions",
+  "description": "Shared definitions so every schema uses one copy of each rule.",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+      "maxLength": 128
+    },
+    "non_simulation_class": {
+      "enum": [
+        "measured",
+        "interpretation"
+      ]
+    },
+    "value_status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "not_applicable"
+      ]
+    },
+    "environment": {
+      "enum": [
+        "spacecraft",
+        "space_station",
+        "lunar_base",
+        "martian_base",
+        "pressurized_rover",
+        "earth"
+      ]
+    },
+    "text_or_null": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "iso_date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "format": "date"
+    },
+    "http_url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s]+$"
+    },
+    "value_matches_status": {
+      "description": "reported needs a non-null value; not_reported/not_applicable need null.",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value_status": {
+                "const": "reported"
+              }
+            },
+            "required": [
+              "value_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "string"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "value_status": {
+                "enum": [
+                  "not_reported",
+                  "not_applicable"
+                ]
+              }
+            },
+            "required": [
+              "value_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -3,6 +3,19 @@
   "contract_version": "0.2.0",
   "answer": "FIXTURE answer assembled from quotes.",
   "mode": "fallback_quotes",
-  "citations": [{"finding_id": "fixture-finding-measured-1", "evidence_class": "measured", "source": {"title": "FIXTURE PLACEHOLDER SOURCE", "url": "https://example.invalid/fixture", "page": null, "quote": null, "retrieved": "2026-11-14", "archive_id": null}}],
+  "citations": [
+    {
+      "finding_id": "fixture-finding-measured-1",
+      "evidence_class": "measured",
+      "source": {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "page": null,
+        "quote": null,
+        "retrieved": "2026-11-14",
+        "archive_id": null
+      }
+    }
+  ],
   "generated_by": "FlameGuard-SI"
 }

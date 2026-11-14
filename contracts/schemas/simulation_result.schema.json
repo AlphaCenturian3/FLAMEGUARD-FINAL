@@ -19,8 +19,7 @@
       "type": "boolean"
     },
     "id": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "common.schema.json#/$defs/id"
     },
     "evidence_class": {
       "const": "illustrative_simulation"
@@ -49,5 +48,6 @@
     "outputs": {
       "type": "object"
     }
-  }
+  },
+  "additionalProperties": false
 }

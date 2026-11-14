@@ -4,66 +4,173 @@
   "title": "Finding",
   "description": "One NASA-measured value or one FlameGuard-SI interpretation. Simulations are NOT Findings; they use SimulationResult only.",
   "type": "object",
-  "required": ["id", "investigation_id", "evidence_class", "statement", "value_status", "provenance"],
+  "required": [
+    "id",
+    "investigation_id",
+    "evidence_class",
+    "statement",
+    "quantity",
+    "value",
+    "unit",
+    "value_status",
+    "provenance"
+  ],
+  "additionalProperties": false,
   "properties": {
-    "fixture": {"type": "boolean"},
-    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$"},
-    "investigation_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]*$"},
-    "evidence_class": {"enum": ["measured", "interpretation"]},
-    "statement": {"type": "string", "minLength": 1},
-    "quantity": {"type": ["string", "null"], "description": "Key from contracts/vocabulary.json, or null for a qualitative statement."},
-    "value": {"type": ["number", "string", "null"]},
-    "unit": {"type": ["string", "null"], "description": "Must equal the vocabulary unit for the quantity."},
-    "value_status": {"enum": ["reported", "not_reported", "not_applicable"]},
-    "uncertainty": {"type": ["string", "null"], "description": "As reported by the source; never invented."},
-    "conditions": {"$ref": "conditions.schema.json"},
+    "fixture": {
+      "type": "boolean"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "investigation_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "evidence_class": {
+      "$ref": "common.schema.json#/$defs/non_simulation_class"
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "quantity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Key from contracts/vocabulary.json, or null for a qualitative statement."
+    },
+    "value": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "unit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "value_status": {
+      "$ref": "common.schema.json#/$defs/value_status"
+    },
+    "uncertainty": {
+      "$ref": "common.schema.json#/$defs/text_or_null",
+      "description": "As reported by the source; never invented."
+    },
+    "conditions": {
+      "$ref": "conditions.schema.json"
+    },
     "fire_safety_topics": {
       "type": "array",
-      "items": {"enum": ["prevention", "detection", "suppression", "material_flammability", "ignition", "extinction", "other"]}
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "prevention",
+          "detection",
+          "suppression",
+          "material_flammability",
+          "ignition",
+          "extinction",
+          "other"
+        ]
+      }
     },
-    "provenance": {"type": "object"}
+    "provenance": {
+      "type": "object"
+    }
   },
   "allOf": [
     {
-      "if": {"properties": {"value_status": {"const": "reported"}}},
-      "then": {"properties": {"value": {"type": ["number", "string"]}}}
+      "$ref": "common.schema.json#/$defs/value_matches_status"
     },
     {
-      "if": {"properties": {"value_status": {"enum": ["not_reported", "not_applicable"]}}},
-      "then": {"properties": {"value": {"type": "null"}}}
+      "$ref": "quantity_rules.schema.json"
     },
     {
-      "if": {"required": ["value"], "properties": {"value": {"type": "number"}}},
-      "then": {"required": ["quantity", "unit"], "properties": {"quantity": {"type": "string"}, "unit": {"type": "string"}}}
-    },
-    {
-      "if": {"properties": {"evidence_class": {"const": "measured"}}},
+      "if": {
+        "properties": {
+          "evidence_class": {
+            "const": "measured"
+          }
+        }
+      },
       "then": {
+        "required": [
+          "conditions"
+        ],
         "properties": {
           "provenance": {
             "type": "object",
-            "required": ["manifest_id", "locator", "sources"],
+            "additionalProperties": false,
+            "required": [
+              "manifest_id",
+              "locator",
+              "sources"
+            ],
             "properties": {
-              "manifest_id": {"type": "string", "minLength": 1},
-              "locator": {"type": "string", "minLength": 1, "description": "Where in the source: e.g. 'Table IX, row 3' or 'file.csv line 12'."},
-              "sources": {"type": "array", "minItems": 1, "items": {"$ref": "source.schema.json"}}
+              "manifest_id": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "locator": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Where in the source: e.g. 'Table IX, row 3' or 'file.csv line 12'."
+              },
+              "sources": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "source.schema.json"
+                }
+              }
             }
           }
         }
       }
     },
     {
-      "if": {"properties": {"evidence_class": {"const": "interpretation"}}},
+      "if": {
+        "properties": {
+          "evidence_class": {
+            "const": "interpretation"
+          }
+        }
+      },
       "then": {
         "properties": {
           "provenance": {
             "type": "object",
-            "required": ["derived_from", "method", "method_version", "generated_by"],
+            "additionalProperties": false,
+            "required": [
+              "derived_from",
+              "method",
+              "method_version",
+              "generated_by"
+            ],
             "properties": {
-              "derived_from": {"type": "array", "minItems": 1, "items": {"type": "string"}, "description": "Finding ids (measured or interpretation). Never a simulation id."},
-              "method": {"type": "string", "minLength": 1},
-              "method_version": {"type": "string", "minLength": 1},
-              "generated_by": {"const": "FlameGuard-SI"}
+              "derived_from": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "$ref": "common.schema.json#/$defs/id"
+                },
+                "description": "Finding ids (measured or interpretation). Never a simulation id."
+              },
+              "method": {
+                "type": "string",
+                "minLength": 1
+              },
+              "method_version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "generated_by": {
+                "const": "FlameGuard-SI"
+              }
             }
           }
         }

@@ -121,9 +121,9 @@ All planned endpoints return HTTP 501 with an `Error` body today (`backend/flame
 | Method and path | Status | Response schema |
 |---|---|---|
 | `GET /api/health` | **implemented** | `health` |
-| `GET /api/investigations` | planned | `list_envelope`, items are `investigation` |
+| `GET /api/investigations` | planned | `investigation_list` |
 | `GET /api/investigations/{id}` | planned | `investigation`; `error` (`not_found`) with 404 |
-| `GET /api/findings?investigation_id=&evidence_class=&quantity=` | planned | `list_envelope`, items are `finding` |
+| `GET /api/findings?investigation_id=&evidence_class=&quantity=` | planned | `finding_list` |
 | `GET /api/compare?quantity=&investigation_ids=a,b` | planned | `comparison` (measured findings only) |
 | `GET /api/rankings?context=<environment>` | planned | `ranking` |
 | `POST /api/assistant/ask` | planned | request `assistant_request`, response `assistant_answer` |
@@ -138,9 +138,10 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
 - `Finding`: one `measured` value or one `interpretation`.
   - **A measured finding** needs a `locator` (where in the source) and a manifest id.
   - **`value_status`** is `reported`, `not_reported` or `not_applicable`. A missing value is `null` and can never be filled in.
-  - **A numeric value** needs a `quantity` from `contracts/vocabulary.json` and exactly that unit.
-  - **`conditions`** has fixed keys whose names carry the units. Unknown keys are rejected.
-- `Comparison`: measured rows for one quantity. When it is `comparable: false`, it must give at least one reason. The backend never converts units, interpolates or fills gaps.
+  - **A numeric value** needs a `quantity` from `contracts/vocabulary.json`, exactly that unit, and must fall within that quantity's physical bounds. A string value is allowed only for a qualitative statement, with `quantity` and `unit` both `null`.
+  - `quantity`, `value` and `unit` are always present. `null` is written out explicitly, never left out.
+  - **`conditions`** is required on measured findings. Every key is present (`null` = not reported). Key names carry the units, and unknown keys are rejected.
+- `Comparison`: rows for one quantity. Every row must carry `evidence_class: "measured"`. `comparable: true` needs at least 2 rows, all `reported`, and no reasons. `comparable: false` needs at least one reason. The backend never converts units, interpolates or fills gaps.
 - `Ranking`: frozen criteria with weights. Each score is the weighted sum of its criterion scores, and each criterion score lists its input findings, which are measured or interpretation only. Investigations left out of the ranking appear in `excluded` with a reason.
 - `AssistantAnswer`: `mode` is `ai`, `fallback_quotes` or `no_evidence`. Every mode except `no_evidence` needs at least one citation. Citations are findings only.
 - `SimulationResult`: `illustrative_simulation` with the required label. `verification_status` is `unverified` or `numerically_verified` only.

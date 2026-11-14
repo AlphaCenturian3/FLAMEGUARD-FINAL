@@ -27,7 +27,11 @@ Every item must keep the rules in spec §2.
 - **D1.** `data/curated/investigations.json`: at least 3 investigations, each with at least one real NASA source.
 - **D2.** `data/curated/findings/<id>.json`: measured findings, each with a `locator` and an exact `quote` where the source has text. At least 2 investigations must share one vocabulary `quantity`, so that comparison can be tested. A value the source does not report is entered as `not_reported`, never estimated.
 - **D3.** Every file is registered in `data/manifest.json` with its SHA-256 and `rights_status`. Raw downloads stay in `data/raw/`, which git ignores.
-- **D4.** `tests/data/`: every curated file validates against its schema. Every `investigation_id`, `manifest_id` and `datasets` reference resolves. Every numeric `quantity` and `unit` matches `contracts/vocabulary.json`.
+- **D4.** `tests/data/` checks the rules that schemas cannot express (S1 to S4 in `contracts/README.md`):
+  - every curated file validates against its schema;
+  - every `investigation_id`, `manifest_id` and `datasets` reference resolves;
+  - each findings file is named after the `investigation_id` of every finding in it;
+  - each measured finding's `manifest_id` points to a `measured` manifest entry whose file contains that finding.
 - **D5.** Any new quantity or condition key goes through a contract PR first, never straight into the data.
 
 | Check | How it is verified |
@@ -42,9 +46,9 @@ Every item must keep the rules in spec §2.
 
 **Start now:** loaders and endpoint code tested against `tests/fixtures/` only, on a branch, unmerged until CP1.
 
-- **B1. Loader.** Reads only manifest entries that pass the provenance check and validate against their schema. A bad file is skipped and reported, never loaded partially (fails closed).
+- **B1. Loader.** Reads only manifest entries that pass the provenance check and validate against their schema. It enforces S1 to S4 at load time. A bad file is skipped and reported, never loaded partially (fails closed).
 - **B2. Explorer API.** `GET /api/investigations`, `/api/investigations/{id}` (404 returns `not_found`) and `/api/findings` with filters. An unknown filter value returns 400 `invalid_request`.
-- **B3. Compare.** `GET /api/compare` uses measured findings only. It sets `comparable: false` with reasons when units, quantities or any reported condition differ, or when a value is missing. It never converts units, interpolates or fills gaps.
+- **B3. Compare.** `GET /api/compare` uses measured findings only. It follows rule S5 in `contracts/README.md` and never converts units, interpolates or fills gaps.
 - **B4. Ranking.**
   - Commit `config/ranking_criteria_v1.json` (criteria, weights, scoring rules) **in its own commit before any ranking output exists**, and get it approved by QA and one other owner. After that it is never edited; changes go in a new `_v2` file.
   - Then implement `GET /api/rankings`.

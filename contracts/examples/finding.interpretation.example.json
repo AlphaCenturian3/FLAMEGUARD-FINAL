@@ -8,6 +8,15 @@
   "value": null,
   "unit": null,
   "value_status": "not_applicable",
-  "fire_safety_topics": ["prevention"],
-  "provenance": {"derived_from": ["fixture-finding-measured-1"], "method": "fixture-method", "method_version": "0", "generated_by": "FlameGuard-SI"}
+  "fire_safety_topics": [
+    "prevention"
+  ],
+  "provenance": {
+    "derived_from": [
+      "fixture-finding-measured-1"
+    ],
+    "method": "fixture-method",
+    "method_version": "0",
+    "generated_by": "FlameGuard-SI"
+  }
 }
