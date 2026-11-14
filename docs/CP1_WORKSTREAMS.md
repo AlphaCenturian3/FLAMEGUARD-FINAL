@@ -51,6 +51,7 @@ Every item must keep the rules in spec §2.
 | Ranking inputs resolve | test: every input `finding_id` exists and is measured or interpretation |
 | Excluded values never used, transitively (S9) | test: no ranking input, no comparable row, and no TARS numeric statement uses a `excluded` finding |
 | Assistant works without a key | test runs with the key blank: `mode` is `fallback_quotes` or `no_evidence` |
+| **S9 runtime gate (mandatory before any B6 or T1 merge)** | B6 passes exclusion-dependent findings **only** to a separate exclusion-explanation step and never to the answer generator as evidence. Each such citation carries its exact exclusion-note text. The answer and its limitations never contain the excluded number, which is resolved as printed from the source at its `locator` by Member 3's resolver (also needed for S10). **Member 5's independent live-output test** in `tests/research/` must pass. The contract oracle is a lower bound and does not prove this |
 | Assistant cites only retrieved evidence | test: every citation's `finding_id` was returned by `retrieve()` for that request |
 | Simulation isolation | test: the ranking, compare and assistant modules do not import simulation code |
 | Independent review | Member 5's `tests/research/` checks of S5, S6 and S8 pass (spec §4.4) |
@@ -129,6 +130,7 @@ Every item must keep the rules in spec §2.
 | D1 to D4 pass | `pytest tests/data` and `python tools/check_data_provenance.py` exit 0 in CI |
 | Values match the sources | Member 5's spot check (Q3) finds 0 mismatches |
 | No raw files committed | `secrets-and-raw-data` CI job is green |
+| **S9 runtime gate for T1** | `retrieve()` marks every exclusion-dependent finding it returns (transitively, at any depth), so B6 can route it to the exclusion-explanation step. Member 3 provides the as-printed value resolver for excluded findings. Member 5 tests both independently |
 | `retrieve()` returns no simulation and is deterministic | test in `tests/data/`: the same input gives the same output, and every returned `evidence_class` is measured or interpretation |
 | Independent review | Member 1 reviews T1; Member 5 performs Q3 |
 
