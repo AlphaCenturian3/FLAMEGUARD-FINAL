@@ -1,82 +1,117 @@
-# Ranking criteria for the environment-only interface (D-01, condition 1)
+# Ranking criteria for the environment-only interface (D-01, condition 1). Revision 2
 
-**Status:** proposal by Member 5 for Member 1 and Member 3 review. **Not approved.** The ranking stays disabled. This document defines the criteria; it does not change `config/research_relevance_criteria_v1.proposed.json`, the reference implementation, or any contract. Member 1 owns the production implementation (B4).
+**Status:** proposal, **not approved**. Revised after Member 1's owner answers on PR #3 ([comment 6883984161](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883984161), 2026-11-14), which are owner proposals and not approvals. The eligibility gates are **pending Member 3's approval of the tag-provenance rule**. No weights are frozen, rankings stay disabled, and nothing here changes `config/`, a contract or any runtime code. Member 1 owns the production implementation (B4); Member 5's reference implementation is updated only after CP1 and the move to `research/`.
+
+**What changed from revision 1:**
+
+- `purpose_relevance` is **removed from the weighted score** and becomes eligibility gate E2.
+- `condition_match` is **scored on gravity only**.
+- O₂ and pressure are **descriptive, not scored**.
+- The proposed O₂ and pressure tolerances are **inactive**.
+- Contract question Q-1 no longer arises, because the gate needs no criterion inputs.
 
 ## Interface
 
-Contract v0.2.0 (CP1 candidate `ca128d0`) ranks with one input: `GET /api/rankings?context=<environment>`, where the environment is one of `spacecraft`, `space_station`, `lunar_base`, `martian_base`, `pressurized_rover` or `earth`. There are no user-supplied topics, quantities or conditions (a research-question input is a v0.3 candidate, D-06). Every criterion below therefore depends only on the context and the curated data.
+Contract v0.2.0 (CP1 candidate `a6876d1`) ranks with one input: `GET /api/rankings?context=<environment>`, one of `spacecraft`, `space_station`, `lunar_base`, `martian_base`, `pressurized_rover`, `earth`. There are no user-supplied topics, quantities or conditions (D-06: v0.3).
 
-**Eligible evidence:** curated measured findings (and interpretation findings derived from them) that passed the provenance check and the loader. An investigation with no measured evidence goes in `excluded` with the reason "insufficient evidence" (D-03).
+The ranking has two stages: **eligibility gates**, then a **weighted score** for the investigations that pass.
 
-**Score:** `score = 0.40·P + 0.25·C + 0.20·T + 0.15·D`, each criterion in [0, 1] (continuous, D-02). The weights are proposed, not approved.
+## Stage 1: eligibility gates (Member 1 proposal; pending Member 3)
 
-## 1. `purpose_relevance` (P, weight 0.40)
+An investigation is scored for a context only if it passes **every** gate. Otherwise it goes in the ranking's `excluded` list, and the reason given is the **first** gate it fails, checked in the order E1, E2, E3. The contract supports this without change.
 
-**Proposed definition (P1, recommended for P0):** P = 1 if the investigation's curated `Investigation.relevant_environments` contains the context, otherwise 0.
+| Gate | Passes when | Fails when | Notes |
+|---|---|---|---|
+| **E1 Evidence** | The investigation has at least one eligible **measured** finding that is either `value_status: reported`, or a measured qualitative finding (quantity, value and unit `null`; `not_applicable`; exact quote and locator; D-05) | No such finding. A finding with `value_status: excluded` never counts (rule S9), and a `not_reported` finding alone does not count | Descriptive investigation text and quoted objectives are **not** measurements and never satisfy E1 |
+| **E2 Source-stated relevance** | `Investigation.relevant_environments` contains the context **and** that tag is stated by one of the investigation's own sources, backed by a quote in `Investigation.sources`, with the tag-to-quote mapping recorded in Member 3's data documentation | The tag is absent, or no source states it. An unset tag fails E2 | **Pending Member 3** (tag-provenance rule). The contract has no per-tag provenance field, and none is added |
+| **E3 Integrity** | No input is a fixture or a simulation, and rules S0 to S10 pass | Any input fails | S9: `excluded` findings are never inputs. S10: flag resolution and quote checks against the registered source |
 
-- The tag comes from the **Investigation** object, which **Member 3** curates with sources. It does not come from interpretation tags written by Member 5, so the author of the criteria does not also set the tags that drive the score (Member 1's condition).
-- P is binary, so it moves an investigation by 0.40 at once. The sensitivity assessment shows the effect (`WEIGHT_SENSITIVITY.md`).
+Member 1 labelled these gates G1 to G3 (comment 6883984161). This document calls them **E1 to E3**, so they are not confused with the options G0 to G2 in Member 5's earlier decision form.
 
-**Alternative (P2, not recommended for P0):** P = ½·(environment tag) + ½·(share of fire-safety topics covered by the investigation's measured findings). It needs per-environment topic priorities, which would be an editorial choice with no source. Listed for completeness.
+**What passing means.** Passing the gates means "relevant according to its own sources, and backed by measured evidence". It does **not** mean "applicable under the conditions of that environment". Applicability is what the condition score measures.
 
-**Contract question Q-1 (Member 1):** for a non-zero criterion score the ranking schema requires at least one input `finding_id`, but P's signal is on the Investigation, not a finding. Proposal: cite the investigation's eligible measured findings as inputs and name the `relevant_environments` tag and its source in the rationale. Member 1 decides whether that satisfies the schema's intent or needs a v0.3 change.
+**Wider applicability is an interpretation.** A statement such as "an ISS microgravity result informs lunar habitats" is a FlameGuard-SI inference. It belongs in a Member 5 **interpretation finding** (with `relevant_environments`, the required `limitations` and `generated_by: "FlameGuard-SI"`), never in an Investigation tag. So the person who writes the criteria never sets the tags that decide eligibility.
 
-## 2. `condition_match` (C, weight 0.25)
+**An empty ranking is a valid result.** If no investigation passes for a context (likely for `lunar_base` and `martian_base` at present), the ranking is reported as empty, with each investigation's failing gate.
 
-**Reference conditions** come from `environment_reference.json` (D-01, condition 2). Each condition is either **assessable** (a cited reference exists) or **reference unknown**.
+## Stage 2: weighted score (weights not determined)
 
-| Context | Gravity (contract category) | O₂ mole fraction reference | Pressure reference (kPa) | Assessable conditions |
-|---|---|---|---|---|
-| `space_station` | microgravity (physical) | 0.21 (ISS, operational) | 101.3 (ISS, operational) | 3 |
-| `spacecraft` | microgravity (**editorial classification**, Member 1 to confirm) | 0.265 (Gateway nominal, design assumption) | 70.3 (Gateway, design assumption); 101.4 (Mars transit, design assumption) | 3 |
-| `lunar_base` | partial_gravity (physical: 1.62 m/s²) | 0.265 or 0.34 (Surface Habitat nominal or capability, design assumption) | 70.3 or 56.5 (Surface Habitat, design assumption) | 3 |
-| `martian_base` | partial_gravity (physical: 3.73 m/s²) | **unknown** (no habitat atmosphere found) | **unknown** | 1 (gravity only) |
-| `pressurized_rover` | partial_gravity (**location-dependent**; lunar rover assumed) | **unknown** | **unknown** | 1 (gravity only) |
-| `earth` | normal_gravity (physical) | 0.2095 (physical) | 101.4 (physical) | 3 |
+`score = w_C · C + w_T · T + w_D · D`, each criterion in [0, 1] (continuous, D-02). The weights must satisfy the applicability-dominance invariant (see `WEIGHT_SENSITIVITY.md`). **No weights are proposed or approved here.** The earlier proposal (40/25/20/15) cannot satisfy the invariant, and P no longer exists.
 
-**Proposed matching rule:** a condition is matched if at least one eligible measured finding of the investigation reports a value that matches any listed reference point:
+### C: condition match, gravity only (P0)
 
-- gravity: exact category match;
-- oxygen mole fraction: within **±0.02** (absolute) of a reference point;
-- pressure: within **±10 %** (relative) of a reference point.
+**Reference (D-13 gravity: accepted with labels by Member 1, owner answer):**
 
-The tolerances are **editorial proposals with no source**. Member 1 decides them (new decision D-13).
+| Context | Reference gravity category | Label shown |
+|---|---|---|
+| `space_station` | microgravity | physical (orbital free fall) |
+| `spacecraft` | microgravity | **assumed: coast phase** (excludes launch, entry and landing) |
+| `lunar_base` | partial_gravity | physical (1.62 m/s²) |
+| `martian_base` | partial_gravity | physical (3.73 m/s²) |
+| `pressurized_rover` | partial_gravity | **assumed: lunar rover** (NTRS 20220000245, p. 2) |
+| Martian pressurized rover | — | **reference unknown** (the contract context cannot express it; see "Open points") |
+| `earth` | normal_gravity | physical |
 
-**Score:** C = matched / assessable.
+**Score.**
 
-- A condition whose reference is unknown is **not** in the denominator and is listed as "reference unknown".
-- A condition the findings do not report counts as unmatched and is listed as "not reported" (D-03: this penalizes less-documented investigations, which the methodology states).
-- If no condition is assessable, C = 0 with empty inputs and status `not_assessed` (cannot happen with the table above, because gravity is always assessable).
+- C = 1 if at least one eligible measured finding reports a `gravity_environment` equal to the reference category.
+- C = 0 if the findings report gravity but none match.
+- If no eligible finding reports gravity, C = 0 and the gap is listed as "not reported". This follows D-03, and the methodology states that it penalizes less-documented investigations.
+- With a gravity-only C, C takes only the values 0 and 1.
 
-**Limits to state in the UI:**
+**Reference unknown.** When a context's gravity reference is unknown, the condition is left out of C and listed as "reference unknown". With gravity as the only scored condition, C then has **nothing to score** for that context. How the ranking should behave in that case is an **open decision** (see "Open points").
 
-- The contract's `gravity_environment` is a category, so lunar (0.165 g) and Martian (0.380 g) gravity both map to `partial_gravity` and cannot be told apart. A numeric gravity level is a v0.3 candidate.
-- Matching a habitat **design** atmosphere does not make a microgravity test lunar or Martian evidence; the gravity condition still differs.
-- `martian_base` and `pressurized_rover` are assessed on gravity alone, so their C scores are not comparable with the other contexts.
+**Stated limits.**
 
-**Illustration (hypothetical conditions, not NASA data):** a test reported as microgravity, O₂ 0.21, 101.3 kPa, ranked for `lunar_base`: gravity unmatched (microgravity ≠ partial_gravity); O₂ unmatched (0.21 is 0.055 from 0.265); pressure unmatched (101.3 is 44 % above 70.3). C = 0/3. For `space_station` the same test gives C = 3/3.
+- Lunar (0.165 g) and Martian (0.380 g) gravity are both `partial_gravity` in the contract, so C cannot distinguish them. A numeric gravity level is a v0.3 candidate.
+- Matching a gravity category is not evidence that a test is applicable to a habitat: atmosphere, flow and scale may still differ.
 
-## 3. `source_traceability` (T, weight 0.20)
+### O₂ and pressure: descriptive, not scored
 
-Independent of the context. Per eligible finding: the share of four checks on its best source (http(s) URL; retrieval date; exact quote; locator, archive id or DOI). An interpretation takes the mean of the findings it is derived from, and unresolved inputs count as 0. T is the mean over eligible findings.
+**D-13 tolerances: inactive (Command Center, recorded by Member 1).** The proposed O₂ ±0.02 and pressure ±10 % tolerances are inactive. No source supports them, and near a material's oxygen limit ±0.02 absolute can move a test across the flammability boundary.
 
-## 4. `data_completeness` (D, weight 0.15)
+For P0, the UI shows each eligible finding's **reported** O₂ and pressure next to the context's reference points from `environment_reference.json`, each labelled with its status (physical, operational, design assumption, historical recommendation, or reference unknown). These values do **not** enter any score.
 
-Independent of the context. Per eligible finding: the share reported among the eight condition keys and the test id, plus value and uncertainty for quantities. D is the mean over eligible findings.
+Scoring them later requires all of:
+
+1. a cited source that defines an **equivalence** tolerance for this purpose (a chamber's control tolerance is not one);
+2. approval by Members 1 and 3;
+3. a sensitivity rerun.
+
+When matching becomes active, the result must say **which** reference point matched, because some contexts have two design points.
+
+### T: source traceability
+
+Unchanged and independent of the context. Per eligible finding, the share of four checks on its best source: http(s) URL; retrieval date; exact quote; locator, archive id or DOI. An interpretation takes the mean of the findings it is derived from. Member 1 notes that once the loader enforces provenance, T may barely vary between eligible findings. Whether T carries any information is **measured at CP2** before any weight is chosen.
+
+### D: data completeness
+
+Unchanged and independent of the context. Per eligible finding, the share reported among the eight condition keys and the test id, plus value and uncertainty for quantities.
 
 ## Disclaimer text (proposed)
 
-> Research-relevance score: how well the curated evidence matches the selected environment. It is not a fire-danger, fire-risk or hazard score, and not a probability. 35 % of the score (traceability 20 %, completeness 15 %) measures how well the evidence is documented, not how relevant it is to fire safety in the selected environment.
+> Research-relevance ranking for the selected environment. An investigation is listed only if its own sources state that it is relevant to the environment and it has measured evidence. The score combines a gravity-condition match with how completely the evidence is documented. It is not a fire-danger, fire-risk or hazard score, not a probability, and it does not show that a result applies under the environment's conditions. Oxygen and pressure are shown for comparison and are not scored.
 
-## Status of the reference implementation
+## Decision status
 
-`backend/flameguard/research/ranking.py` (Member 5's reference, moving to `research/` after CP1) still implements the earlier structured-question form. It is **not** updated in this change, so that Member 1 and Member 3 can review these definitions first and Member 1's B4 remains the only runtime. After approval, Member 5 updates the reference implementation to these definitions and `tests/research/` compares it with Member 1's output.
+| ID | Item | Status | Owner(s) |
+|---|---|---|---|
+| E1–E3 | Eligibility gates | **Owner proposal (Member 1); pending Member 3**; not approved | M1, M3 |
+| E2 rule | Tags hold only source-stated environments, each backed by a quote | **Pending Member 3** | M3 (with M1) |
+| C | Gravity-only condition match | Owner proposal (Member 1, "For P0, C is scored on gravity only"); not approved | M1, M3 |
+| D-13 gravity | Categories and labels above | Accepted with labels (Member 1 owner answer) | M1 |
+| D-13 O₂/pressure | Tolerances | **Inactive** (Command Center, via Member 1) | M1, M3 |
+| D-13 unknowns | "Reference unknown", left out of the score | Accepted (Member 1 owner answer) | M1 |
+| Weights | w_C, w_T, w_D | **Not proposed, not approved**; must satisfy the invariant; real data at CP2 | M1, M3 |
+| Q-1 | Criterion inputs for a tag signal | Resolved by the gate (Member 1), pending Member 3 | M1, M3 |
 
-## Decisions requested
+## Open points (not decided; for Member 1 and Member 3)
 
-| ID | Question | Owner |
-|---|---|---|
-| D-01 (conditions 1–3) | Accept these definitions, the reference table and the sensitivity method; then co-approve the weights | M1 and M3 |
-| D-13 | O₂ and pressure tolerances (±0.02, ±10 % proposed); gravity class for `spacecraft` and `pressurized_rover` | M1 |
-| Q-1 | Inputs for P when the signal is investigation-level | M1 |
-| — | Curate `Investigation.relevant_environments` with sources for each investigation | M3 |
+1. **A context whose gravity reference is unknown.** If C has nothing to score, it would be 0 for every eligible investigation, and the order would fall to T and D alone, which is what the invariant is meant to prevent. Options: (a) report no ranking for that context ("reference unknown"); (b) rank by T and D with a visible warning. Member 5 recommends **(a)**.
+2. **A Martian pressurized rover cannot be expressed.** `pressurized_rover` is a single context value. Member 1's labels assume a lunar rover; a Martian rover's reference is unknown. Separate contexts would be a v0.3 contract change.
+3. **E1 versus D.** E1 can pass on a measured qualitative finding with no quantity, and D gives such a finding fewer checks (no value or uncertainty). Member 1 should confirm this is intended.
+4. **Gate order.** The first failing gate is reported in the order E1, E2, E3. If integrity (E3) should be reported first, Member 1 should say so.
+
+## Superseded (revision 1, kept for traceability)
+
+Revision 1 defined `purpose_relevance` (weight 0.40) as a binary environment-tag match, and proposed O₂ ±0.02 and pressure ±10 % tolerances. Both are superseded by Member 1's answers above. Revision 1 is in this file's git history (commit `24f710e`).
