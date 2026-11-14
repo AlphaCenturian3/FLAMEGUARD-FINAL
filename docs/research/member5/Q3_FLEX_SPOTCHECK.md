@@ -88,3 +88,23 @@ Findings sent on PR #4 ([comment 6884315288](https://github.com/AlphaCenturian3/
 | S-5 | "ACCEPT WITH QUALIFICATION: include the report's mitigating phrase … as an attributed source assertion" | Member 3 proposes it on PR #4 |
 
 Member 3 will then request **Member 5's renewed independent review of the changed flags**. "No merge or owner approval is implied."
+
+## G. Renewed review of the revised flags (PR #4 `d117ba90afc78416c4769963f15adaa98a17ed39`, 2026-11-14)
+
+Commit `d117ba9` ("data: add FLEX-010 cautions and contamination context from Member 5 Q3 (S-2, S-3, S-5)"). Checked read-only against the same PDF (SHA-256 `b4f6ca98…`).
+
+| Check | Result | Status |
+|---|---|---|
+| Data CSV | unchanged | **Verified** |
+| Flags manifest SHA-256 | `80e73f19…` matches the committed flags blob | **Verified** |
+| Flag counts | 45 (1 `exclude`, 35 `caution`, 9 `not_available`) | **Verified** |
+| All 45 `source_quote` values on their cited printed page | 45 of 45 verbatim | **Verified** |
+| S-2 → F044: FLEX-010 `initial_droplet_diameter_mm`, `caution`, printed p. 38, "The HiBMs produced a saturated image that influenced the droplet size measurement." | Correct field, status and quote; value untouched | **Verified** |
+| S-3 → F045: FLEX-010 `burn_time_s`, `caution`, printed p. 38; reason: "The printed value is kept as reported and is not judged incorrect." | Correct field and status; quote verbatim | **Verified**, with one wording note (below) |
+| S-5 → F001, F007, F010, F013, F017, F020, F023, F028, F034, F041: reason now quotes printed p. 17 assertions (1) and (2), labelled "the authors' assessments, not independent measurements" | Both sentences are in the source (sentence (1) matches whitespace-insensitively, because of a pypdf word split, not an error) | **Verified** |
+| F042 FLEX-010 burning rate | still `exclude` | **Verified** |
+| CI on `d117ba9` | runs 43642566376 and 43642570754: backend 3.11, 3.12, secrets-and-raw-data all pass | **Verified** (observed) |
+
+**Wording note (minor, Member 3's call):** F045's reason says the droplet left the fields of view "early in the test". The caption does not say "early"; it says the droplet "quickly moved west out of the fields of view" and was "in the HiBMs FOV for only a short time". Quoting those words would be exact. This is not a data error.
+
+**Q3 status:** the PR #4 transcription and flags are verified at `d117ba9` by Member 5's executor. This is not an approval of PR #4, and it does not resolve S-1 or S-3 against PSI data (still blocked).

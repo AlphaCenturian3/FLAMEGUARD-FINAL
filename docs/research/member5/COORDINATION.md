@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 21:30 UTC (Member 5 decisions on S9 oracle, investigation tags and page convention; Q3 findings sent to Member 3). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 21:30 UTC (Member 2 identity and roster confirmed; renewed Q3 review of PR #4 `d117ba9`; CP1 head `eaae6d6`, corrected S9 oracle not yet pushed). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -54,7 +54,7 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 | Member | Account | Roster confirmation on PR #1 | Evidence |
 |---|---|---|---|
 | 1 | `AlphaCenturian3` | Covered by the CP1 approval ("the four-active-member ownership model") | [6884018748](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884018748) |
-| 2 | not confirmed | **AWAITING**: neither identity nor roster stated | — |
+| 2 | `buihhlong-a11y` | **Confirmed**: "I am Member 2 (buihhlong-a11y). I confirm the four-active-member CP1 roster"; stated as "not my approval of PR #1" | [6884379301](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884379301) |
 | 3 | `huyenthoai272008` | **AWAITING** explicit confirmation on PR #1. On PR #4 Member 3 wrote "My earlier review request mentioning Member 4 is superseded" | [PR #4 6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095) |
 | 5 | `16trtuoiloz-ducdo` | **Confirmed**: "Member 5 (16trtuoiloz-ducdo) confirms the four-active-member roster." Posted with the account holder's authorization | [6884177976](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884177976) |
 
@@ -74,7 +74,7 @@ No member has confirmed the roster from their own account, and no account has cl
 | Member | Account | Identity evidence | Formal CP1 approval at `a6876d1` |
 |---|---|---|---|
 | 1 | `AlphaCenturian3` | Designated by coordination | approved `a6876d1` (comment 6884018748); **superseded by head `eaae6d6`** |
-| 2 | not confirmed | `buihhlong-a11y` says approval "will come from the Member 2 account holder personally" | none |
+| 2 | `buihhlong-a11y` (confirmed 21:21 UTC) | Self-identified on PR #1 ([6884379301](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884379301)) | none |
 | 3 | `huyenthoai272008` | Self-identified in PR #4 | none |
 | 4 | not established | — | not in the approval table |
 | 5 | `16trtuoiloz-ducdo` | Author of PR #3 | none (withheld per instruction A) |
