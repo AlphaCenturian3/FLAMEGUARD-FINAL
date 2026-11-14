@@ -40,7 +40,12 @@
           "enum": [
             "caution",
             "exclusion"
-          ]
+          ],
+          "x-flag-ranking-use": {
+            "caution": "caution",
+            "exclusion": "exclude"
+          },
+          "description": "Maps to the flags file's ranking_use exactly as in x-flag-ranking-use (rule S10). A ranking_use of not_available produces no note: the finding gets value_status not_reported."
         },
         "text": {
           "type": "string",
@@ -70,7 +75,7 @@
           }
         },
         "source": {
-          "description": "The NASA passage the note relies on. An exact quote is required.",
+          "description": "The NASA passage the note relies on. A non-empty quote is required here, but the schema cannot verify it: the quote must match the flag row's quote and be checked against the registered source text (rule S10).",
           "allOf": [
             {
               "$ref": "source.schema.json"

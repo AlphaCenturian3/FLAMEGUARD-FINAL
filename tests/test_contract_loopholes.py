@@ -297,3 +297,53 @@ def test_excluded_row_makes_comparison_non_comparable(validator_for):
     doc["non_comparable_reasons"] = []
     with pytest.raises(ValidationError):
         v.validate(doc)
+
+
+# --- Flag mapping (rule S10, schema side) ---------------------------------------
+# The cross-file half of S10 (flag_ref resolution, per-row coverage, quote verification
+# against the registered source) needs the curated files: Member 3 implements it in the
+# derivation tool and tests/data/, and Member 5 checks it independently in tests/research/.
+
+FLAG_RANKING_USE = {"caution": "caution", "exclusion": "exclude"}
+
+
+def _curation_kind():
+    path = ROOT / "contracts" / "schemas" / "common.schema.json"
+    common = json.loads(path.read_text(encoding="utf-8"))
+    return common["$defs"]["curation_note"]["properties"]["kind"]
+
+
+def test_flag_mapping_is_exact():
+    kind = _curation_kind()
+    assert kind["x-flag-ranking-use"] == FLAG_RANKING_USE
+    assert set(kind["enum"]) == set(FLAG_RANKING_USE)
+
+
+def test_not_available_has_no_note_kind_and_no_value_status():
+    kind = _curation_kind()
+    assert "not_available" not in kind["enum"]
+    assert "not_available" not in kind["x-flag-ranking-use"].values()
+    path = ROOT / "contracts" / "schemas" / "common.schema.json"
+    common = json.loads(path.read_text(encoding="utf-8"))
+    assert "not_available" not in common["$defs"]["value_status"]["enum"]
+
+
+def test_not_available_cell_is_not_reported_without_a_note(validator_for):
+    v = validator_for("finding.schema.json")
+    doc = copy.deepcopy(_load(MISSING))
+    assert doc["value_status"] == "not_reported"
+    assert doc["value"] is None
+    assert "curation_notes" not in doc
+    v.validate(doc)
+    doc["value_status"] = "not_available"  # the flags-file term must not pass through
+    with pytest.raises(ValidationError):
+        v.validate(doc)
+
+
+@pytest.mark.parametrize("ranking_use", ["exclude", "not_available", "excluded"])
+def test_flag_terms_are_not_note_kinds(validator_for, ranking_use):
+    doc = copy.deepcopy(_load(EXCLUDED))
+    assert doc["curation_notes"][1]["kind"] == "caution"
+    doc["curation_notes"][1]["kind"] = ranking_use  # only the kind enum can reject this
+    with pytest.raises(ValidationError):
+        validator_for("finding.schema.json").validate(doc)

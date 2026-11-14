@@ -43,6 +43,18 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
    - A `not_available` cell is `not_reported`.
    - Source files are never edited to remove a value.
 
+   The mapping from the flags file's `ranking_use` is exact and has no other cases. It is also machine-readable as `x-flag-ranking-use` on `curation_note.kind` in `common.schema.json`:
+
+   | Flags file `ranking_use` | Finding |
+   |---|---|
+   | `caution` | `curation_notes[]` entry with `kind: "caution"`; `value_status` unchanged |
+   | `exclude` | `value_status: "excluded"`, `value: null`, plus a `curation_notes[]` entry with `kind: "exclusion"` |
+   | `not_available` | `value_status: "not_reported"`, `value: null`. **No note is created for this flag.** A not-available cell is not a caution or an exclusion |
+
+   Other flags on the same row (for example a whole-row `*` caution) still produce their own notes. A `not_reported` finding may therefore carry caution notes, but never one that points to a `not_available` flag.
+
+   **Quotes are verified, not just present.** The schema requires a non-empty `source.quote` on every note. That is a shape check, not scientific verification. The quote must equal the flag row's `source_quote` and must be checked against the text of the registered source document (rule S10, and spec §2.4 for all quotes).
+
 ## Rules schemas cannot express
 
 These rules span several files or depend on computed values. Each one has a member who enforces it in code and a different member who tests it independently (spec §4.4).
@@ -58,7 +70,8 @@ These rules span several files or depend on computed values. Each one has a memb
 | S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | M1 (B4) / M5 (Q2) |
 | S7 | List `total` equals `len(items)` | M1 (B2) / M1 (Q1 integration) and M2 (Q4) |
 | S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources, and was returned by `retrieve()` | M1 (B6) with M3 (T1) / M5 (Q2) |
-| S9 | **Exclusions.** No finding with `value_status: "excluded"` is a ranking input, a comparison row counted as comparable (also schema-enforced), a `retrieve()` result or an assistant citation. Each `curation_notes[].flag_ref` resolves to a row of a registered interpretation-class flags file whose `ranking_use` matches the note's `kind` | M1 (B1, B3, B4, B6) with M3 (T1, D4) / M5 (Q2) |
+| S9 | **Exclusions at runtime.** No finding with `value_status: "excluded"` is a ranking input, a comparison row counted as comparable (also schema-enforced), a `retrieve()` result or an assistant citation | M1 (B1, B3, B4, B6) with M3 (T1) / M5 (Q2) |
+| S10 | **Flags to findings (convention 9 mapping).** (a) Each `curation_notes[].flag_ref` resolves to a row of a manifest-registered, interpretation-class flags file. That row's `ranking_use` equals `x-flag-ranking-use[kind]`, its test or row matches the finding's `locator`, and its field is the finding's field or `*`. (b) Every `exclude` row that applies to an emitted finding makes that finding `excluded` with an exclusion note for that row. Every `caution` row produces a caution note on each finding it applies to. (c) Every `not_available` cell is a `not_reported` finding, and no note references a `not_available` row. (d) Each note's `source.quote` equals the flag row's `source_quote` and is verified against the registered source document's text; a non-empty string alone does not count. | M3: derivation tool (D4) plus `tests/data/` / M5: independent check in `tests/research/` and the Q3 source spot check |
 
 ## Changing the contract
 
@@ -80,5 +93,5 @@ Follow spec §5.4. The PR touches only `contracts/`, the spec and the version co
 | Strict JSON parsing (S0) | `NaN` passed every numeric bound |
 | `/api/compare` (501 stub); `error.code` enum; shared `common.schema.json` | Comparison had no endpoint, and environment and id rules were duplicated |
 | Removed `validated_against_measured` from simulations | No reference format exists for it yet |
-| **CP1 amendment:** `Finding.curation_notes` (measured only; attributed to FlameGuard-SI; `flag_ref` + exact NASA quote) and `value_status: "excluded"` (value `null`, exclusion note required); `uncertainty` is source-reported only; rule S9 | C3 put FlameGuard-SI caution text into the source-reported `uncertainty` field, and excluded values vanished without an explanation the dashboard could show |
+| **CP1 amendment:** `Finding.curation_notes` (measured only; attributed to FlameGuard-SI; `flag_ref` + exact NASA quote) and `value_status: "excluded"` (value `null`, exclusion note required); `uncertainty` is source-reported only; rules S9 (runtime exclusion) and S10 (exact `ranking_use` mapping, `not_available` without a note, quotes verified against the source) | C3 put FlameGuard-SI caution text into the source-reported `uncertainty` field, and excluded values vanished without an explanation the dashboard could show |
 | **P0 additions (PR #5):** `Finding.relevant_environments` and `Finding.limitations` (interpretation only; limitations required there); `AssistantAnswer.limitations` (required; at least 1 in `ai`/`fallback_quotes`) | Moon/Mars recommendations (R3) need an environment tag, and TARS must identify uncertainty. Both schemas forbid extra keys, so adding the fields after CP1 would be a breaking change |
