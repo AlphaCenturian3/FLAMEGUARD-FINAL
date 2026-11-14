@@ -1,9 +1,12 @@
 {
-  "_comment": "Test-only base records for the frontend browser tests (frontend/tests/). Invented placeholder content, not NASA data. Never loaded by the app. Owner of this directory: test/qa-demo (spec section 4); added by feat/frontend-dashboard under spec section 2.2 rule 2.",
+  "_comment": "Test-only base records for the frontend browser tests (frontend/tests/), in contract v0.2.0 shapes. Invented placeholder content, not NASA data. Never loaded by the app. Owner: Member 2 (spec section 4).",
   "source": {
     "title": "TEST SOURCE",
     "url": "https://example.invalid/test",
-    "retrieved": "2026-11-14"
+    "page": null,
+    "quote": null,
+    "retrieved": "2026-11-14",
+    "archive_id": null
   },
   "investigation": {
     "fixture": true,
@@ -13,6 +16,7 @@
     "platform": null,
     "objectives": [],
     "relevant_environments": [],
+    "datasets": ["test-dataset"],
     "sources": [{ "title": "TEST SOURCE", "url": "https://example.invalid/test", "retrieved": "2026-11-14" }]
   },
   "measured": {
@@ -21,13 +25,33 @@
     "investigation_id": "test-investigation",
     "evidence_class": "measured",
     "statement": "TEST measured placeholder",
-    "value": null,
-    "unit": null,
+    "quantity": "flame_spread_rate",
+    "value": 1.0,
+    "unit": "mm/s",
+    "value_status": "reported",
     "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": null,
+      "pressure_kpa": null,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": null,
+      "fuel_or_material": null,
+      "sample_geometry": null
+    },
     "provenance": {
       "manifest_id": "test-dataset",
-      "sources": [{ "title": "TEST SOURCE", "url": "https://example.invalid/test", "retrieved": "2026-11-14" }]
+      "locator": "TEST table 0, row 0",
+      "sources": [{ "title": "TEST SOURCE", "url": "https://example.invalid/test", "page": null, "quote": null, "retrieved": "2026-11-14", "archive_id": null }]
     }
+  },
+  "curation_note": {
+    "kind": "caution",
+    "note": "TEST caution note",
+    "generated_by": "FlameGuard-SI",
+    "flag_ref": { "manifest_id": "test-quality-flags", "flag_id": "T-F1" },
+    "source": { "title": "TEST SOURCE", "url": "https://example.invalid/test", "page": 1, "quote": "TEST recorded quote", "retrieved": "2026-11-14", "archive_id": null }
   },
   "interpretation": {
     "fixture": true,
@@ -35,18 +59,24 @@
     "investigation_id": "test-investigation",
     "evidence_class": "interpretation",
     "statement": "TEST interpretation placeholder",
+    "quantity": null,
+    "value": null,
+    "unit": null,
+    "value_status": "not_applicable",
     "provenance": {
       "derived_from": ["test-measured"],
-      "method": "test-method v0",
+      "method": "test-method",
+      "method_version": "0",
       "generated_by": "FlameGuard-SI"
-    }
+    },
+    "limitations": ["TEST limitation"]
   },
   "illustrative_simulation": {
     "fixture": true,
     "id": "test-simulation",
     "investigation_id": "test-investigation",
     "evidence_class": "illustrative_simulation",
-    "statement": "TEST simulation placeholder",
+    "statement": "TEST simulation placeholder (not a valid v0.2.0 Finding; used to test that it is rejected)",
     "label": "Fluid and thermal transport model. No combustion chemistry.",
     "provenance": { "model": "test-model", "model_version": "0.0.0" }
   }

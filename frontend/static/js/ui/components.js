@@ -1,32 +1,38 @@
 // Reusable UI building blocks. Every scientific value rendered here carries
-// its evidence class, its fixture status, and a route back to its source.
+// its evidence class, its value status, its fixture status, and a route back
+// to its source. FlameGuard-SI text is always labelled as such; a recorded
+// quote is never called "verified" (contract v0.2.0, S10d / Q3).
 
 import {
+  CONDITIONS,
+  curationNotes,
   environmentLabel,
   evidenceInfo,
   findingSources,
   formatValue,
   isFixture,
+  isMissing,
   missingFindingFields,
   missingInvestigationFields,
   missingSourceFields,
   provenanceIssues,
   SIMULATION_LABEL,
+  valueStatusInfo,
 } from "../model/evidence.js";
 import { h, safeHttpUrl } from "./dom.js";
 
 export function evidenceBadge(cls) {
   const info = evidenceInfo(cls);
-  return h(
-    "span",
-    { class: `badge ev ev-${info.key}`, title: info.description },
-    h("span", { class: "ev-dot", "aria-hidden": "true" }),
-    info.label,
-  );
+  return h("span", { class: `badge ev ev-${info.key}`, title: info.description }, h("span", { class: "ev-dot", "aria-hidden": "true" }), info.label);
 }
 
 export function fixtureBadge() {
   return h("span", { class: "badge fixture", title: "Contract fixture with invented placeholder content." }, "Fixture · not NASA data");
+}
+
+export function valueStatusBadge(status) {
+  const info = valueStatusInfo(status);
+  return h("span", { class: `badge vs vs-${info.key}`, title: info.description }, info.label);
 }
 
 export function simulationLabel() {
@@ -44,14 +50,18 @@ export function missingList(fields, noun = "Not reported") {
   );
 }
 
+function link(url, text) {
+  const href = safeHttpUrl(url);
+  return href ? h("a", { href, target: "_blank", rel: "noopener noreferrer" }, text, h("span", { class: "sr-only" }, " (opens in new tab)")) : text;
+}
+
 /** @param {import("../api/types.js").Source} s */
 export function sourceItem(s) {
-  const href = safeHttpUrl(s.url);
   const missing = missingSourceFields(s);
   return h(
     "li",
     { class: "source" },
-    h("div", { class: "source-title" }, href ? h("a", { href, target: "_blank", rel: "noopener noreferrer" }, s.title, h("span", { class: "sr-only" }, " (opens in new tab)")) : s.title),
+    h("div", { class: "source-title" }, link(s.url, s.title)),
     h(
       "dl",
       { class: "kv compact" },
@@ -59,10 +69,10 @@ export function sourceItem(s) {
       h("dd", { class: "mono break" }, s.url || "—"),
       h("dt", null, "Retrieved"),
       h("dd", null, s.retrieved || "—"),
-      s.page !== null && s.page !== undefined ? [h("dt", null, "Page"), h("dd", null, String(s.page))] : null,
+      !isMissing(s.page) ? [h("dt", null, "Page"), h("dd", null, String(s.page))] : null,
       s.archive_id ? [h("dt", null, "Archive ID"), h("dd", { class: "mono" }, s.archive_id)] : null,
     ),
-    s.quote ? h("blockquote", { class: "quote" }, `“${s.quote}”`) : null,
+    s.quote ? h("blockquote", { class: "quote" }, h("span", { class: "quote-label" }, "Recorded quote: "), `“${s.quote}”`) : null,
     missingList(missing, "Source fields not provided"),
   );
 }
@@ -70,6 +80,52 @@ export function sourceItem(s) {
 export function sourceList(sources, emptyText = "No source cited.") {
   if (!sources || !sources.length) return h("p", { class: "muted" }, emptyText);
   return h("ul", { class: "sources" }, sources.map(sourceItem));
+}
+
+/** All eight condition keys; a null value is shown as "Not reported", never inferred. */
+export function conditionsBlock(conditions) {
+  if (!conditions || typeof conditions !== "object") return h("p", { class: "missing-value" }, "Conditions not provided.");
+  return h(
+    "dl",
+    { class: "kv compact conditions", "aria-label": "Experimental conditions" },
+    CONDITIONS.map(([key, label, unit]) => {
+      const v = conditions[key];
+      return [
+        h("dt", null, label),
+        h("dd", null, isMissing(v) ? h("span", { class: "missing-value" }, "Not reported") : `${v}${unit ? " " + unit : ""}`.replaceAll("_", " ")),
+      ];
+    }),
+  );
+}
+
+/** FlameGuard-SI curation notes (caution / exclusion), each with its flag and recorded quote. */
+export function curationNotesBlock(notes) {
+  if (!notes.length) return null;
+  return h(
+    "div",
+    { class: "curation" },
+    notes.map((n) =>
+      h(
+        "div",
+        { class: `curation-note note-${n.kind === "exclusion" ? "exclusion" : "caution"}`, role: "note" },
+        h("p", { class: "note-head" }, h("strong", null, n.kind === "exclusion" ? "FlameGuard-SI exclusion" : "FlameGuard-SI caution"), h("span", { class: "muted small" }, " · FlameGuard-SI assessment, not source text")),
+        h("p", null, n.note),
+        n.source
+          ? h(
+              "p",
+              { class: "small" },
+              "Recorded quote",
+              !isMissing(n.source.page) ? ` (p. ${n.source.page})` : "",
+              ": ",
+              h("q", null, n.source.quote || "—"),
+              " · ",
+              link(n.source.url, n.source.title),
+            )
+          : h("p", { class: "warn-text small" }, "No source recorded for this note."),
+        n.flag_ref ? h("p", { class: "mono muted small" }, `Quality flag ${n.flag_ref.flag_id} in ${n.flag_ref.manifest_id}`) : h("p", { class: "warn-text small" }, "No quality-flag reference."),
+      ),
+    ),
+  );
 }
 
 /**
@@ -82,7 +138,7 @@ export function provenanceBlock(finding, findingsById = new Map()) {
   const info = evidenceInfo(finding.evidence_class);
   const rows = [];
   if (info.key === "measured") {
-    rows.push(h("dt", null, "Manifest entry"), h("dd", { class: "mono" }, p.manifest_id || "missing"));
+    rows.push(h("dt", null, "Manifest entry"), h("dd", { class: "mono" }, p.manifest_id || "missing"), h("dt", null, "Locator"), h("dd", null, p.locator || h("span", { class: "missing-value" }, "missing")));
   } else if (info.key === "interpretation") {
     rows.push(
       h("dt", null, "Derived from"),
@@ -95,18 +151,16 @@ export function provenanceBlock(finding, findingsById = new Map()) {
               { class: "inline-list" },
               p.derived_from.map((id) => {
                 const src = findingsById.get(id);
-                return h("li", null, h("span", { class: "mono" }, id), src ? [" ", evidenceBadge(src.evidence_class)] : h("span", { class: "warn-text" }, " (not loaded)"));
+                return h("li", null, h("span", { class: "mono" }, id), src ? [" ", evidenceBadge(src.evidence_class), " ", valueStatusBadge(src.value_status)] : h("span", { class: "warn-text" }, " (not loaded)"));
               }),
             )
           : "missing",
       ),
       h("dt", null, "Method"),
-      h("dd", { class: "mono" }, p.method || "missing"),
+      h("dd", { class: "mono" }, `${p.method || "missing"}${p.method_version ? " v" + p.method_version : " (version missing)"}`),
       h("dt", null, "Generated by"),
       h("dd", null, p.generated_by || "missing"),
     );
-  } else if (info.key === "illustrative_simulation") {
-    rows.push(h("dt", null, "Model"), h("dd", { class: "mono" }, `${p.model || "missing"} ${p.model_version || ""}`.trim()));
   }
   const issues = provenanceIssues(finding);
   return h(
@@ -114,47 +168,73 @@ export function provenanceBlock(finding, findingsById = new Map()) {
     { class: "provenance" },
     rows.length ? h("dl", { class: "kv compact" }, rows) : null,
     info.key === "measured" ? sourceList(findingSources(finding), "No source cited.") : null,
-    issues.length
-      ? h("div", { class: "alert alert-warn", role: "status" }, h("strong", null, "Provenance problems: "), h("ul", null, issues.map((i) => h("li", null, i))))
-      : null,
+    issues.length ? h("div", { class: "alert alert-warn", role: "status" }, h("strong", null, "Provenance problems: "), h("ul", null, issues.map((i) => h("li", null, i)))) : null,
   );
+}
+
+function valueBlock(finding) {
+  const status = valueStatusInfo(finding.value_status);
+  const value = formatValue(finding);
+  let shown;
+  if (status.key === "reported") shown = value ?? h("span", { class: "missing-value" }, "Reported, but no value present");
+  else if (status.key === "excluded") shown = h("span", { class: "excluded-value" }, "Excluded by FlameGuard-SI — value not shown");
+  else shown = h("span", { class: "missing-value" }, status.label);
+  return [
+    h("dt", null, finding.quantity ? finding.quantity.replaceAll("_", " ") : "Value"),
+    h("dd", { "data-value-status": status.key }, shown),
+  ];
 }
 
 /**
  * @param {import("../api/types.js").Finding} finding
  * @param {Map<string, import("../api/types.js").Finding>} [findingsById]
+ * @param {{ hideConditions?: boolean }} [opts]
  */
-export function findingCard(finding, findingsById) {
-  const value = formatValue(finding);
+export function findingCard(finding, findingsById, opts = {}) {
   const info = evidenceInfo(finding.evidence_class);
-  // Measured findings always show value/uncertainty rows, so gaps are visible.
-  // Qualitative interpretations show them only when they carry a value.
-  const showValues = info.key === "measured" || value !== null;
+  const measured = info.key === "measured";
+  const showValue = measured || finding.value_status === "reported";
   return h(
     "article",
-    { class: `finding ev-border-${info.key}`, "aria-label": `${info.label} finding ${finding.id}` },
-    h("header", { class: "finding-head" }, evidenceBadge(finding.evidence_class), isFixture(finding) ? fixtureBadge() : null, h("span", { class: "mono muted small" }, finding.id)),
-    info.key === "illustrative_simulation" ? simulationLabel() : null,
+    { class: `finding ev-border-${info.key}${finding.value_status === "excluded" ? " is-excluded" : ""}`, "aria-label": `${info.label} finding ${finding.id}` },
+    h(
+      "header",
+      { class: "finding-head" },
+      evidenceBadge(finding.evidence_class),
+      showValue ? valueStatusBadge(finding.value_status) : null,
+      isFixture(finding) ? fixtureBadge() : null,
+      h("span", { class: "mono muted small" }, finding.id),
+    ),
+    finding.evidence_class === "illustrative_simulation" ? simulationLabel() : null,
     h("p", { class: "statement" }, finding.statement),
-    showValues
+    info.key === "interpretation" ? h("p", { class: "small muted" }, "Generated by FlameGuard-SI. Not a NASA statement.") : null,
+    showValue
       ? h(
           "dl",
           { class: "kv" },
-          h("dt", null, "Value"),
-          h("dd", null, value ?? h("span", { class: "missing-value" }, "Not reported")),
-          h("dt", null, "Uncertainty"),
-          h("dd", null, finding.uncertainty ? `${finding.uncertainty} (as reported)` : h("span", { class: "missing-value" }, "Not reported")),
+          valueBlock(finding),
+          measured
+            ? [
+                h("dt", null, "Uncertainty"),
+                h("dd", null, isMissing(finding.uncertainty) ? h("span", { class: "missing-value" }, "Not reported by the source") : [h("span", { class: "muted small" }, "Reported by the source: "), finding.uncertainty]),
+              ]
+            : null,
         )
       : h("p", { class: "small muted" }, "Qualitative statement; no numerical value."),
-    showValues ? missingList(missingFindingFields(finding), "Missing from record") : null,
+    measured ? curationNotesBlock(curationNotes(finding)) : null,
+    info.key === "interpretation" && Array.isArray(finding.limitations) && finding.limitations.length
+      ? h("div", { class: "limitations" }, h("p", { class: "small" }, h("strong", null, "Limitations (FlameGuard-SI):")), h("ul", { class: "small" }, finding.limitations.map((l) => h("li", null, l))))
+      : null,
+    info.key === "interpretation" && (finding.relevant_environments || []).length
+      ? h("p", { class: "small" }, "Argued to apply to: ", finding.relevant_environments.map((e) => h("span", { class: "chip" }, environmentLabel(e))))
+      : null,
+    missingList(missingFindingFields(finding), "Missing from record"),
+    measured && !opts.hideConditions ? h("details", { class: "prov-details" }, h("summary", null, "Experimental conditions"), conditionsBlock(finding.conditions)) : null,
     h("details", { class: "prov-details" }, h("summary", null, "Provenance and sources"), provenanceBlock(finding, findingsById)),
   );
 }
 
-/**
- * @param {import("../api/types.js").Investigation} inv
- * @param {import("../api/types.js").Finding[]} findings
- */
+/** @param {import("../api/types.js").Investigation} inv */
 export function investigationMeta(inv) {
   return h(
     "dl",
@@ -162,19 +242,10 @@ export function investigationMeta(inv) {
     h("dt", null, "Platform"),
     h("dd", null, inv.platform || h("span", { class: "missing-value" }, "Not reported")),
     h("dt", null, "Environments"),
-    h(
-      "dd",
-      null,
-      (inv.relevant_environments || []).length
-        ? inv.relevant_environments.map((e) => h("span", { class: "chip" }, environmentLabel(e)))
-        : h("span", { class: "missing-value" }, "Not reported"),
-    ),
+    h("dd", null, (inv.relevant_environments || []).length ? inv.relevant_environments.map((e) => h("span", { class: "chip" }, environmentLabel(e))) : h("span", { class: "missing-value" }, "Not reported")),
     h("dt", null, "Objectives"),
-    h(
-      "dd",
-      null,
-      (inv.objectives || []).length ? h("ul", { class: "plain" }, inv.objectives.map((o) => h("li", null, o))) : h("span", { class: "missing-value" }, "Not reported"),
-    ),
+    h("dd", null, (inv.objectives || []).length ? h("ul", { class: "plain" }, inv.objectives.map((o) => h("li", null, o))) : h("span", { class: "missing-value" }, "Not reported")),
+    (inv.datasets || []).length ? [h("dt", null, "Datasets"), h("dd", { class: "mono small" }, inv.datasets.join(", "))] : null,
   );
 }
 
@@ -192,7 +263,15 @@ export function statePanel({ kind, title, message, detail, action }) {
   );
 }
 
-/** Standard panel for a failed or not-yet-implemented resource. */
+const ERROR_TITLES = {
+  invalid_request: "The request was rejected (HTTP 400)",
+  not_found: "Not found (HTTP 404)",
+  unavailable: "Service unavailable",
+  network_error: "The API could not be reached",
+  fixture_unavailable: "Fixture file could not be loaded",
+};
+
+/** Standard panel for a failed or not-yet-implemented resource (F6). */
 export function resourcePanel(resource, what, endpoint) {
   if (resource.state === "not_implemented") {
     return statePanel({
@@ -202,11 +281,12 @@ export function resourcePanel(resource, what, endpoint) {
       detail: resource.error && resource.error.message,
     });
   }
+  const code = resource.error && resource.error.code;
   return statePanel({
     kind: "error",
-    title: `Could not load ${what.toLowerCase()}`,
+    title: `${ERROR_TITLES[code] || "Request failed"}: ${what.toLowerCase()}`,
     message: resource.error ? resource.error.message : "Unknown error.",
-    detail: resource.error && resource.error.code ? `code: ${resource.error.code}` : null,
+    detail: code ? `code: ${code}${resource.error.status ? ` · HTTP ${resource.error.status}` : ""}` : null,
   });
 }
 

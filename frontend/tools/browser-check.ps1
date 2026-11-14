@@ -107,9 +107,9 @@ try {
 
   # ---- desktop keyboard ----
   Cdp "Emulation.setDeviceMetricsOverride" @{ width = 1280; height = 900; deviceScaleFactor = 1; mobile = $false } | Out-Null
-  Go "$base`?source=fixtures#/"
+  Go "$base`?fixtures=1#/"
   Js "sessionStorage.clear(); document.activeElement && document.activeElement.blur(); window.scrollTo(0,0); true" | Out-Null
-  Go "$base`?source=fixtures#/"
+  Go "$base`?fixtures=1#/"
 
   Press Tab
   $a = Active
@@ -121,7 +121,7 @@ try {
 
   Js "document.querySelector('.skip-link').focus(); true" | Out-Null
   $seen = @(); $noRing = @()
-  for ($i = 0; $i -lt 16; $i++) {
+  for ($i = 0; $i -lt 20; $i++) {
     Press Tab
     $a = Active
     if ($a -eq "BODY") { break }   # tabbed past the last focusable element
@@ -129,7 +129,7 @@ try {
     if ($a -notlike "*| ring |*") { $noRing += $a }
   }
   $order = ($seen | ForEach-Object { ($_ -split " \| ")[1] }) -join ", "
-  foreach ($href in @("#/", "#/explorer", "#/compare", "#/rank", "#/interpret", "#/integrations")) {
+  foreach ($href in @("#/", "#/explorer", "#/compare", "#/rank", "#/interpret", "#/tars", "#/integrations")) {
     Check "Nav link $href reachable by Tab" (($seen | Where-Object { $_ -like "A | $href |*" }).Count -gt 0) ""
   }
   Check "Judge demo button reachable by Tab" (($seen | Where-Object { $_ -like "BUTTON*Judge demo*" }).Count -gt 0) ""
@@ -179,18 +179,46 @@ try {
   Press Enter
   Check "Exit closes the demo bar" ((Js "document.querySelector('.demo-bar').hidden") -eq $true) ""
 
+  # F8: theme toggle by keyboard
+  Js "try { localStorage.removeItem('flameguard.theme') } catch (e) {} ; document.getElementById('theme-button').focus(); true" | Out-Null
+  $before = Js "getComputedStyle(document.body).backgroundColor"
+  Press Enter
+  Start-Sleep -Milliseconds 150
+  $after = Js "[document.documentElement.dataset.theme, getComputedStyle(document.body).backgroundColor, document.getElementById('theme-button').getAttribute('aria-pressed')].join('|')"
+  Check "Theme button toggles light/dark by keyboard and changes the page colours" ($after -notlike "|*" -and ($after -split "\|")[1] -ne $before) "$before -> $after"
+  Shot "desktop-theme-toggled"
+  Press Enter
+  Js "try { localStorage.removeItem('flameguard.theme') } catch (e) {} ; true" | Out-Null
+
+  # P3: backend comparison in fixture mode, operated by keyboard
+  Go "$base`?fixtures=1#/compare"
+  WaitFor "document.querySelector('#cmp-quantity')" | Out-Null
+  Js "document.querySelector('.compare-controls button[type=submit]').focus(); true" | Out-Null
+  Press Enter
+  $cmp = WaitFor "/Backend decision/.test(document.querySelector('.compare-body').textContent)"
+  $txt = Js "document.querySelector('.compare-body').textContent"
+  Check "Compare: Enter requests /api/compare and shows the backend decision with its reasons verbatim, no chart" ($cmp -and $txt -like "*Not comparable*" -and $txt -like "*pressure_kpa not reported for either row*" -and (Js "!!document.querySelector('.compare-body svg')") -eq $false) ""
+
+  # P4: ranking in fixture mode follows backend rank, shows criteria and not-ranked investigations
+  Go "$base`?fixtures=1#/rank"
+  $rk = WaitFor "document.querySelector('.ranking .rank-item')"
+  $txt = Js "document.querySelector('main').textContent"
+  Check "Rank: fixture ranking shows criteria weights, criterion inputs and the not-ranked investigation" ($rk -and $txt -like "*FIXTURE criterion A*" -and $txt -like "*fixture-finding-interp-1*" -and $txt -like "*Not ranked for Spacecraft*") ""
+
   # ---- mobile layout ----
-  Cdp "Emulation.setDeviceMetricsOverride" @{ width = 390; height = 844; deviceScaleFactor = 2; mobile = $true } | Out-Null
+  Cdp "Emulation.setDeviceMetricsOverride" @{ width = 360; height = 780; deviceScaleFactor = 2; mobile = $true } | Out-Null
   Cdp "Emulation.setTouchEmulationEnabled" @{ enabled = $true; maxTouchPoints = 5 } | Out-Null
-  foreach ($route in @("#/", "#/explorer", "#/compare", "#/rank", "#/interpret", "#/integrations")) {
-    Go "$base`?source=fixtures$route"
+  foreach ($route in @("#/", "#/explorer", "#/compare", "#/rank", "#/interpret", "#/tars", "#/integrations")) {
+    Go "$base`?fixtures=1$route"
     Start-Sleep -Milliseconds 300
-    $w = Js "[document.documentElement.scrollWidth, innerWidth].join('/')"
+    $w = Js "[document.documentElement.scrollWidth, 360, [...document.querySelectorAll('body *')].filter(e => e.getBoundingClientRect().right > 360.5).slice(0, 4).map(e => e.tagName + '.' + (e.className || '')).join(',')].join('/')"
     $parts = $w -split "/"
-    Check "Mobile 390px $route has no horizontal scroll" ([int]$parts[0] -le [int]$parts[1]) "scrollWidth/innerWidth=$w"
+    Check "Mobile 360px $route has no horizontal scroll (page width <= 360 px)" ([int]$parts[0] -le 360) "scrollWidth/limit/overflowing=$w"
+    $banner = Js "(document.querySelector('.banner-fixture') || {}).textContent || ''"
+    Check "Fixture mode $route shows the permanent 'FIXTURE DATA. NOT NASA DATA.' banner" ($banner -like "*FIXTURE DATA. NOT NASA DATA.*") ""
     Shot ("mobile-" + ($route -replace "[#/]", "").Trim() + $(if ($route -eq "#/") { "overview" } else { "" }))
   }
-  Go "$base`?source=fixtures#/explorer"
+  Go "$base`?fixtures=1#/explorer"
   $hiddenNav = Js "getComputedStyle(document.getElementById('sidebar')).visibility"
   Check "Mobile: closed sidebar is hidden from Tab order" ($hiddenNav -eq "hidden") $hiddenNav
   Js "document.getElementById('menu-button').focus(); true" | Out-Null
@@ -205,20 +233,41 @@ try {
   $closed = Js "document.body.classList.contains('nav-open')"
   Check "Mobile: Escape closes the sidebar and returns focus to the menu button" ($closed -eq $false -and $a -like "BUTTON | menu-button*") $a
 
+  # P2: a FLEX-sized investigation (40 findings, 10 rows) at 360 px. Test page only; test records from tests/fixtures/frontend.
+  Go "http://localhost:$Port/frontend/tests/layout.html"
+  WaitFor "document.body.dataset.ready === '1'" | Out-Null
+  Js "document.querySelectorAll('details.row-group').forEach(d => d.open = true); true" | Out-Null
+  Start-Sleep -Milliseconds 200
+  $w = Js "[document.documentElement.scrollWidth, innerWidth, document.querySelectorAll('details.row-group').length, document.querySelectorAll('article.finding').length].join('/')"
+  $parts = $w -split "/"
+  Check "Mobile 360px: 40-finding investigation grouped into 10 rows, no horizontal scroll with every row open" (([int]$parts[0] -le 360) -and $parts[2] -eq "10" -and $parts[3] -eq "40") "scrollWidth/innerWidth/rows/findings=$w"
+  Shot "mobile-grouped-40"
+
   # ---- served at / (as FastAPI StaticFiles(directory='frontend') would) ----
   Cdp "Emulation.setDeviceMetricsOverride" @{ width = 1280; height = 900; deviceScaleFactor = 1; mobile = $false } | Out-Null
   $rootUrl = "http://localhost:$RootPort/"
   Go "$rootUrl#/"
   $assets = Js "[getComputedStyle(document.body).backgroundColor, document.querySelectorAll('#nav a').length].join('/')"
-  Check "Served at /: CSS and JS load via relative paths" ($assets -like "*/6") $assets
+  Check "Served at /: CSS and JS load via relative paths" ($assets -like "*/7") $assets
   $api = WaitFor "document.querySelector('#health .badge') && /API/.test(document.querySelector('#health').textContent) && !/checking/.test(document.querySelector('#health').textContent)"
   Check "Served at /: API mode calls /api/health at the same origin" $api (Js "document.querySelector('#health').textContent")
-  Go "$rootUrl`?source=fixtures#/explorer"
+
+  # No fixture leak (CP1 F-check): without ?fixtures=1, visiting every route never requests contracts/examples/.
+  Go "http://localhost:$MountPort/#/"
+  foreach ($route in @("#/explorer", "#/compare", "#/rank", "#/interpret", "#/tars", "#/integrations", "#/")) {
+    Js "location.hash = '$route'; true" | Out-Null
+    Start-Sleep -Milliseconds 500
+  }
+  $leak = Js "performance.getEntriesByType('resource').filter(e => e.name.includes('contracts/examples')).map(e => e.name).join(' ')"
+  $apiCalls = Js "performance.getEntriesByType('resource').filter(e => e.name.includes('/api/')).length"
+  Check "No fixture leak: API mode on every route makes no request to contracts/examples/ (while /contracts/examples is reachable)" ($leak -eq "" -and [int]$apiCalls -gt 0) "leaked=[$leak] apiRequests=$apiCalls"
+
+  Go "$rootUrl`?fixtures=1#/explorer"
   WaitFor "document.querySelector('.results .state')" | Out-Null
   $msg = Js "(document.querySelector('.results .state') || {}).textContent || ''"
-  Check "Served at / with ?source=fixtures and no /contracts/examples mount: explicit error, no data shown" ($msg -like "*Could not load*fixture*") $msg
+  Check "Served at / with ?fixtures=1 and no /contracts/examples mount: explicit error, no data shown" ($msg -like "*Fixture file could not be loaded*" -and $msg -like "*HTTP 404*") $msg
   Shot "served-at-root-fixtures-unmounted"
-  Go "http://localhost:$MountPort/?source=fixtures#/explorer"
+  Go "http://localhost:$MountPort/?fixtures=1#/explorer"
   $ok = WaitFor "document.querySelectorAll('.results .investigation').length === 1"
   Check "Served at / with /contracts/examples/ mounted: default fixture URL works unchanged" $ok (Js "location.href")
 } finally {

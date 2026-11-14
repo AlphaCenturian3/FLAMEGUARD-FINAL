@@ -27,7 +27,7 @@ export const DEMO_STEPS = [
     title: "Rank",
     route: "#/rank",
     seconds: 15,
-    say: "Choose a crewed environment. Scores come only from the backend, must trace to measured evidence, and are not risk values. Until the backend ranking and NASA data exist, this step shows the HTTP 501 “not implemented” state, not a ranking.",
+    say: "Choose a crewed environment. Scores come only from the backend, must trace to measured evidence, and are not risk values. Without the backend ranking and real NASA data, this step shows either HTTP 501 (live API) or the labelled contract fixture, never a real ranking.",
   },
   {
     key: "interpret",

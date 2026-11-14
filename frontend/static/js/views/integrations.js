@@ -1,7 +1,6 @@
 // Integration status page. Probes every contract endpoint and hosts the
 // isolated assistant and simulation panels.
 
-import { renderAssistantPanel } from "../integrations/assistant.js";
 import { renderSimulationPanel } from "../integrations/simulation.js";
 import { isNotImplemented } from "../api/errors.js";
 import { h, mount } from "../ui/dom.js";
@@ -12,6 +11,7 @@ const PROBES = [
   { label: "GET /api/health", owner: "Backend", run: (s) => s.health() },
   { label: "GET /api/investigations", owner: "Backend + data", run: (s) => s.listInvestigations() },
   { label: "GET /api/findings", owner: "Backend + data", run: (s) => s.listFindings() },
+  { label: "GET /api/compare?quantity=flame_spread_rate", owner: "Backend (compare)", run: (s) => s.compare("flame_spread_rate") },
   { label: "GET /api/rankings?context=spacecraft", owner: "Backend (ranking)", run: (s) => s.getRankings("spacecraft") },
   { label: "GET /api/simulations/{id}", owner: "Backend (simulation)", run: (s) => s.getSimulation("fixture-sim-1") },
 ];
@@ -28,9 +28,10 @@ export function render(ctx) {
       { class: "card" },
       h("h2", null, "Endpoint status"),
       h("div", { class: "table-wrap", tabindex: "0", role: "region", "aria-label": "Endpoint status" }, h("table", null, h("thead", null, h("tr", null, h("th", { scope: "col" }, "Endpoint"), h("th", { scope: "col" }, "Owner"), h("th", { scope: "col" }, "Status"))), tbody)),
-      h("p", { class: "small muted" }, "POST /api/assistant/ask is exercised only when a question is submitted below."),
+      h("p", { class: "small muted" }, "Each probe sends one read-only request (in fixture mode it reads the contract example). POST /api/assistant/ask is not probed, because it may call an AI model; use the TARS page."),
     ),
-    h("div", { class: "two-col" }, renderAssistantPanel(ctx.store.source), renderSimulationPanel(ctx.store.source)),
+    h("p", null, "The TARS assistant has its own page: ", h("a", { href: "#/tars" }, "TARS assistant"), "."),
+    renderSimulationPanel(ctx.store.source),
   );
 
   for (const p of PROBES) {

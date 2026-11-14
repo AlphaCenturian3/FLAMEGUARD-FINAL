@@ -1,68 +1,75 @@
-// Ranking display rules. The ranking itself is computed by the backend
-// (GET /api/rankings?context=). This module never computes scores; it only
-// checks what the backend returns against spec §5.1 before it is shown.
-//
-// An item is shown only if every supporting finding it cites resolves to a
-// loaded finding and traces back, without any illustrative simulation, to
-// measured evidence. Anything else is withheld with the reason.
+// Ranking display rules (P4, contract v0.2.0). The ranking is computed by the
+// backend (GET /api/rankings?context=). This module never computes, verifies,
+// re-weights or re-orders scores (spec §4.3): items are shown in the backend's
+// `rank` order. It only withholds, with reasons, items whose inputs cannot be
+// traced to usable evidence.
 //
 // Must not import any simulation module (spec §2.3).
 
 import { ENVIRONMENTS } from "./evidence.js";
 import { traceSupport } from "./trace.js";
 
-export const RANKING_CONTEXTS = Object.freeze(
-  Object.entries(ENVIRONMENTS).map(([key, label]) => ({ key, label })),
-);
+export const RANKING_CONTEXTS = Object.freeze(Object.entries(ENVIRONMENTS).map(([key, label]) => ({ key, label })));
 
 const ALLOWED_INPUT_CLASSES = new Set(["measured", "interpretation"]);
 
 /**
- * Check a ranking response.
- *
  * Withheld when:
- * - investigation_id, a numeric score, a rationale, or inputs are missing;
- * - any input ID does not resolve to a loaded finding;
- * - any input is not measured or interpretation;
- * - any input's evidence chain fails `traceSupport` (unresolved parents,
- *   bad provenance, cycles, or an illustrative simulation anywhere upstream).
+ * - rank, investigation_id, a numeric score, a rationale or criterion scores are missing;
+ * - a criterion score names a criterion not in `criteria`;
+ * - an input finding_id does not resolve to a loaded finding;
+ * - an input's declared evidence_class differs from the loaded finding's;
+ * - an input is not measured / interpretation;
+ * - an input's chain fails `traceSupport`: unresolved parents, bad provenance,
+ *   cycles, a simulation, or an `excluded` finding at any depth (S9, transitive).
  *
- * @param {{items?: import("../api/types.js").RankingItem[]}} response
+ * @param {import("../api/types.js").Ranking} response
  * @param {Map<string, import("../api/types.js").Finding>} findingsById
  */
 export function reviewRankings(response, findingsById) {
+  const criteria = response && Array.isArray(response.criteria) ? response.criteria : [];
+  const criterionIds = new Set(criteria.map((c) => c.id));
   const accepted = [];
   const rejected = [];
   const items = response && Array.isArray(response.items) ? response.items : [];
 
   for (const item of items) {
     const problems = [];
+    if (!item || !Number.isInteger(item.rank)) problems.push("Missing rank.");
     if (!item || typeof item.investigation_id !== "string") problems.push("Missing investigation_id.");
     if (!item || typeof item.score !== "number" || !Number.isFinite(item.score)) problems.push("Score is not a number.");
     if (!item || typeof item.rationale !== "string" || item.rationale.trim() === "") problems.push("No rationale given.");
-    const inputs = item && Array.isArray(item.inputs) ? item.inputs : [];
-    if (inputs.length === 0) problems.push("No supporting findings listed.");
+    const scores = item && Array.isArray(item.criterion_scores) ? item.criterion_scores : [];
+    if (scores.length === 0) problems.push("No criterion scores.");
 
-    const resolved = [];
-    for (const id of inputs) {
-      const f = findingsById.get(id);
-      if (!f) {
-        problems.push(`Supporting finding ${id} is not among the loaded findings, so the ranking cannot be traced.`);
-        continue;
+    const inputs = [];
+    for (const cs of scores) {
+      if (!criterionIds.has(cs.criterion_id)) problems.push(`Criterion ${cs.criterion_id} is not among the listed criteria.`);
+      for (const input of Array.isArray(cs.inputs) ? cs.inputs : []) {
+        const f = findingsById.get(input.finding_id);
+        if (!f) {
+          problems.push(`Input ${input.finding_id} is not among the loaded findings, so the ranking cannot be traced.`);
+          continue;
+        }
+        if (f.evidence_class !== input.evidence_class) problems.push(`Input ${input.finding_id} is declared ${input.evidence_class} but the loaded finding is ${f.evidence_class}.`);
+        if (!ALLOWED_INPUT_CLASSES.has(f.evidence_class)) {
+          problems.push(`Input ${input.finding_id} is ${f.evidence_class}; rankings may use only measured or interpretation findings.`);
+        } else {
+          for (const r of traceSupport(f, findingsById).reasons) problems.push(`Input ${input.finding_id}: ${r}`);
+        }
+        inputs.push({ criterion_id: cs.criterion_id, finding: f });
       }
-      if (!ALLOWED_INPUT_CLASSES.has(f.evidence_class)) {
-        problems.push(`Input ${id} is ${f.evidence_class}; rankings may use only measured or interpretation findings.`);
-      } else {
-        const trace = traceSupport(f, findingsById);
-        for (const r of trace.reasons) problems.push(`Input ${id}: ${r}`);
-      }
-      resolved.push(f);
     }
-
-    const entry = { item, inputs: resolved, problems: [...new Set(problems)] };
+    const entry = { item, inputs, problems: [...new Set(problems)] };
     (entry.problems.length ? rejected : accepted).push(entry);
   }
 
-  accepted.sort((a, b) => b.item.score - a.item.score);
-  return { accepted, rejected };
+  // Backend order. No sorting by score: the rank field is authoritative.
+  accepted.sort((a, b) => a.item.rank - b.item.rank);
+  return {
+    criteria,
+    accepted,
+    rejected,
+    notRanked: response && Array.isArray(response.excluded) ? response.excluded : [],
+  };
 }

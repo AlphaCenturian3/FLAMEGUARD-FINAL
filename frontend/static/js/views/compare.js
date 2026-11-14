@@ -1,15 +1,16 @@
-import { buildComparison } from "../model/compare.js";
-import { evidenceInfo, formatValue, isFixture } from "../model/evidence.js";
-import { evidenceBadge, findingCard, fixtureBadge, investigationMeta, resourcePanel, sourceList, statePanel } from "../ui/components.js";
-import { h, mount } from "../ui/dom.js";
+import { availableQuantities, reviewComparison } from "../model/compare.js";
+import { CONDITIONS, isFixture, isMissing, valueStatusInfo } from "../model/evidence.js";
+import { resourceFromError } from "../store.js";
 import { barChart } from "../ui/chart.js";
+import { fixtureBadge, investigationMeta, resourcePanel, statePanel, valueStatusBadge } from "../ui/components.js";
+import { h, mount } from "../ui/dom.js";
 
 export const title = "Experiment Comparison";
 
 /** @param {import("../main.js").ViewContext} ctx */
 export function render(ctx) {
-  const picker = h("fieldset", { class: "card picker" }, h("legend", null, "Investigations to compare"));
-  const body = h("div", { class: "compare-body", "aria-live": "polite" });
+  const controls = h("form", { class: "card compare-controls", onsubmit: (e) => e.preventDefault() });
+  const result = h("div", { class: "compare-body", "aria-live": "polite" });
   const root = h(
     "section",
     { class: "view" },
@@ -17,139 +18,128 @@ export function render(ctx) {
       "header",
       { class: "view-head" },
       h("h1", { tabindex: "-1" }, title),
-      h("p", { class: "lede" }, "Side-by-side evidence for selected investigations. Values are charted only when FlameGuard-SI can confirm they measure the same quantity in the same unit."),
+      h("p", { class: "lede" }, "Measured values for one quantity across investigations. Whether they are comparable is decided by the FlameGuard-SI backend; this page shows that decision and its reasons exactly as returned."),
     ),
-    picker,
-    body,
+    controls,
+    result,
   );
-  mount(body, statePanel({ kind: "loading", title: "Loading evidence…" }));
+  mount(result, statePanel({ kind: "loading", title: "Loading evidence…" }));
 
   ctx.store.evidence().then((ev) => {
-    if (ev.investigations.state !== "ready") {
-      mount(picker, h("legend", null, "Investigations to compare"));
-      mount(body, resourcePanel(ev.investigations, "Investigations", "GET /api/investigations"));
+    if (ev.investigations.state !== "ready" || ev.findings.state !== "ready") {
+      mount(result, resourcePanel(ev.investigations.state !== "ready" ? ev.investigations : ev.findings, "Evidence", "GET /api/investigations, /api/findings"));
       return;
     }
     const all = ev.investigations.data;
-    if (all.length === 0) {
-      mount(body, statePanel({ kind: "empty", title: "No investigations available to compare" }));
+    const quantities = availableQuantities(ev.findings.data);
+    if (!quantities.length) {
+      mount(controls, h("p", { class: "muted" }, "No measured finding names a quantity, so there is nothing to compare."));
+      mount(result);
       return;
     }
+    const qSelect = h("select", { id: "cmp-quantity", name: "quantity" }, quantities.map((q) => h("option", { value: q.quantity }, `${q.quantity.replaceAll("_", " ")} (${q.unit})`)));
+    const run = h("button", { type: "submit", class: "btn btn-primary" }, "Request comparison");
 
-    const drawPicker = () =>
+    const drawControls = () =>
       mount(
-        picker,
-        h("legend", null, "Investigations to compare"),
+        controls,
+        h("label", { class: "field", for: "cmp-quantity" }, h("span", null, "Quantity"), qSelect),
         h(
-          "div",
-          { class: "picker-list" },
-          all.map((inv) =>
-            h(
-              "label",
-              { class: "check" },
-              h("input", { type: "checkbox", checked: ctx.store.selection.has(inv.id), onchange: () => ctx.store.selection.toggle(inv.id) }),
-              h("span", null, inv.name),
-              isFixture(inv) ? fixtureBadge() : null,
+          "fieldset",
+          { class: "picker" },
+          h("legend", null, "Limit to investigations (optional)"),
+          h(
+            "div",
+            { class: "picker-list" },
+            all.map((inv) =>
+              h("label", { class: "check" }, h("input", { type: "checkbox", checked: ctx.store.selection.has(inv.id), onchange: () => ctx.store.selection.toggle(inv.id) }), h("span", null, inv.name), isFixture(inv) ? fixtureBadge() : null),
             ),
           ),
+          h("p", { class: "small muted" }, "With none selected, the backend compares every investigation that reports the quantity."),
         ),
-        h(
-          "div",
-          { class: "row gap" },
-          h("button", { type: "button", class: "btn btn-ghost", onclick: () => ctx.store.selection.set(all.map((i) => i.id)) }, "Select all"),
-          h("button", { type: "button", class: "btn btn-ghost", onclick: () => ctx.store.selection.set([]) }, "Clear"),
-        ),
+        h("div", { class: "row gap" }, run),
       );
+    drawControls();
+    ctx.onLeave(ctx.store.onSelectionChange(drawControls));
 
-    const draw = () => {
-      drawPicker();
-      const selected = all.filter((i) => ctx.store.selection.has(i.id));
-      const model = buildComparison(selected, ev.findingsByInvestigation);
-      mount(body, comparisonView(model, ev));
-    };
-    const unsubscribe = ctx.store.onSelectionChange(draw);
-    ctx.onLeave(unsubscribe);
-    draw();
+    async function request() {
+      const quantity = qSelect.value;
+      const ids = all.filter((i) => ctx.store.selection.has(i.id)).map((i) => i.id);
+      mount(result, statePanel({ kind: "loading", title: `Requesting comparison for ${quantity}…` }));
+      try {
+        const resp = await ctx.store.source.compare(quantity, ids);
+        mount(result, comparisonView(resp, ev, all));
+      } catch (err) {
+        mount(result, resourcePanel(resourceFromError(err), "Comparison", `GET /api/compare?quantity=${quantity}`));
+      }
+    }
+    controls.addEventListener("submit", request);
+    mount(result, statePanel({ kind: "empty", title: "Choose a quantity and request a comparison" }));
   });
 
   return root;
 }
 
-function comparisonView(model, ev) {
-  if (model.columns.length === 0) {
-    return statePanel({ kind: "empty", title: "Nothing selected", message: "Choose investigations above, or tick “Compare” on cards in the Evidence Explorer." });
-  }
+function comparisonView(resp, ev, investigations) {
+  const { chartable, problems } = reviewComparison(resp, ev.findingsById);
+  const invName = (id) => investigations.find((i) => i.id === id)?.name || id;
+  const rows = resp.rows || [];
 
-  const charts = h(
+  const decision = h(
     "section",
-    { class: "card", "aria-labelledby": "charts-h" },
-    h("h2", { id: "charts-h" }, "Quantitative comparison"),
-    model.message ? h("div", { class: "alert alert-info", role: "status" }, model.message) : null,
-    model.groups.map((g) =>
-      h(
-        "div",
-        { class: "chart-group" },
-        h("h3", null, g.quantity),
-        g.compatible
-          ? barChart(
-              g.findings.map((f) => ({
-                label: (model.columns.find((c) => c.investigation.id === f.investigation_id) || {}).investigation?.name || f.investigation_id,
-                value: /** @type {number} */ (f.value),
-                note: f.uncertainty ? `uncertainty as reported: ${f.uncertainty}` : "uncertainty not reported",
-                fixture: isFixture(f),
-              })),
-              { unit: g.findings[0].unit, title: g.quantity },
-            )
-          : h("div", { class: "alert alert-warn" }, h("strong", null, "Not charted. "), h("ul", null, g.reasons.map((r) => h("li", null, r)))),
-      ),
-    ),
+    { class: "card", "aria-labelledby": "decision-h" },
+    h("h2", { id: "decision-h" }, "Backend decision ", resp.fixture ? fixtureBadge() : null),
+    h("p", null, h("strong", null, resp.comparable ? "Comparable" : "Not comparable"), ` · ${resp.quantity} (${resp.unit})`),
+    (resp.non_comparable_reasons || []).length
+      ? h("div", null, h("p", { class: "small" }, "Reasons given by the backend:"), h("ul", { class: "reasons-list" }, resp.non_comparable_reasons.map((r) => h("li", null, r))))
+      : null,
+    problems.length ? h("div", { class: "alert alert-warn", role: "status" }, h("strong", null, "Withheld by dashboard check: "), "the response is inconsistent with the contract, so no chart is drawn.", h("ul", null, problems.map((p) => h("li", null, p)))) : null,
   );
 
-  const cols = model.columns;
-  const row = (label, cell) => h("tr", null, h("th", { scope: "row" }, label), cols.map((c) => h("td", null, cell(c))));
+  const chart = chartable
+    ? h(
+        "section",
+        { class: "card" },
+        h("h2", null, "Chart"),
+        barChart(
+          rows.map((r) => ({ label: invName(r.investigation_id), value: r.value, note: `finding ${r.finding_id}`, fixture: Boolean(resp.fixture) })),
+          { unit: resp.unit, title: resp.quantity },
+        ),
+      )
+    : h("p", { class: "small muted" }, "No chart: values are charted only when the backend marks them comparable. Missing and excluded values are never plotted.");
+
   const table = h(
-    "div",
-    { class: "table-wrap", tabindex: "0", role: "region", "aria-label": "Side-by-side evidence table" },
-    h(
-      "table",
-      { class: "compare-table" },
-      h("caption", { class: "sr-only" }, "Selected investigations side by side"),
-      h("thead", null, h("tr", null, h("th", { scope: "col" }, "Field"), cols.map((c) => h("th", { scope: "col" }, c.investigation.name, isFixture(c.investigation) ? [" ", fixtureBadge()] : null)))),
-      h(
-        "tbody",
-        null,
-        row("Metadata", (c) => investigationMeta(c.investigation)),
-        row("Findings by class", (c) =>
-          h(
-            "ul",
-            { class: "plain" },
-            Object.entries(c.counts).map(([k, n]) => h("li", null, evidenceBadge(k), ` ${n}`)),
-          ),
-        ),
-        row("Reported values", (c) =>
-          ev.findings.state !== "ready"
-            ? resourcePanel(ev.findings, "Findings", "GET /api/findings")
-            : c.findings.length
-              ? h(
-                  "ul",
-                  { class: "plain values" },
-                  c.findings.map((f) =>
-                    h("li", null, h("span", { class: "sr-only" }, `${evidenceInfo(f.evidence_class).label}: `), evidenceBadge(f.evidence_class), " ", formatValue(f) ?? h("span", { class: "missing-value" }, "value not reported"), h("span", { class: "muted small" }, ` — ${f.id}`)),
-                  ),
-                )
-              : h("span", { class: "missing-value" }, "No findings"),
-        ),
-        row("Sources", (c) => sourceList(c.investigation.sources)),
-      ),
-    ),
-  );
-
-  const details = h(
     "section",
     { class: "card" },
-    h("h2", null, "Finding detail"),
-    h("div", { class: "compare-grid", style: `--cols:${cols.length}` }, cols.map((c) => h("div", null, h("h3", null, c.investigation.name), c.findings.length ? c.findings.map((f) => findingCard(f, ev.findingsById)) : h("p", { class: "missing-value" }, "No findings")))),
+    h("h2", null, "Rows as returned"),
+    h(
+      "div",
+      { class: "table-wrap", tabindex: "0", role: "region", "aria-label": "Comparison rows" },
+      h(
+        "table",
+        { class: "compare-table" },
+        h("thead", null, h("tr", null, h("th", { scope: "col" }, "Investigation"), h("th", { scope: "col" }, "Value"), CONDITIONS.map(([, label, unit]) => h("th", { scope: "col" }, unit ? `${label} (${unit})` : label)))),
+        h(
+          "tbody",
+          null,
+          rows.map((r) =>
+            h(
+              "tr",
+              null,
+              h("th", { scope: "row" }, invName(r.investigation_id), h("div", { class: "mono small muted" }, r.finding_id)),
+              h("td", null, r.value_status === "reported" && r.value !== null ? `${r.value} ${resp.unit}` : valueStatusBadge(r.value_status), r.value_status !== "reported" ? h("div", { class: "small muted" }, valueStatusInfo(r.value_status).description) : null),
+              CONDITIONS.map(([key]) => h("td", null, isMissing(r.conditions?.[key]) ? h("span", { class: "missing-value" }, "Not reported") : String(r.conditions[key]).replaceAll("_", " "))),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 
-  return [charts, h("section", { class: "card" }, h("h2", null, "Side-by-side evidence"), table), details];
+  const selected = investigations.filter((i) => rows.some((r) => r.investigation_id === i.id));
+  const meta = selected.length
+    ? h("section", { class: "card" }, h("h2", null, "Investigations in this comparison"), h("div", { class: "compare-grid" }, selected.map((i) => h("div", null, h("h3", null, i.name), investigationMeta(i)))))
+    : null;
+
+  return [decision, chart, table, meta];
 }

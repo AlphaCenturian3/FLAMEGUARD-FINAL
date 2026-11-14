@@ -11,10 +11,11 @@
  * @property {string} [platform]        "" = any
  * @property {string} [environment]     "" = any
  * @property {string} [evidenceClass]   "" = any
+ * @property {string} [valueStatus]     "" = any; else investigations with a finding in that value_status
  * @property {boolean} [withValuesOnly] only investigations with a finding that reports a value
  */
 
-export const EMPTY_FILTERS = Object.freeze({ query: "", platform: "", environment: "", evidenceClass: "", withValuesOnly: false });
+export const EMPTY_FILTERS = Object.freeze({ query: "", platform: "", environment: "", evidenceClass: "", valueStatus: "", withValuesOnly: false });
 
 function norm(s) {
   return String(s || "").toLowerCase();
@@ -41,7 +42,8 @@ export function filterInvestigations(investigations, filters, findingsByInvestig
     if (f.platform && inv.platform !== f.platform) return false;
     if (f.environment && !(inv.relevant_environments || []).includes(f.environment)) return false;
     if (f.evidenceClass && !findings.some((x) => x.evidence_class === f.evidenceClass)) return false;
-    if (f.withValuesOnly && !findings.some((x) => x.value !== null && x.value !== undefined && x.value !== "")) return false;
+    if (f.withValuesOnly && !findings.some((x) => x.value_status === "reported" && x.value !== null && x.value !== undefined && x.value !== "")) return false;
+    if (f.valueStatus && !findings.some((x) => x.value_status === f.valueStatus)) return false;
     return true;
   });
 }

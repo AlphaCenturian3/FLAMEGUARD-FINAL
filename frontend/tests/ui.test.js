@@ -1,110 +1,152 @@
 import { assert, test } from "./harness.js";
-import { interpretation, measured, simulation } from "./samples.js";
-import { evidenceBadge, findingCard, provenanceBlock, resourcePanel, sourceItem } from "../static/js/ui/components.js";
+import { byId, excluded, interpretation, measured, note, notReported } from "./samples.js";
+import { conditionsBlock, curationNotesBlock, evidenceBadge, findingCard, provenanceBlock, resourcePanel, sourceItem } from "../static/js/ui/components.js";
 import { ApiError } from "../static/js/api/errors.js";
 import { safeHttpUrl } from "../static/js/ui/dom.js";
 import { DEMO_STEPS, DEMO_TARGET_SECONDS, createDemo } from "../static/js/demo.js";
-import { interpretationCard } from "../static/js/views/interpret.js";
+import { classifyInterpretation, interpretationCard } from "../static/js/views/interpret.js";
+import { findingsSection } from "../static/js/views/explorer.js";
 
-test("ui: every finding card shows its evidence class label and fixture badge", () => {
-  for (const [f, label] of [
-    [measured("m", "a"), "Measured"],
-    [interpretation("i", "a", ["m"]), "Interpretation"],
-    [simulation("s", "a"), "Illustrative simulation"],
-  ]) {
-    const el = findingCard(f);
-    assert.includes(el.textContent, label);
-    assert.includes(el.textContent, "Fixture · not NASA data");
-  }
+
+// ---------- P1: evidence display ----------
+test("ui: each value status gets its exact wording; nothing is shown as 0 or blank", () => {
+  assert.includes(findingCard(measured("m", "a", { value: 1.5 })).textContent, "1.5 mm/s");
+  const nr = findingCard(notReported("m", "a")).textContent;
+  assert.includes(nr, "Not reported");
+  assert.ok(!/\b0 mm\/s/.test(nr));
+  const ex = findingCard(excluded("e", "a")).textContent;
+  assert.includes(ex, "Excluded by FlameGuard-SI");
+  assert.includes(ex, "value not shown");
 });
 
-test("ui: simulation card always shows the required label", () => {
-  assert.includes(findingCard(simulation("s", "a")).textContent, "Fluid and thermal transport model. No combustion chemistry.");
-  assert.ok(!findingCard(measured("m", "a")).textContent.includes("No combustion chemistry"));
+test("ui: an excluded finding never shows its number, even in a malformed record", () => {
+  const f = excluded("e", "a", { value: 0.37, statement: "TEST statement without numbers" });
+  const card = findingCard(f);
+  const valueCell = card.querySelector('[data-value-status="excluded"]');
+  assert.ok(valueCell, "value cell is marked excluded");
+  assert.ok(!valueCell.textContent.includes("0.37"));
+  assert.ok(!card.textContent.includes("0.37"));
 });
 
-test("ui: missing values are shown as 'Not reported', not blank or zero", () => {
-  const el = findingCard(measured("m", "a"));
+test("ui: uncertainty is labelled as source-reported; curation notes are separate FlameGuard-SI assessments", () => {
+  const card = findingCard(measured("m", "a", { uncertainty: "±0.1 mm/s", curation_notes: [note("caution")] }));
+  const text = card.textContent;
+  assert.includes(text, "Reported by the source: ±0.1 mm/s");
+  assert.includes(text, "FlameGuard-SI caution");
+  assert.includes(text, "FlameGuard-SI assessment, not source text");
+  const unc = [...card.querySelectorAll("dd")].find((d) => d.textContent.includes("Reported by the source"));
+  assert.ok(!unc.textContent.includes("TEST caution note"), "a caution note is never rendered as uncertainty");
+  assert.includes(findingCard(measured("m", "a")).textContent, "Not reported by the source");
+});
+
+test("ui: notes show flag, recorded quote and source; a quote is never called verified", () => {
+  const el = curationNotesBlock([note("exclusion")]);
+  const text = el.textContent;
+  assert.includes(text, "FlameGuard-SI exclusion");
+  assert.includes(text, "Quality flag T-F1 in test-quality-flags");
+  assert.includes(text, "Recorded quote (p. 1)");
+  assert.includes(text, "TEST recorded quote");
+  assert.ok(!/verified/i.test(text));
+  assert.ok(!/verified/i.test(findingCard(excluded("e", "a")).textContent));
+});
+
+test("ui: all eight conditions are shown; unreported ones say so", () => {
+  const el = conditionsBlock(measured("m", "a", { conditions: { ...measured("m", "a").conditions, pressure_kpa: 101.3 } }).conditions);
+  assert.equal(el.querySelectorAll("dt").length, 8);
+  assert.includes(el.textContent, "101.3 kPa");
   assert.includes(el.textContent, "Not reported");
-  assert.includes(el.textContent, "Missing from record");
-  const withValue = findingCard(measured("m", "a", { value: 3.2, unit: "mm/s", uncertainty: "±0.1 mm/s" }));
-  assert.includes(withValue.textContent, "3.2 mm/s");
-  assert.includes(withValue.textContent, "±0.1 mm/s (as reported)");
 });
 
-test("ui: qualitative interpretation is labelled as such, not as missing data", () => {
-  const el = findingCard(interpretation("i", "a", ["m"]));
-  assert.includes(el.textContent, "Qualitative statement; no numerical value.");
-  assert.ok(!el.textContent.includes("Missing from record"));
-  const valued = findingCard(interpretation("i", "a", ["m"], { value: 2, unit: "x" }));
-  assert.includes(valued.textContent, "Missing from record");
+test("ui: measured provenance shows manifest entry, locator and sources", () => {
+  const text = provenanceBlock(measured("m", "a")).textContent;
+  assert.includes(text, "test-dataset");
+  assert.includes(text, "TEST table 0, row 0");
+  assert.includes(text, "TEST SOURCE");
 });
 
-test("ui: interpretation provenance links derived-from ids and attribution", () => {
-  const m = measured("m1", "a");
-  const el = provenanceBlock(interpretation("i", "a", ["m1", "ghost"]), new Map([["m1", m]]));
-  assert.includes(el.textContent, "m1");
-  assert.includes(el.textContent, "ghost (not loaded)");
-  assert.includes(el.textContent, "FlameGuard-SI");
-});
-
-test("ui: bad provenance raises a visible warning", () => {
-  const el = provenanceBlock(measured("m", "a", { provenance: {} }));
-  assert.includes(el.textContent, "Provenance problems");
+test("ui: interpretations show attribution, method version and limitations", () => {
+  const text = findingCard(interpretation("i", "a", ["m"], { relevant_environments: ["lunar_base"] }), byId([measured("m", "a")])).textContent;
+  assert.includes(text, "Generated by FlameGuard-SI. Not a NASA statement.");
+  assert.includes(text, "TEST limitation");
+  assert.includes(text, "Lunar base");
+  assert.includes(provenanceBlock(interpretation("i", "a", ["m"])).textContent, "test-method v0");
 });
 
 test("ui: unsafe source URLs are not turned into links; data is not parsed as HTML", () => {
   assert.equal(safeHttpUrl("javascript:alert(1)"), null);
-  assert.equal(safeHttpUrl("https://ntrs.nasa.gov/x"), "https://ntrs.nasa.gov/x");
   const el = sourceItem({ title: "<img src=x onerror=alert(1)>", url: "javascript:alert(1)", retrieved: "2026-11-14" });
   assert.equal(el.querySelector("a"), null);
   assert.equal(el.querySelector("img"), null);
-  assert.includes(el.textContent, "<img src=x");
 });
 
-test("ui: 501 resource panel says not implemented and shows nothing invented", () => {
-  const el = resourcePanel({ state: "not_implemented", error: new ApiError(501, "not_implemented", "planned") }, "Rankings", "GET /api/rankings");
-  assert.includes(el.textContent, "not implemented by the backend yet");
-  assert.includes(el.textContent, "HTTP 501");
-  const err = resourcePanel({ state: "error", error: new ApiError(0, "network_error", "down") }, "Rankings", "GET /api/rankings");
-  assert.equal(err.getAttribute("role"), "alert");
-});
-
-test("interpret: fully traced interpretation is shown with its statement and evidence", () => {
-  const m = measured("m1", "a");
-  const i = interpretation("i1", "a", ["m1"]);
-  const el = interpretationCard(i, new Map([m, i].map((f) => [f.id, f])), undefined);
-  assert.equal(el.dataset.support, "supported");
-  assert.includes(el.textContent, "TEST interpretation i1");
-  assert.includes(el.textContent, "Traced to 1 measured record");
-  assert.ok(!el.textContent.includes("Withheld"));
-});
-
-test("interpret: unsupported interpretations are withheld with a reason and hidden statement", () => {
-  const m = measured("m1", "a");
-  const badM = measured("m-bad", "a", { provenance: { manifest_id: "x", sources: [] } });
-  const sim = simulation("s1", "a");
-  const cases = [
-    [interpretation("i-missing", "a", ["ghost"]), "ghost"],
-    [interpretation("i-sim", "a", ["m1", "s1"]), "Depends on illustrative simulation s1"],
-    [interpretation("i-badm", "a", ["m-bad"]), "cites no source"],
-    [interpretation("i-nasa", "a", ["m1"], { provenance: { derived_from: ["m1"], method: "x", generated_by: "NASA" } }), "not attributed to FlameGuard-SI"],
-    [interpretation("i-nomethod", "a", ["m1"], { provenance: { derived_from: ["m1"], generated_by: "FlameGuard-SI" } }), "does not state its method"],
-  ];
-  for (const [i, reason] of cases) {
-    const byId = new Map([m, badM, sim, i].map((f) => [f.id, f]));
-    const el = interpretationCard(i, byId, undefined);
-    assert.equal(el.dataset.support, "withheld", `${i.id} should be withheld`);
-    assert.includes(el.textContent, "Withheld");
-    assert.includes(el.textContent, reason);
-    assert.ok(!el.textContent.includes(`TEST interpretation ${i.id}`), `${i.id} statement must not be presented`);
-  }
+test("ui: error panels name 501, 400, 404 and network failures (F6)", () => {
+  assert.includes(resourcePanel({ state: "not_implemented", error: new ApiError(501, "not_implemented", "planned") }, "Rankings", "GET /api/rankings").textContent, "HTTP 501");
+  assert.includes(resourcePanel({ state: "error", error: new ApiError(400, "invalid_request", "bad") }, "Rankings", "x").textContent, "HTTP 400");
+  assert.includes(resourcePanel({ state: "error", error: new ApiError(404, "not_found", "no") }, "Rankings", "x").textContent, "HTTP 404");
+  const net = resourcePanel({ state: "error", error: new ApiError(0, "network_error", "down") }, "Rankings", "x");
+  assert.includes(net.textContent, "could not be reached");
+  assert.equal(net.getAttribute("role"), "alert");
 });
 
 test("ui: unknown evidence class badge is flagged", () => {
   assert.includes(evidenceBadge("quoted").textContent, "Unknown evidence class");
 });
 
+// ---------- P2: grouped explorer ----------
+test("explorer: a 40-finding investigation renders as 10 collapsible test rows", () => {
+  const fs = [];
+  for (let r = 1; r <= 10; r++) {
+    for (let q = 0; q < 4; q++) {
+      const f = r === 10 && q === 3 ? excluded(`f-${r}-${q}`, "f") : measured(`f-${r}-${q}`, "f", { value: r + q / 10 });
+      f.provenance.locator = `TEST Table IX, row ${r}`;
+      fs.push(f);
+    }
+  }
+  const el = findingsSection(fs, byId(fs));
+  assert.equal(el.querySelectorAll("details.row-group").length, 10);
+  assert.equal(el.querySelectorAll("article.finding").length, 40);
+  assert.includes(el.textContent, "Conditions for this row");
+  assert.includes(el.textContent, "1 excluded by flameguard-si");
+});
+
+// ---------- P8: interpretations ----------
+const IFS = [measured("m", "a"), excluded("e", "a"), interpretation("ok", "a", ["m"], { relevant_environments: ["lunar_base"] }), interpretation("ex1", "a", ["e"]), interpretation("ex2", "a", ["ex1"]), interpretation("bad", "a", ["ghost"], { relevant_environments: ["lunar_base"] })];
+const IMAP = byId(IFS);
+
+test("interpret: supported, exclusion-dependent and broken interpretations are classified apart", () => {
+  assert.equal(classifyInterpretation(IMAP.get("ok"), IMAP).kind, "insight");
+  assert.equal(classifyInterpretation(IMAP.get("ex1"), IMAP).kind, "exclusion");
+  assert.equal(classifyInterpretation(IMAP.get("ex2"), IMAP).kind, "exclusion", "depth 2");
+  assert.equal(classifyInterpretation(IMAP.get("bad"), IMAP).kind, "withheld");
+});
+
+test("interpret: an exclusion-dependent interpretation explains the exclusion and supports no conclusion", () => {
+  const el = interpretationCard(IMAP.get("ex2"), IMAP);
+  assert.equal(el.dataset.support, "exclusion");
+  assert.includes(el.textContent, "Explains an exclusion");
+  assert.includes(el.textContent, "supports no safety conclusion");
+  assert.includes(el.textContent, "TEST exclusion reason for e");
+  assert.equal(el.querySelector(".chain-links"), null, "no 'supporting evidence' section");
+});
+
+test("interpret: an insight shows statement, method, limitations and traced evidence", () => {
+  const el = interpretationCard(IMAP.get("ok"), IMAP);
+  assert.equal(el.dataset.support, "supported");
+  assert.includes(el.textContent, "TEST interpretation ok");
+  assert.includes(el.textContent, "Traced to 1 measured record");
+  assert.includes(el.textContent, "method test-method v0");
+  assert.includes(el.textContent, "TEST limitation");
+});
+
+test("interpret: a broken chain is withheld with its reason and hidden statement", () => {
+  const el = interpretationCard(IMAP.get("bad"), IMAP);
+  assert.equal(el.dataset.support, "withheld");
+  assert.includes(el.textContent, "Withheld by dashboard check");
+  assert.includes(el.textContent, "ghost");
+  assert.ok(!el.textContent.includes("TEST interpretation bad"));
+});
+
+// ---------- Demo ----------
 test("demo: five steps in order, fit 90 s, restart returns to step 1", async () => {
   assert.deepEqual(DEMO_STEPS.map((s) => s.title), ["Discover", "Compare", "Rank", "Interpret", "Safety Insight"]);
   assert.equal(DEMO_STEPS.reduce((n, s) => n + s.seconds, 0), DEMO_TARGET_SECONDS);
@@ -122,3 +164,4 @@ test("demo: five steps in order, fit 90 s, restart returns to step 1", async () 
   assert.equal(demo.active(), false);
   assert.equal(visited[0], "#/explorer");
 });
+

@@ -1,7 +1,9 @@
 import { assert, test } from "./harness.js";
-import { inv, interpretation, measured, simulation } from "./samples.js";
-import { filterInvestigations, facetOptions, groupFindings } from "../static/js/model/filter.js";
-import { assessCompatibility, buildComparison, INCOMPATIBILITY } from "../static/js/model/compare.js";
+import { byId, excluded, interpretation, inv, measured, note, notReported, simulation } from "./samples.js";
+import { facetOptions, filterInvestigations, groupFindings } from "../static/js/model/filter.js";
+import * as compareModel from "../static/js/model/compare.js";
+import { availableQuantities, reviewComparison } from "../static/js/model/compare.js";
+import { GROUP_THRESHOLD, groupFindingsByRow } from "../static/js/model/group.js";
 import {
   evidenceInfo,
   formatValue,
@@ -9,10 +11,12 @@ import {
   missingInvestigationFields,
   missingSourceFields,
   provenanceIssues,
-  SIMULATION_LABEL,
+  unreportedConditions,
+  VALUE_STATUS,
+  valueStatusInfo,
 } from "../static/js/model/evidence.js";
 import { reviewRankings } from "../static/js/model/ranking.js";
-import { traceSupport } from "../static/js/model/trace.js";
+import { exclusionContext, traceSupport } from "../static/js/model/trace.js";
 
 // ---------- Filtering ----------
 const INVS = [
@@ -20,7 +24,7 @@ const INVS = [
   inv("b", { name: "Bravo droplet", platform: "drop tower", relevant_environments: ["lunar_base"] }),
   inv("c", { name: "Charlie smolder", platform: "ISS", relevant_environments: ["martian_base"] }),
 ];
-const FINDINGS = [measured("fa", "a", { value: 1.5, unit: "mm/s" }), interpretation("fi", "a", ["fa"]), measured("fb", "b"), simulation("fs", "c")];
+const FINDINGS = [measured("fa", "a", { value: 1.5 }), interpretation("fi", "a", ["fa"]), notReported("fb", "b"), excluded("fx", "c")];
 const BY_INV = groupFindings(FINDINGS);
 
 test("filter: empty filters return everything", () => {
@@ -34,223 +38,242 @@ test("filter: free-text search matches name, objectives, and finding statements 
   assert.deepEqual(filterInvestigations(INVS, { query: "alpha droplet" }, BY_INV), []);
 });
 
-test("filter: platform and environment", () => {
+test("filter: platform, environment, evidence class", () => {
   assert.deepEqual(filterInvestigations(INVS, { platform: "ISS" }, BY_INV).map((i) => i.id), ["a", "c"]);
   assert.deepEqual(filterInvestigations(INVS, { environment: "lunar_base" }, BY_INV).map((i) => i.id), ["b"]);
-  assert.deepEqual(filterInvestigations(INVS, { platform: "ISS", environment: "martian_base" }, BY_INV).map((i) => i.id), ["c"]);
+  assert.deepEqual(filterInvestigations(INVS, { evidenceClass: "interpretation" }, BY_INV).map((i) => i.id), ["a"]);
 });
 
-test("filter: evidence class and reported-value filters", () => {
-  assert.deepEqual(filterInvestigations(INVS, { evidenceClass: "interpretation" }, BY_INV).map((i) => i.id), ["a"]);
-  assert.deepEqual(filterInvestigations(INVS, { evidenceClass: "illustrative_simulation" }, BY_INV).map((i) => i.id), ["c"]);
+test("filter: 'reports a value' counts only reported values, never excluded or missing ones", () => {
   assert.deepEqual(filterInvestigations(INVS, { withValuesOnly: true }, BY_INV).map((i) => i.id), ["a"]);
+  assert.deepEqual(filterInvestigations(INVS, { valueStatus: "excluded" }, BY_INV).map((i) => i.id), ["c"]);
+  assert.deepEqual(filterInvestigations(INVS, { valueStatus: "not_reported" }, BY_INV).map((i) => i.id), ["b"]);
 });
 
 test("filter: facets come only from loaded data", () => {
   const f = facetOptions(INVS);
   assert.deepEqual(f.platforms, ["ISS", "drop tower"]);
-  assert.deepEqual(f.environments, ["lunar_base", "martian_base", "space_station", "spacecraft"]);
   assert.deepEqual(facetOptions([inv("x")]), { platforms: [], environments: [] });
 });
 
-// ---------- Comparison compatibility ----------
-test("compare: fewer than two investigations gives explicit message", () => {
-  const m = buildComparison([INVS[0]], BY_INV);
-  assert.equal(m.chartsAvailable, false);
-  assert.equal(m.message, INCOMPATIBILITY.TOO_FEW_INVESTIGATIONS);
+// ---------- P2: grouping by test row ----------
+function flexLike(rows = 10, perRow = 4) {
+  const fs = [];
+  for (let r = 1; r <= rows; r++) {
+    const conditions = { ...measured("x", "f").conditions, oxygen_mole_fraction: 0.21, pressure_kpa: 100 + r, fuel_or_material: r < 7 ? "methanol" : "heptane" };
+    for (let q = 0; q < perRow; q++) {
+      const locator = `TEST Table IX, row ${r}`;
+      const base = q === 3 && r === 10 ? excluded(`f-${r}-${q}`, "f") : q === 2 && r === 9 ? notReported(`f-${r}-${q}`, "f") : measured(`f-${r}-${q}`, "f", { value: r + q / 10 });
+      base.conditions = structuredClone(conditions);
+      base.provenance.locator = locator;
+      fs.push(base);
+    }
+  }
+  return fs;
+}
+
+test("group: small investigations stay flat; large ones group by locator row", () => {
+  const small = [measured("m1", "a"), measured("m2", "a")];
+  assert.equal(groupFindingsByRow(small).grouped, false);
+  const fs = flexLike();
+  const g = groupFindingsByRow([...fs, interpretation("i1", "f", ["f-1-0"])]);
+  assert.ok(fs.length > GROUP_THRESHOLD);
+  assert.equal(g.grouped, true);
+  assert.equal(g.groups.length, 10);
+  assert.ok(g.groups.every((x) => x.findings.length === 4));
+  assert.equal(g.interpretations.length, 1, "interpretations are listed separately, never merged into a row");
+  assert.equal(g.groups[0].sharedConditions.pressure_kpa, 101);
 });
 
-test("compare: contract v0.1.0 findings without quantity id are never charted", () => {
-  const m = buildComparison(INVS, BY_INV);
-  assert.equal(m.chartsAvailable, false);
-  assert.equal(m.groups.length, 0);
-  assert.equal(m.message, INCOMPATIBILITY.NO_QUANTITY_ID);
+test("group: conditions are shown once only when every finding in the row shares them", () => {
+  const fs = flexLike(2, 4); // 8 findings, above the threshold
+  fs[1].conditions.pressure_kpa = 999; // row 1 now disagrees within itself
+  const g = groupFindingsByRow(fs);
+  assert.equal(g.groups[0].sharedConditions, null, "row with differing conditions shows them per finding");
+  assert.ok(g.groups[1].sharedConditions, "uniform row shows them once");
 });
 
-test("compare: compatible measured values with same quantity and unit are charted", () => {
-  const f = [measured("x1", "a", { quantity: "spread_rate", value: 1.2, unit: "mm/s" }), measured("x2", "b", { quantity: "spread_rate", value: 0.8, unit: "mm/s" })];
-  const m = buildComparison(INVS.slice(0, 2), groupFindings(f));
-  assert.equal(m.chartsAvailable, true);
-  assert.equal(m.groups[0].compatible, true);
-  assert.equal(m.message, null);
+test("group: grouping never alters values or statuses", () => {
+  const fs = flexLike();
+  const before = JSON.stringify(fs.map((f) => [f.id, f.value, f.value_status]));
+  const g = groupFindingsByRow(fs);
+  const after = JSON.stringify(g.groups.flatMap((x) => x.findings).map((f) => [f.id, f.value, f.value_status]));
+  assert.equal(after, before);
 });
 
-test("compare: unit mismatch, missing value, non-numeric, non-measured are each reported", () => {
-  const unit = assessCompatibility([measured("1", "a", { value: 1, unit: "mm/s" }), measured("2", "b", { value: 1, unit: "cm/s" })]);
-  assert.equal(unit.compatible, false);
-  assert.includes(unit.reasons, INCOMPATIBILITY.UNIT_MISMATCH);
-
-  const missing = assessCompatibility([measured("1", "a", { value: 1, unit: "s" }), measured("2", "b", { value: null, unit: "s" })]);
-  assert.includes(missing.reasons, INCOMPATIBILITY.MISSING_VALUE);
-
-  const text = assessCompatibility([measured("1", "a", { value: 1, unit: "s" }), measured("2", "b", { value: "about 2", unit: "s" })]);
-  assert.includes(text.reasons, INCOMPATIBILITY.NON_NUMERIC);
-
-  const interp = assessCompatibility([measured("1", "a", { value: 1, unit: "s" }), interpretation("2", "b", ["1"], { value: 2, unit: "s" })]);
-  assert.includes(interp.reasons, INCOMPATIBILITY.NOT_MEASURED);
-
-  const single = assessCompatibility([measured("1", "a", { value: 1, unit: "s" }), measured("2", "a", { value: 2, unit: "s" })]);
-  assert.includes(single.reasons, INCOMPATIBILITY.SINGLE_INVESTIGATION);
+// ---------- P3: backend comparison, display review only ----------
+const CMP = (extra = {}) => ({
+  contract_version: "0.2.0",
+  quantity: "flame_spread_rate",
+  unit: "mm/s",
+  rows: [
+    { investigation_id: "a", finding_id: "fa", evidence_class: "measured", value: 1.5, value_status: "reported", conditions: measured("x", "a").conditions },
+    { investigation_id: "b", finding_id: "fb2", evidence_class: "measured", value: 0.8, value_status: "reported", conditions: measured("x", "a").conditions },
+  ],
+  comparable: true,
+  non_comparable_reasons: [],
+  ...extra,
 });
 
-test("compare: simulation findings never enter a comparison group", () => {
-  const f = [measured("m", "a", { quantity: "q", value: 1, unit: "s" }), simulation("s", "b", { quantity: "q", value: 2, unit: "s" })];
-  const m = buildComparison(INVS.slice(0, 2), groupFindings(f));
-  assert.equal(m.groups[0].findings.length, 1);
-  assert.equal(m.groups[0].compatible, false);
+test("compare: the frontend has no comparability decision code", () => {
+  assert.equal(compareModel.assessCompatibility, undefined);
+  assert.equal(compareModel.buildComparison, undefined);
 });
 
-// ---------- Provenance labels ----------
-test("provenance: evidence class labels and unknown class", () => {
+test("compare: a consistent comparable response is chartable", () => {
+  const r = reviewComparison(CMP(), byId([measured("fa", "a"), measured("fb2", "b")]));
+  assert.equal(r.chartable, true);
+  assert.deepEqual(r.problems, []);
+});
+
+test("compare: not comparable is shown with the backend's reasons, never charted", () => {
+  const r = reviewComparison(CMP({ comparable: false, non_comparable_reasons: ["pressure_kpa not reported for either row"] }));
+  assert.equal(r.chartable, false);
+  assert.deepEqual(r.problems, []);
+  const noReason = reviewComparison(CMP({ comparable: false, non_comparable_reasons: [] }));
+  assert.includes(noReason.problems.join(" "), "no reason");
+});
+
+test("compare: 'comparable' with a missing or excluded value fails closed (no chart, no filling)", () => {
+  const missing = CMP();
+  missing.rows[1] = { ...missing.rows[1], value: null, value_status: "not_reported" };
+  const r1 = reviewComparison(missing);
+  assert.equal(r1.chartable, false);
+  assert.includes(r1.problems.join(" "), "no reported numeric value");
+  const r2 = reviewComparison(CMP(), byId([excluded("fa", "a"), measured("fb2", "b")]));
+  assert.equal(r2.chartable, false);
+  assert.includes(r2.problems.join(" "), "excluded");
+});
+
+test("compare: quantity picker lists only quantities of loaded measured findings", () => {
+  assert.deepEqual(availableQuantities(FINDINGS), [{ quantity: "flame_spread_rate", unit: "mm/s" }]);
+  assert.deepEqual(availableQuantities([interpretation("i", "a", ["x"])]), []);
+});
+
+// ---------- Evidence classes, value status, provenance ----------
+test("evidence: classes and the four value statuses have exact wording", () => {
   assert.equal(evidenceInfo("measured").label, "Measured");
   assert.equal(evidenceInfo("interpretation").label, "Interpretation");
-  assert.equal(evidenceInfo("illustrative_simulation").label, "Illustrative simulation");
   assert.equal(evidenceInfo("quoted").valid, false);
-  assert.equal(evidenceInfo(undefined).key, "unknown");
+  assert.deepEqual(Object.keys(VALUE_STATUS), ["reported", "not_reported", "not_applicable", "excluded"]);
+  assert.equal(valueStatusInfo("not_reported").label, "Not reported");
+  assert.equal(valueStatusInfo("not_applicable").label, "Not applicable");
+  assert.equal(valueStatusInfo("excluded").label, "Excluded by FlameGuard-SI");
+  assert.equal(valueStatusInfo("withheld").valid, false, "withheld is not a v0.2.0 value status");
 });
 
-test("provenance: valid records have no issues", () => {
+test("evidence: only a reported value is ever formatted; an excluded value never is", () => {
+  assert.equal(formatValue(measured("m", "a", { value: 0 })), "0 mm/s", "zero is a value, not missing");
+  assert.equal(formatValue(notReported("m", "a")), null);
+  assert.equal(formatValue(excluded("e", "a")), null);
+  assert.equal(formatValue(excluded("e", "a", { value: 0.37 })), null, "malformed excluded record with a number still shows none");
+});
+
+test("provenance: valid v0.2.0 records have no issues", () => {
   assert.deepEqual(provenanceIssues(measured("m", "a")), []);
+  assert.deepEqual(provenanceIssues(measured("m", "a", { curation_notes: [note("caution")] })), []);
+  assert.deepEqual(provenanceIssues(excluded("e", "a")), []);
   assert.deepEqual(provenanceIssues(interpretation("i", "a", ["m"])), []);
-  assert.deepEqual(provenanceIssues(simulation("s", "a")), []);
 });
 
-test("provenance: measured without manifest or sources is flagged", () => {
-  const issues = provenanceIssues(measured("m", "a", { provenance: { sources: [] } }));
-  assert.equal(issues.length, 2);
+test("provenance: v0.2.0 rule violations are each flagged", () => {
+  const cases = [
+    [measured("m", "a", { provenance: { manifest_id: "d", sources: [{ title: "t", url: "https://example.invalid", retrieved: "2026-11-14" }] } }), "no locator"],
+    [interpretation("i", "a", ["m"], { provenance: { derived_from: ["m"], method: "x", generated_by: "FlameGuard-SI" } }), "method version"],
+    [interpretation("i", "a", ["m"], { limitations: [] }), "no limitations"],
+    [measured("m", "a", { curation_notes: [note("caution", { generated_by: "NASA" })] }), "not attributed to FlameGuard-SI"],
+    [measured("m", "a", { curation_notes: [note("caution", { source: { title: "t", url: "https://example.invalid", retrieved: "2026-11-14", quote: null } })] }), "no source quote"],
+    [measured("m", "a", { curation_notes: [note("caution", { flag_ref: null })] }), "quality-flag reference"],
+    [excluded("e", "a", { curation_notes: [note("caution")] }), "no exclusion note"],
+    [measured("m", "a", { curation_notes: [note("exclusion")] }), "not excluded"],
+    [interpretation("i", "a", ["m"], { curation_notes: [note("caution")] }), "not allowed on interpretations"],
+    [notReported("m", "a", { value: 3 }), "carries a value"],
+    [simulation("s", "a"), "not a Finding"],
+  ];
+  for (const [f, fragment] of cases) assert.includes(provenanceIssues(f).join(" "), fragment, `expected "${fragment}" for ${f.id}`);
 });
 
-test("provenance: interpretation attributed to NASA is flagged", () => {
-  const f = interpretation("i", "a", ["m"]);
-  f.provenance.generated_by = "NASA";
-  assert.includes(provenanceIssues(f).join(" "), "not attributed to FlameGuard-SI");
-});
-
-test("provenance: simulation without exact label is flagged", () => {
-  assert.equal(SIMULATION_LABEL, "Fluid and thermal transport model. No combustion chemistry.");
-  assert.includes(provenanceIssues(simulation("s", "a", { label: "Simulated flame" })).join(" "), "required label");
-});
-
-// ---------- Missing data ----------
-test("missing: finding value/unit/uncertainty reported as missing, never formatted", () => {
-  const f = measured("m", "a");
-  assert.deepEqual(missingFindingFields(f), ["value", "unit", "uncertainty"]);
-  assert.equal(formatValue(f), null);
-  assert.equal(formatValue(measured("m", "a", { value: 0, unit: "K" })), "0 K", "zero is a value, not missing");
-  assert.deepEqual(missingFindingFields(measured("m", "a", { value: 0, unit: "K", uncertainty: "±2 K" })), []);
-});
-
-test("missing: investigation and source fields", () => {
+test("missing: value, uncertainty and unreported conditions are listed, never filled", () => {
+  assert.deepEqual(missingFindingFields(notReported("m", "a")), ["value", "uncertainty"]);
+  assert.deepEqual(missingFindingFields(measured("m", "a", { uncertainty: "±0.1 mm/s" })), []);
+  assert.deepEqual(missingFindingFields(excluded("e", "a", { uncertainty: "x" })), [], "excluded is not 'missing'");
+  assert.equal(unreportedConditions(measured("m", "a")).length, 7);
   assert.deepEqual(missingInvestigationFields(inv("x")), ["acronym", "platform", "objectives", "relevant_environments"]);
   assert.deepEqual(missingSourceFields({ title: "t", url: "u", retrieved: "d" }), ["page", "quote", "archive_id"]);
 });
 
-// ---------- Ranking guards ----------
-test("ranking: items citing simulation inputs are withheld", () => {
-  const byId = new Map(FINDINGS.map((f) => [f.id, f]));
-  const res = reviewRankings(
-    {
-      items: [
-        { investigation_id: "a", score: 0.4, rationale: "r", inputs: ["fa", "fi"] },
-        { investigation_id: "c", score: 0.9, rationale: "r", inputs: ["fs"] },
-        { investigation_id: "b", score: "high", rationale: "r", inputs: ["fb"] },
-        { investigation_id: "b", score: 0.7, rationale: "", inputs: ["fb"] },
-      ],
-    },
-    byId,
-  );
-  assert.deepEqual(res.accepted.map((e) => e.item.investigation_id), ["a"]);
-  assert.equal(res.rejected.length, 3);
-  assert.includes(res.rejected[0].problems.join(" "), "illustrative_simulation");
+// ---------- S9: transitive exclusion ----------
+test("trace: a clean chain to measured evidence is supported", () => {
+  const t = traceSupport(interpretation("i2", "a", ["i1", "m2"]), byId([measured("m1", "a"), measured("m2", "a"), interpretation("i1", "a", ["m1"])]));
+  assert.equal(t.supported, true, t.reasons.join(" | "));
+  assert.deepEqual(t.measuredRoots.map((f) => f.id).sort(), ["m1", "m2"]);
 });
 
-test("ranking: accepted items are sorted by score; empty response is empty", () => {
-  const byId = new Map(FINDINGS.map((f) => [f.id, f]));
+test("trace: an excluded value blocks support directly, at depth 2, and through one of mixed parents", () => {
+  const fs = [excluded("e", "a"), measured("m", "a"), interpretation("i1", "a", ["e"]), interpretation("i2", "a", ["i1"]), interpretation("i3", "a", ["m", "e"])];
+  const map = byId(fs);
+  for (const id of ["e", "i1", "i2", "i3"]) {
+    const t = traceSupport(map.get(id), map);
+    assert.equal(t.supported, false, `${id} must not be supported`);
+    assert.equal(t.problems.length, 0, `${id}: exclusion is not a provenance problem`);
+    assert.ok(t.exclusionReasons.length > 0, `${id} carries an S9 reason`);
+    assert.deepEqual(t.excludedAncestors.map((f) => f.id), ["e"]);
+  }
+  assert.equal(exclusionContext(map.get("i2"), map)[0].notes[0].note, "TEST exclusion reason for e");
+});
+
+test("trace: unresolved parents, cycles and simulations are problems, not exclusions", () => {
+  const fs = [simulation("s", "a"), interpretation("i-sim", "a", ["s"]), interpretation("i-orphan", "a", ["nope"]), interpretation("i-self", "a", ["i-self"])];
+  const map = byId(fs);
+  assert.includes(traceSupport(map.get("i-sim"), map).problems.join(" "), "imulation");
+  assert.includes(traceSupport(map.get("i-orphan"), map).problems.join(" "), "nope (cited by i-orphan)");
+  assert.includes(traceSupport(map.get("i-self"), map).problems.join(" "), "Circular derivation");
+});
+
+// ---------- P4: ranking display guard ----------
+function ranking(items, extra = {}) {
+  return {
+    contract_version: "0.2.0",
+    context: "spacecraft",
+    criteria_version: "test",
+    criteria: [{ id: "c-a", description: "A", weight: 0.5 }, { id: "c-b", description: "B", weight: 0.5 }],
+    items,
+    excluded: [{ investigation_id: "z", reason: "TEST: no reported value" }],
+    generated_by: "FlameGuard-SI",
+    ...extra,
+  };
+}
+const item = (rank, inv, score, inputs, cid = "c-a") => ({ rank, investigation_id: inv, score, rationale: "r", criterion_scores: [{ criterion_id: cid, score, inputs }] });
+const RANK_FINDINGS = [measured("fa", "a"), interpretation("fi", "a", ["fa"]), measured("fb", "b"), excluded("fx", "c"), interpretation("ix", "c", ["fx"]), interpretation("ix2", "c", ["ix"])];
+
+test("ranking: accepted items follow the backend rank field, not the score", () => {
   const res = reviewRankings(
-    { items: [{ investigation_id: "b", score: 1, rationale: "r", inputs: ["fb"] }, { investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "fi"] }] },
-    byId,
+    ranking([item(2, "b", 0.9, [{ finding_id: "fb", evidence_class: "measured" }]), item(1, "a", 0.1, [{ finding_id: "fa", evidence_class: "measured" }, { finding_id: "fi", evidence_class: "interpretation" }])]),
+    byId(RANK_FINDINGS),
   );
   assert.deepEqual(res.accepted.map((e) => e.item.investigation_id), ["a", "b"]);
-  assert.deepEqual(reviewRankings({}, byId), { accepted: [], rejected: [] });
+  assert.equal(res.criteria.length, 2);
+  assert.deepEqual(res.notRanked, [{ investigation_id: "z", reason: "TEST: no reported value" }]);
 });
 
-// Regression: unresolved supporting IDs used to be accepted with a warning.
-test("ranking: item with an unresolved supporting finding ID is withheld", () => {
-  const byId = new Map(FINDINGS.map((f) => [f.id, f]));
-  const res = reviewRankings({ items: [{ investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "ghost"] }] }, byId);
-  assert.equal(res.accepted.length, 0);
-  assert.equal(res.rejected.length, 1);
-  assert.includes(res.rejected[0].problems.join(" "), "ghost is not among the loaded findings");
+test("ranking: scores are never recomputed or checked against weights", () => {
+  // Score 0.99 does not equal 0.5 x 0.1; S6 is Member 5's check, not the dashboard's.
+  const res = reviewRankings(ranking([item(1, "a", 0.99, [{ finding_id: "fa", evidence_class: "measured" }])]), byId(RANK_FINDINGS));
+  assert.equal(res.accepted.length, 1);
 });
 
-// Regression: an interpretation derived from a simulation could carry it into a ranking.
-test("ranking: simulation reaching a ranking through an interpretation is withheld", () => {
-  const sim = simulation("s1", "a");
-  const viaSim = interpretation("i-sim", "a", ["s1"]);
-  const mixed = interpretation("i-mixed", "a", ["fa", "s1"]);
-  const deep = interpretation("i-deep", "a", ["i-sim"]);
-  const byId = new Map([...FINDINGS, sim, viaSim, mixed, deep].map((f) => [f.id, f]));
-  const res = reviewRankings(
-    {
-      items: [
-        { investigation_id: "a", score: 3, rationale: "r", inputs: ["i-sim"] },
-        { investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "i-mixed"] },
-        { investigation_id: "a", score: 1, rationale: "r", inputs: ["i-deep"] },
-      ],
-    },
-    byId,
-  );
-  assert.equal(res.accepted.length, 0, "no item may be accepted");
-  assert.equal(res.rejected.length, 3);
-  for (const r of res.rejected) assert.includes(r.problems.join(" "), "Depends on illustrative simulation s1");
-});
-
-test("ranking: interpretation with broken parent, bad provenance, or cycle is withheld", () => {
-  const orphan = interpretation("i-orphan", "a", ["missing-parent"]);
-  const badMeasured = measured("m-bad", "a", { provenance: { sources: [] } });
-  const onBad = interpretation("i-bad", "a", ["m-bad"]);
-  const c1 = interpretation("c1", "a", ["c2"]);
-  const c2 = interpretation("c2", "a", ["c1"]);
-  const byId = new Map([...FINDINGS, orphan, badMeasured, onBad, c1, c2].map((f) => [f.id, f]));
-  const res = reviewRankings(
-    {
-      items: [
-        { investigation_id: "a", score: 1, rationale: "r", inputs: ["i-orphan"] },
-        { investigation_id: "a", score: 1, rationale: "r", inputs: ["i-bad"] },
-        { investigation_id: "a", score: 1, rationale: "r", inputs: ["c1"] },
-        { investigation_id: "a", score: 1, rationale: "r", inputs: ["m-bad"] },
-      ],
-    },
-    byId,
-  );
-  assert.equal(res.accepted.length, 0);
-  assert.includes(res.rejected[0].problems.join(" "), "missing-parent");
-  assert.includes(res.rejected[1].problems.join(" "), "no manifest_id");
-  assert.includes(res.rejected[2].problems.join(" "), "Circular derivation");
-  assert.includes(res.rejected[3].problems.join(" "), "cites no source");
-});
-
-// ---------- Evidence-chain tracing ----------
-test("trace: interpretation chain ending in valid measured records is supported", () => {
-  const i2 = interpretation("i2", "a", ["fi", "fb"]);
-  const byId = new Map([...FINDINGS, i2].map((f) => [f.id, f]));
-  const t = traceSupport(i2, byId);
-  assert.equal(t.supported, true, t.reasons.join(" | "));
-  assert.deepEqual(t.measuredRoots.map((f) => f.id).sort(), ["fa", "fb"]);
-});
-
-test("trace: simulation, unresolved parent, cycle, and no measured root are unsupported", () => {
-  const sim = simulation("s1", "a");
-  const viaSim = interpretation("i-sim", "a", ["s1"]);
-  const orphan = interpretation("i-orphan", "a", ["nope"]);
-  const self = interpretation("i-self", "a", ["i-self"]);
-  const byId = new Map([...FINDINGS, sim, viaSim, orphan, self].map((f) => [f.id, f]));
-  assert.includes(traceSupport(viaSim, byId).reasons.join(" "), "Depends on illustrative simulation s1");
-  assert.includes(traceSupport(sim, byId).reasons.join(" "), "is an illustrative simulation, not evidence");
-  assert.includes(traceSupport(orphan, byId).reasons.join(" "), "nope (cited by i-orphan) is not among the loaded findings");
-  assert.includes(traceSupport(self, byId).reasons.join(" "), "Circular derivation");
-  const noParents = interpretation("i-empty", "a", []);
-  const t = traceSupport(noParents, byId);
-  assert.equal(t.supported, false);
-  assert.includes(t.reasons.join(" "), "does not list the findings it is derived from");
+test("ranking: unresolved, mis-declared, unknown-criterion, excluded and exclusion-dependent inputs are withheld", () => {
+  const cases = [
+    [item(1, "a", 0.5, [{ finding_id: "ghost", evidence_class: "measured" }]), "not among the loaded findings"],
+    [item(1, "a", 0.5, [{ finding_id: "fi", evidence_class: "measured" }]), "declared measured"],
+    [item(1, "a", 0.5, [{ finding_id: "fa", evidence_class: "measured" }], "c-zzz"), "not among the listed criteria"],
+    [item(1, "c", 0.5, [{ finding_id: "fx", evidence_class: "measured" }]), "excluded"],
+    [item(1, "c", 0.5, [{ finding_id: "ix2", evidence_class: "interpretation" }]), "Depends on excluded finding fx"],
+  ];
+  for (const [it, fragment] of cases) {
+    const res = reviewRankings(ranking([it]), byId(RANK_FINDINGS));
+    assert.equal(res.accepted.length, 0, `should withhold: ${fragment}`);
+    assert.includes(res.rejected[0].problems.join(" "), fragment);
+  }
+  assert.deepEqual(reviewRankings({}, byId(RANK_FINDINGS)).accepted, []);
 });

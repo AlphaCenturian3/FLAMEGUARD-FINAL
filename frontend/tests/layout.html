@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>layout test</title>
+    <link rel="stylesheet" href="../static/css/app.css" />
+  </head>
+  <body>
+    <!-- Test page only: renders a FLEX-sized investigation (40 findings in 10 rows)
+         built from tests/fixtures/frontend/records.json, for the 360 px layout check
+         in frontend/tools/browser-check.ps1. Test records, not NASA data. -->
+    <main id="main" class="view"><article class="card investigation" id="target"></article></main>
+    <script type="module">
+      import { excluded, measured, notReported, byId } from "./samples.js";
+      import { findingsSection } from "../static/js/views/explorer.js";
+      const fs = [];
+      for (let r = 1; r <= 10; r++) {
+        for (let q = 0; q < 4; q++) {
+          const id = `test-flex-like-${r}-${q}`;
+          const f = r === 10 && q === 3 ? excluded(id, "test-flex-like") : r === 9 && q === 2 ? notReported(id, "test-flex-like") : measured(id, "test-flex-like", { value: r + q / 10 });
+          f.provenance.locator = `TEST NASA/TP-0000-000000 Table IX, row FLEX-like-${String(r).padStart(3, "0")} (test record)`;
+          f.conditions = { ...f.conditions, oxygen_mole_fraction: 0.21, pressure_kpa: 101.3, fuel_or_material: "TEST fuel with a long descriptive name", sample_geometry: "TEST free-floating droplet" };
+          fs.push(f);
+        }
+      }
+      document.getElementById("target").appendChild(findingsSection(fs, byId(fs)));
+      document.body.dataset.ready = "1";
+    </script>
+  </body>
+</html>

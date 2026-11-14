@@ -1,6 +1,6 @@
 // App shell: hash router, navigation, data-source banner, and demo bar.
 
-import { createDataSource, readConfig, urlWithSource } from "./config.js";
+import { createDataSource, FIXTURE_BANNER, readConfig, urlWithFixtures, versionMismatch } from "./config.js";
 import { createDemo } from "./demo.js";
 import { createStore } from "./store.js";
 import { h, mount } from "./ui/dom.js";
@@ -10,6 +10,7 @@ import * as explorer from "./views/explorer.js";
 import * as integrations from "./views/integrations.js";
 import * as interpret from "./views/interpret.js";
 import * as rank from "./views/rank.js";
+import * as tars from "./views/tars.js";
 
 /**
  * @typedef {Object} ViewContext
@@ -25,6 +26,7 @@ export const ROUTES = {
   "/compare": { view: compare, nav: "Compare", icon: "⇄" },
   "/rank": { view: rank, nav: "Rank", icon: "≡" },
   "/interpret": { view: interpret, nav: "Interpret & Insight", icon: "◈" },
+  "/tars": { view: tars, nav: "TARS assistant", icon: "?" },
   "/integrations": { view: integrations, nav: "Integrations", icon: "⚙" },
 };
 
@@ -104,46 +106,95 @@ function renderRoute() {
 }
 let firstRender = true;
 
-function renderBanner() {
-  if (source.kind === "fixtures") {
-    mount(
-      banner,
-      h(
-        "div",
-        { class: "banner banner-fixture", role: "note" },
-        h("strong", null, "Fixture mode. "),
-        "Showing contract examples from contracts/examples/ with invented placeholder content. This is not NASA data. ",
-        h("a", { href: urlWithSource("api") }, "Switch to live API"),
-      ),
-    );
-  } else {
-    mount(banner);
-  }
+const fixtureBanner = h("div", { id: "fixture-banner" });
+const alerts = h("div", { id: "alerts" });
+banner.append(fixtureBanner, alerts);
+const alertMessages = new Set();
+
+function addAlert(text, kind = "warn") {
+  if (alertMessages.has(text)) return;
+  alertMessages.add(text);
+  alerts.appendChild(h("div", { class: `banner banner-${kind}`, role: kind === "error" ? "alert" : "status" }, text));
+}
+
+function renderFixtureBanner() {
+  if (source.kind !== "fixtures") return;
+  // Permanent on every page while fixture mode is on (spec §5.3).
+  mount(
+    fixtureBanner,
+    h(
+      "div",
+      { class: "banner banner-fixture", role: "note" },
+      h("strong", null, FIXTURE_BANNER),
+      " Showing contract examples from contracts/examples/ with invented placeholder content. ",
+      h("a", { href: urlWithFixtures(false) }, "Switch to live API"),
+    ),
+  );
 }
 
 async function checkHealth() {
   mount(health, h("span", { class: "badge" }, "API: checking…"));
   try {
     const res = await source.health();
-    mount(health, h("span", { class: `badge ${source.kind === "fixtures" ? "fixture" : "ok"}`, title: source.description }, source.kind === "fixtures" ? `Fixtures · contract ${res.contract_version}` : `API ok · contract ${res.contract_version}`));
+    const mismatch = versionMismatch(res.contract_version);
+    mount(
+      health,
+      h(
+        "span",
+        { class: `badge ${mismatch ? "err" : source.kind === "fixtures" ? "fixture" : "ok"}`, title: source.description },
+        `${source.kind === "fixtures" ? "Fixtures" : "API"} · contract ${res.contract_version}`,
+      ),
+    );
+    if (mismatch) addAlert(mismatch, "error");
   } catch (err) {
     mount(health, h("span", { class: "badge err", title: err.message }, "API unreachable"));
     if (source.kind === "api") {
-      mount(
-        banner,
+      alerts.appendChild(
         h(
           "div",
           { class: "banner banner-error", role: "alert" },
           h("strong", null, "The FlameGuard-SI API is not reachable. "),
           `${err.message} `,
           "Start the backend, or ",
-          h("a", { href: urlWithSource("fixtures") }, "view the interface with contract fixtures (not NASA data)"),
+          h("a", { href: urlWithFixtures(true) }, "view the interface with contract fixtures (not NASA data)"),
           ".",
         ),
       );
     }
   }
 }
+
+store.evidence().then((ev) => ev.warnings.forEach((w) => addAlert(w)));
+
+// ---- Theme (F8): follows the system unless the viewer picks one. ----
+const THEME_KEY = "flameguard.theme";
+function applyTheme(theme) {
+  if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+  else delete document.documentElement.dataset.theme;
+  const btn = document.getElementById("theme-button");
+  if (btn) {
+    const effective = theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    btn.setAttribute("aria-pressed", String(effective === "light"));
+    btn.querySelector(".theme-label").textContent = effective === "light" ? "Light" : "Dark";
+  }
+}
+let savedTheme = null;
+try {
+  savedTheme = localStorage.getItem(THEME_KEY);
+} catch {
+  // storage unavailable
+}
+applyTheme(savedTheme);
+document.getElementById("theme-button")?.addEventListener("click", () => {
+  const current = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const next = current === "light" ? "dark" : "light";
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch {
+    // storage unavailable; the choice lasts for this page only
+  }
+  applyTheme(next);
+});
 
 // The skip link must not change the hash (the router would treat "#main" as a route).
 document.querySelector(".skip-link")?.addEventListener("click", (e) => {
@@ -165,6 +216,6 @@ document.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("hashchange", renderRoute);
-renderBanner();
+renderFixtureBanner();
 checkHealth();
 renderRoute();

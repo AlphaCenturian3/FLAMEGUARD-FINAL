@@ -1,6 +1,6 @@
 import { CONTRACT_VERSION } from "../config.js";
-import { EVIDENCE_CLASSES, isFixture } from "../model/evidence.js";
-import { evidenceBadge, fixtureBadge, resourcePanel, sourceList, statePanel } from "../ui/components.js";
+import { EVIDENCE_CLASSES, isFixture, VALUE_STATUS } from "../model/evidence.js";
+import { evidenceBadge, fixtureBadge, resourcePanel, sourceList, statePanel, valueStatusBadge } from "../ui/components.js";
 import { h, mount } from "../ui/dom.js";
 
 export const title = "Overview";
@@ -39,9 +39,12 @@ export function render(ctx) {
       h(
         "dl",
         { class: "legend" },
-        Object.entries(EVIDENCE_CLASSES).map(([k, v]) => [h("dt", null, evidenceBadge(k)), h("dd", null, v.description)]),
+        Object.entries(EVIDENCE_CLASSES).filter(([k]) => k !== "illustrative_simulation").map(([k, v]) => [h("dt", null, evidenceBadge(k)), h("dd", null, v.description)]),
         h("dt", null, fixtureBadge()),
         h("dd", null, "Contract example with invented placeholder content, used while the backend is built. Never NASA data."),
+        Object.entries(VALUE_STATUS).map(([k, v]) => [h("dt", null, valueStatusBadge(k)), h("dd", null, v.description)]),
+        h("dt", null, h("span", { class: "badge" }, "FlameGuard-SI caution / exclusion")),
+        h("dd", null, "A FlameGuard-SI quality assessment of a measured value, linked to a reviewed quality flag and a recorded NASA quote. Never source text, never shown as source-reported uncertainty."),
       ),
     ),
     h("section", { class: "card", "aria-labelledby": "prov-h" }, h("h2", { id: "prov-h" }, "Sources cited by loaded records"), sources),
@@ -78,6 +81,7 @@ export function render(ctx) {
       tile("Investigations loaded", invs.length),
       tile("Measured findings", byClass("measured"), evidenceBadge("measured")),
       tile("Interpretations", byClass("interpretation"), evidenceBadge("interpretation")),
+      tile("Values excluded by FlameGuard-SI", findings.filter((f) => f.value_status === "excluded").length, valueStatusBadge("excluded")),
       tile("Contract version", CONTRACT_VERSION),
       fixtures
         ? h("p", { class: "alert alert-fixture grow-all", role: "note" }, `${fixtures} of these records are contract fixtures with placeholder content. They demonstrate the interface only and are not NASA data.`)

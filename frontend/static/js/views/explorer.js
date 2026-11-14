@@ -1,6 +1,8 @@
-import { environmentLabel, EVIDENCE_CLASSES, isFixture } from "../model/evidence.js";
+import { environmentLabel, EVIDENCE_CLASSES, isFixture, VALUE_STATUS } from "../model/evidence.js";
+import { groupFindingsByRow } from "../model/group.js";
 import { EMPTY_FILTERS, facetOptions, filterInvestigations } from "../model/filter.js";
 import {
+  conditionsBlock,
   evidenceBadge,
   findingCard,
   fixtureBadge,
@@ -62,13 +64,14 @@ export function render(ctx) {
       h("label", { class: "field" }, h("span", null, "Search"), h("input", { type: "search", name: "query", value: filters.query, placeholder: "Name, objective, statement…", oninput: (e) => update("query", e.target.value) })),
       select("platform", "Platform", facets.platforms),
       select("environment", "Relevant environment", facets.environments, environmentLabel),
-      select("evidenceClass", "Has evidence class", Object.keys(EVIDENCE_CLASSES), (k) => EVIDENCE_CLASSES[k].label),
+      select("evidenceClass", "Has evidence class", ["measured", "interpretation"], (k) => EVIDENCE_CLASSES[k].label),
+      select("valueStatus", "Has value status", Object.keys(VALUE_STATUS), (k) => VALUE_STATUS[k].label),
       h("label", { class: "check" }, h("input", { type: "checkbox", name: "withValuesOnly", onchange: (e) => update("withValuesOnly", e.target.checked) }), h("span", null, "Only investigations reporting a value")),
       h("button", { type: "reset", class: "btn btn-ghost", onclick: () => setTimeout(() => { Object.assign(filters, EMPTY_FILTERS); draw(); }) }, "Clear filters"),
       h(
         "p",
         { class: "small muted note" },
-        "Contract v0.1.0 has no structured experimental parameters (oxygen fraction, pressure, flow speed, fuel). Parameter filters will be added when the contract defines them.",
+        "Experimental conditions (oxygen fraction, pressure, flow, fuel) are shown on each finding. Condition filters will be added once real curated data shows which ones are populated.",
       ),
     );
 
@@ -96,6 +99,40 @@ export function render(ctx) {
   return root;
 }
 
+/**
+ * Findings of one investigation. Large investigations (e.g. FLEX, ~40
+ * findings) are grouped by test row (`locator`) with the row's conditions
+ * shown once; small ones are listed flat.
+ */
+export function findingsSection(findings, findingsById) {
+  const { grouped, groups, interpretations } = groupFindingsByRow(findings);
+  const interp = interpretations.length ? [h("h4", { class: "subhead" }, `Interpretations (${interpretations.length})`), h("div", { class: "findings" }, interpretations.map((f) => findingCard(f, findingsById)))] : null;
+  if (!grouped) return h("div", { class: "findings" }, groups[0].findings.map((f) => findingCard(f, findingsById)), interp);
+  return h(
+    "div",
+    { class: "findings grouped" },
+    h("p", { class: "small muted" }, `${groups.length} test rows. Each row lists its own findings; conditions are shown once per row when every finding in it shares them.`),
+    groups.map((g, i) => {
+      const counts = {};
+      for (const f of g.findings) counts[f.value_status] = (counts[f.value_status] || 0) + 1;
+      return h(
+        "details",
+        { class: "row-group", open: i === 0 },
+        h(
+          "summary",
+          null,
+          h("span", { class: "row-label" }, g.label),
+          h("span", { class: "muted small" }, ` · ${g.findings.length} finding${g.findings.length === 1 ? "" : "s"}`),
+          Object.entries(counts).map(([k, n]) => h("span", { class: `badge vs vs-${k}` }, `${n} ${(VALUE_STATUS[k] || { label: k }).label.toLowerCase()}`)),
+        ),
+        g.sharedConditions ? h("div", { class: "row-conditions" }, h("p", { class: "small" }, h("strong", null, "Conditions for this row")), conditionsBlock(g.sharedConditions)) : null,
+        h("div", { class: "findings" }, g.findings.map((f) => findingCard(f, findingsById, { hideConditions: Boolean(g.sharedConditions) }))),
+      );
+    }),
+    interp,
+  );
+}
+
 function investigationCard(ctx, inv, ev) {
   const findings = ev.findingsByInvestigation.get(inv.id) || [];
   const selected = ctx.store.selection.has(inv.id);
@@ -105,7 +142,7 @@ function investigationCard(ctx, inv, ev) {
   let findingsBody;
   if (ev.findings.state !== "ready") findingsBody = resourcePanel(ev.findings, "Findings", "GET /api/findings");
   else if (findings.length === 0) findingsBody = statePanel({ kind: "empty", title: "No findings recorded for this investigation" });
-  else findingsBody = h("div", { class: "findings" }, findings.map((f) => findingCard(f, ev.findingsById)));
+  else findingsBody = findingsSection(findings, ev.findingsById);
 
   return h(
     "article",

@@ -1,14 +1,14 @@
 # Frontend
 
-Owner: `feat/frontend-dashboard`.
+Owner: Member 2 (`feat/frontend-dashboard`). Also owns `tests/frontend/`, `tests/e2e/` and `tests/fixtures/frontend/` (spec §4).
 
-**Status:** Evidence Explorer, Comparison, Ranking, Interpretation & Safety Insight, Integrations, and the guided judge demo are built against contract v0.1.0. No real NASA data exists in the repository yet, so the dashboard shows either backend responses (all `501` except `/api/health`) or the contract fixtures, which are clearly labelled as not NASA data.
+**Status:** built against **contract v0.2.0** (CP1, merged at `f7cef55`). No curated NASA data or backend endpoint (other than `/api/health`) exists yet. The dashboard therefore shows either backend responses (HTTP 501 for planned endpoints) or, with `?fixtures=1`, the contract examples, labelled **FIXTURE DATA. NOT NASA DATA.** on every page.
 
 Stack (spec §3): static HTML, CSS, and vanilla JavaScript ES modules. No build step, no dependencies.
 
 ## Run it
 
-The page must be served over HTTP because ES modules and `fetch` do not work from `file://`.
+The page must be served over HTTP, because ES modules and `fetch` do not work from `file://`.
 
 **With contract fixtures** (serve the repository root so `contracts/examples/` is reachable):
 
@@ -18,97 +18,102 @@ python3 -m http.server 8765                      # from the repository root
 powershell -ExecutionPolicy Bypass -File frontend/tools/serve.ps1
 ```
 
-Open <http://localhost:8765/frontend/index.html?source=fixtures>.
+Open <http://localhost:8765/frontend/index.html?fixtures=1>.
 
-**Against the backend** (once it serves `frontend/` at `/`): open `/`. The default source is the API at the same origin. To point at a separate API host, add `?api=http://127.0.0.1:8000`. The backend then needs CORS enabled.
-
-**Fixture mode when FastAPI serves `frontend/` at `/`:** all asset paths are relative and work at `/` (verified by `browser-check.ps1`). The default fixture location resolves to `/contracts/examples/`, which works **only if the backend also mounts that directory** (for example `app.mount("/contracts/examples", StaticFiles(directory="contracts/examples"))`). Without the mount, `?source=fixtures` shows an explicit "Could not load fixture … HTTP 404" error and no data. This is a backend decision; the frontend does not require it.
+**Against the backend** (once Member 1 serves `frontend/` at `/`, B7): open `/`. The default source is the API at the same origin. Fixture files are never requested in this mode (browser-checked).
 
 | Query parameter | Meaning |
 |---|---|
-| `source=fixtures` | Read `contracts/examples/*.json`. A striped banner and per-record badges mark everything as a fixture. |
-| `api=URL` | API base URL (default: same origin). |
-| `fixtures=URL` | Location of `contracts/examples/` (default: `../contracts/examples/`). |
+| `fixtures=1` | Read `contracts/examples/*.json`. A permanent banner and per-record badges mark everything as a fixture. |
+| `api=URL` | API base URL (default: same origin; a different origin needs CORS on the backend). |
+| `fixtures_base=URL` | Location of `contracts/examples/` (default `../contracts/examples/`). |
 
-If the API is unreachable the page says so and offers a link to fixture mode. It never switches to fixtures silently.
+If the API is unreachable, the page says so and offers a link to fixture mode. It never switches to fixtures silently. If `/api/health` or a list response reports a contract version other than 0.2.0, a warning is shown.
+
+**Fixture mode when FastAPI serves `frontend/` at `/`:** asset paths are relative and work at `/`. The default fixture location resolves to `/contracts/examples/`, which works only if the backend also mounts that directory. Without the mount, `?fixtures=1` shows an explicit HTTP 404 fixture error and no data.
+
+## What each page does (contract v0.2.0)
+
+| Page | Behaviour |
+|---|---|
+| Explorer (P1, P2) | Every finding shows evidence class, value status, value, source-reported uncertainty, all 8 conditions, locator, sources and recorded quotes. Investigations with more than 6 measured findings (e.g. FLEX) are grouped by test row (`locator`), with the row's conditions shown once. |
+| Compare (P3) | Calls `GET /api/compare` and shows `comparable` and `non_comparable_reasons` exactly as returned. **The browser never decides comparability.** A chart is drawn only when the backend says comparable and the response is consistent; missing and excluded values are never plotted. |
+| Rank (P4) | Shows criteria and weights, criteria version, each criterion score and its input findings, the rationale, and investigations not ranked (`excluded[]`) with their reason, in the backend's `rank` order. Scores are never recomputed or checked. |
+| Interpret & Insight (P8) | Uses each interpretation's own `relevant_environments`, and shows method, version and limitations. Exclusion-dependent interpretations appear only as **exclusion explanations**; broken chains are withheld with reasons. |
+| TARS assistant (P5) | Shows the mode (AI / quotes only / no evidence), "Generated by FlameGuard-SI", limitations, and citations linked to findings. Citations that depend on an excluded value are shown separately as exclusion explanations. |
+| Integrations | Read-only probe of every contract endpoint (the assistant is not probed, because it may call an AI model), plus the isolated simulation panel. |
+
+## Scientific-integrity behaviour
+
+- **Value status wording:** `reported` shows the value; `not_reported` → "Not reported"; `not_applicable` → "Not applicable"; `excluded` → "Excluded by FlameGuard-SI". An excluded value is never displayed as a number, even if a malformed record carries one.
+- `uncertainty` is labelled "Reported by the source". FlameGuard-SI cautions and exclusions (`curation_notes`) are shown separately as FlameGuard-SI assessments, with their quality-flag reference and recorded quote. **A recorded quote is never called "verified"**; verification is S10(d) (Member 3) and Q3 (Member 5).
+- Missing values and unreported conditions are shown as missing. Nothing is interpolated, converted or filled.
+- **Display guards (spec §4.3) fail closed and never compute.** `model/trace.js` walks `derived_from` and treats an `excluded` finding at any depth as non-supporting (S9, transitive), alongside unresolved ids, cycles, simulations and provenance problems. The ranking, interpretation, comparison and TARS views withhold, with reasons, anything that fails.
+- Interpretations and answers are labelled "Generated by FlameGuard-SI. Not a NASA statement." The phrase "according to NASA" appears in no frontend module (tested).
+- Simulations are not Findings in v0.2.0; one appearing among findings is flagged. Ranking, interpretation, comparison and TARS modules never import simulation code (import-graph test).
+- Data is inserted as text nodes only, and only `http(s)` URLs become links.
 
 ## Tests
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1
+powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1        # 58 unit tests, headless Chrome/Edge
+powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1    # 47 keyboard / 360 px / theme / served-at-/ checks
 ```
 
-This starts the static server, loads `frontend/tests/index.html` in headless Chrome or Edge, prints each result, and exits non-zero on failure. On any OS you can also serve the repository root and open `/frontend/tests/index.html` in a browser.
+- **`run-tests.ps1`** loads `frontend/tests/index.html` and exits non-zero on failure. It covers:
+  - filters and row grouping;
+  - the comparison display review (no browser-side decision code exists);
+  - value-status wording and the rule that excluded values are never formatted;
+  - v0.2.0 provenance rules, including curation notes;
+  - transitive exclusion (direct, depth 2, mixed parents);
+  - ranking rank-order and withholding, with no score recomputation;
+  - the fixture adapter against every merged example;
+  - TARS modes and exclusion explanations;
+  - 400/404/501/network errors, isolation, and attribution.
+- **`browser-check.ps1`** drives Chrome through the DevTools Protocol with real key events. It covers:
+  - skip link, Tab order and focus rings, and the demo by keyboard;
+  - the light/dark theme toggle;
+  - Compare and Rank flows in fixture mode;
+  - a 360 px viewport on every route, judged against the fixed 360 px width (Chrome widens the layout viewport otherwise);
+  - a 40-finding grouped investigation at 360 px (`frontend/tests/layout.html`);
+  - the fixture banner on every route;
+  - **no fixture requests in API mode**;
+  - serving at `/` with and without a `/contracts/examples` mount.
+- Base test records are in `tests/fixtures/frontend/records.json` (v0.2.0 shapes, `fixture: true`, `example.invalid` URLs, never loaded by the app). `frontend/tests/samples.js` only clones them and applies overrides.
+- Mutation-checked: seven deliberate breaks of the display guards were each caught by at least one test (see the PR #2 checkpoint comment).
 
-The tests cover filtering, comparison compatibility messages, provenance and evidence-class labels, missing-data display, HTTP 501 handling, ranking guards (unresolved inputs, simulations reached directly or through interpretations, broken provenance, cycles), withheld interpretations, assistant attribution, the simulation label, isolation of simulation modules (import-graph check), HTML-injection safety, and the demo step order.
-
-Base test records live in `tests/fixtures/frontend/records.json` (spec §2.2: mock data only in `tests/fixtures/`; that directory is owned by `test/qa-demo`). `frontend/tests/samples.js` only clones them and applies per-test overrides. All are marked `"fixture": true`, use `example.invalid` URLs, and are never loaded by the app.
-
-### Browser checks (keyboard, mobile, served at `/`)
-
-```powershell
-powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1 [-OutDir shots] [-Headed]
-```
-
-Drives Chrome/Edge through the DevTools Protocol with real key events: skip link, Tab order and visible focus rings, Enter/Space activation, search empty state, the judge demo by keyboard (focus stays in the demo bar), and the mobile menu (Enter opens it, Escape closes it and returns focus). It emulates a 390 px mobile viewport on every route and checks for horizontal scroll. It also serves `frontend/` at `/` as FastAPI would and checks asset paths, same-origin API calls, and fixture mode with and without a `/contracts/examples` mount. Use `-Headed` to watch it.
-
-### Ranking and interpretation guards
-
-`static/js/model/trace.js` walks each finding's `derived_from` chain. A finding counts as evidence-backed only if every link resolves to a loaded finding, every node passes the schema's provenance rules, there are no cycles, no node is an `illustrative_simulation`, and the chain ends in at least one `measured` finding. Rankings withhold any item whose inputs fail this. The Interpretation view withholds failing interpretations: their statement is hidden and the reasons are listed.
+CI: the GitHub Actions workflow is owned by Member 1 and does not run these tests yet. Q4 (Playwright end-to-end tests in a separate CI job) needs Member 1's dependency PR and CI job.
 
 ## Layout
 
 ```
 frontend/
-  index.html                 App shell
-  static/css/app.css         All styles
+  index.html                 App shell (skip link, theme button)
+  static/css/app.css         Styles; dark and light themes
   static/js/
-    main.js                  Hash router, nav, data-source banner, health badge
-    config.js                URL params -> data source
-    store.js                 Loads investigations + findings; loading/ready/not_implemented/error states
+    main.js                  Router, nav, fixture banner, version and list warnings, theme
+    config.js                ?fixtures=1, CONTRACT_VERSION 0.2.0, version check
+    store.js                 Loads lists; S7 total and version warnings
     demo.js                  90-second guided walkthrough
-    api/
-      types.js               JSDoc mirrors of contracts/schemas
-      errors.js              ApiError, 501 detection
-      http.js                Backend adapter (spec §5.1 endpoints)
-      fixtures.js            contracts/examples adapter (rankings/assistant -> 501)
-    model/                   Pure logic, no DOM
-      evidence.js            Evidence classes, provenance checks, missing fields
-      filter.js              Explorer filters
-      compare.js             Comparison model + chart compatibility rules
-      ranking.js             Checks backend rankings; never computes scores
-    ui/                      dom.js (safe element builder), components.js, chart.js (SVG bars)
-    views/                   dashboard, explorer, compare, rank, interpret, integrations, context
-    integrations/            assistant.js, simulation.js (isolated integration points)
-  tests/                     Browser test harness and tests
+    api/                     types.js (v0.2.0 JSDoc), errors.js, http.js (incl. /api/compare), fixtures.js
+    model/                   Pure logic, no DOM: evidence.js, trace.js (S9), group.js (P2),
+                             filter.js, compare.js (display review only), ranking.js (display guard only)
+    ui/                      dom.js (safe element builder), components.js, chart.js
+    views/                   dashboard, explorer, compare, rank, interpret, tars, integrations, context
+    integrations/            assistant.js (TARS UI), simulation.js (isolated)
+  tests/                     Browser test harness, tests, layout.html (360 px page)
   tools/                     serve.ps1, run-tests.ps1, browser-check.ps1
-tests/fixtures/frontend/     Base test records (QA-owned directory)
+tests/fixtures/frontend/     Base test records (Member 2)
 ```
-
-## Judge demo limitation
-
-Until the backend implements `GET /api/rankings` and the data workstream registers measured NASA records, the walkthrough **cannot show a real ranking or a real safety insight**. The Rank step shows the HTTP 501 "not implemented" state, and the demo text says so. In fixture mode, the Interpret step shows only the labelled placeholder interpretation.
-
-## Scientific-integrity behaviour
-
-- Every finding shows its evidence class (`measured`, `interpretation`, `illustrative_simulation`) as text plus colour, and a fixture badge when `fixture: true`.
-- Missing values, units, uncertainty, and source fields are listed as missing. Nothing is interpolated.
-- Uncertainty is shown as reported text. No error bars are drawn.
-- Provenance rules from the schemas are re-checked on screen. A failing record shows a visible warning.
-- Rankings are only displayed from the backend. Items citing an `illustrative_simulation` finding, or lacking a numeric score or rationale, are withheld and listed.
-- Interpretations and assistant answers are labelled "Generated by FlameGuard-SI. Not a NASA statement."
-- Simulation views always show "Fluid and thermal transport model. No combustion chemistry." Results with a different label are refused.
-- Ranking, interpretation, and assistant modules never import simulation modules. A test enforces this.
-- Data is inserted as text nodes only, and only `http(s)` source URLs become links.
 
 ## Integration points
 
-| Workstream | What the frontend expects |
+| Member | What the frontend needs |
 |---|---|
-| Backend (`feat/backend-science`) | Endpoints in spec §5.1 with contract-shaped JSON and `Error` bodies on non-2xx. Serve `frontend/` at `/` (e.g. FastAPI `StaticFiles(directory="frontend", html=True)` mounted after the API routes). Rankings: `{items:[{investigation_id, score, rationale, inputs}]}`. An optional `criteria` array is displayed verbatim if present. |
-| Data (`feat/nasa-data-tars`) | Investigations and findings with complete `sources` (title, url, retrieved, page, quote, archive_id where known). "TARS" is still undefined in spec §4, so `integrations/assistant.js` targets only `POST /api/assistant/ask`. |
-| QA (`test/qa-demo`) | Owns `tests/fixtures/frontend/` and CI. `frontend/tools/run-tests.ps1` and `browser-check.ps1` exit codes; stable selectors: `#main`, `#nav a[href="#/explorer"]`, `.demo-bar`, `[data-status]` on the test page. The demo steps are in `static/js/demo.js` (`DEMO_STEPS`). |
+| 1 (backend) | B1 loader, B2 lists (`investigation_list`, `finding_list` with `total`), B3 `/api/compare`, B4 `/api/rankings`, B6 `/api/assistant/ask`, and B7: mount `frontend/` at `/`. Optionally mount `contracts/examples` at `/contracts/examples` for fixture mode. Q4: Playwright dependency PR and CI job. |
+| 3 (data) | Curated FLEX `Finding` JSON: measured findings of one test row share one `locator` (used for P2 grouping and S10a); every caution and exclusion is a `curation_notes` entry with `flag_ref` and a recorded `source` quote; FLEX-010 burning rate is `excluded`. The FLEX vocabulary contract PR (C4) is needed before any FLEX numeric finding. |
+| 5 (research) | Independent review of the display wording and labels (spec §4.4). Ranking criteria (R1) before any real ranking. |
 
-## Proposed contract addition (not yet in v0.1.0)
+## Judge demo limitation
 
-Comparison charts need to know that two findings measure the same thing. Contract v0.1.0 has no such field, so **charts are currently disabled** and the page explains why. The frontend already reads an optional `quantity` string on `Finding` (for example `"flame_spread_rate"`). Charts appear only when two or more selected investigations report a `measured` numeric value for the same `quantity` with the same `unit`. Adding `quantity` (and, later, structured experimental parameters for Explorer filters) needs a contract PR under spec §5.4.
+Until the backend serves rankings, comparisons and the assistant, and real NASA records are curated, the walkthrough **cannot show a real ranking, comparison or safety insight**. In API mode those steps show HTTP 501; in fixture mode they show the labelled contract fixtures. Compare and Rank also need a second curated investigation that shares a quantity with FLEX.

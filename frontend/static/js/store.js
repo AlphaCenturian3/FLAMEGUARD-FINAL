@@ -2,11 +2,27 @@
 // small state machine: loading -> ready | not_implemented | error.
 
 import { isNotImplemented } from "./api/errors.js";
+import { versionMismatch } from "./config.js";
 import { groupFindings } from "./model/filter.js";
 
 /**
  * @typedef {{ state: "idle"|"loading"|"ready"|"not_implemented"|"error", data?: any, error?: any }} Resource
  */
+
+/**
+ * Display checks on a v0.2.0 list response (S7 and version). They only warn;
+ * they never change the data.
+ */
+export function listWarnings(res, what) {
+  const out = [];
+  const items = Array.isArray(res && res.items) ? res.items : null;
+  if (!items) out.push(`${what}: response has no items array.`);
+  else if (typeof res.total !== "number") out.push(`${what}: response has no total.`);
+  else if (res.total !== items.length) out.push(`${what}: total is ${res.total} but ${items.length} items were returned (S7).`);
+  const v = versionMismatch(res && res.contract_version);
+  if (v) out.push(`${what}: ${v}`);
+  return out;
+}
 
 /** @param {any} err */
 export function resourceFromError(err) {
@@ -22,15 +38,19 @@ export function createStore(source) {
   async function loadEvidence() {
     /** @type {Resource} */ let investigations;
     /** @type {Resource} */ let findings;
+    const warnings = [];
+    const readList = (res, what) => {
+      const items = Array.isArray(res && res.items) ? res.items : [];
+      warnings.push(...listWarnings(res, what));
+      return items;
+    };
     try {
-      const res = await source.listInvestigations();
-      investigations = { state: "ready", data: Array.isArray(res.items) ? res.items : [] };
+      investigations = { state: "ready", data: readList(await source.listInvestigations(), "Investigation list") };
     } catch (err) {
       investigations = resourceFromError(err);
     }
     try {
-      const res = await source.listFindings();
-      findings = { state: "ready", data: Array.isArray(res.items) ? res.items : [] };
+      findings = { state: "ready", data: readList(await source.listFindings(), "Finding list") };
     } catch (err) {
       findings = resourceFromError(err);
     }
@@ -38,6 +58,7 @@ export function createStore(source) {
     return {
       investigations,
       findings,
+      warnings,
       findingsByInvestigation: groupFindings(findingList),
       findingsById: new Map(findingList.map((f) => [f.id, f])),
     };

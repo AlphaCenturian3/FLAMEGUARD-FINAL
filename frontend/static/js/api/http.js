@@ -1,6 +1,6 @@
-// Adapter for the FastAPI backend (master spec §5.1). Integration point for
-// the backend workstream: when an endpoint is implemented, no change is
-// needed here as long as it follows the contract.
+// Adapter for the FastAPI backend (spec §5.1, contract v0.2.0). Integration
+// point for Member 1: once an endpoint is implemented to the contract, no
+// change is needed here.
 
 import { ApiError, errorFromResponse } from "./errors.js";
 
@@ -38,10 +38,13 @@ export function createHttpSource({ baseUrl = "", fetchImpl } = {}) {
     health: () => request("GET", "/api/health"),
     listInvestigations: () => request("GET", "/api/investigations"),
     getInvestigation: (id) => request("GET", `/api/investigations/${enc(id)}`),
-    listFindings: (investigationId) =>
-      request("GET", investigationId ? `/api/findings?investigation_id=${enc(investigationId)}` : "/api/findings"),
+    listFindings: (investigationId) => request("GET", investigationId ? `/api/findings?investigation_id=${enc(investigationId)}` : "/api/findings"),
+    compare(quantity, investigationIds = []) {
+      const q = `quantity=${enc(quantity)}` + (investigationIds.length ? `&investigation_ids=${investigationIds.map(enc).join(",")}` : "");
+      return request("GET", `/api/compare?${q}`);
+    },
     getRankings: (context) => request("GET", `/api/rankings?context=${enc(context)}`),
-    ask: (question) => request("POST", "/api/assistant/ask", { question }),
+    ask: (question, investigationIds = []) => request("POST", "/api/assistant/ask", investigationIds.length ? { question, investigation_ids: investigationIds } : { question }),
     getSimulation: (id) => request("GET", `/api/simulations/${enc(id)}`),
   };
 }
