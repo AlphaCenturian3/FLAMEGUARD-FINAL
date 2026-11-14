@@ -22,6 +22,8 @@ Open <http://localhost:8765/frontend/index.html?source=fixtures>.
 
 **Against the backend** (once it serves `frontend/` at `/`): open `/`. The default source is the API at the same origin. To point at a separate API host, add `?api=http://127.0.0.1:8000`. The backend then needs CORS enabled.
 
+**Fixture mode when FastAPI serves `frontend/` at `/`:** all asset paths are relative and work at `/` (verified by `browser-check.ps1`). The default fixture location resolves to `/contracts/examples/`, which works **only if the backend also mounts that directory** (for example `app.mount("/contracts/examples", StaticFiles(directory="contracts/examples"))`). Without the mount, `?source=fixtures` shows an explicit "Could not load fixture … HTTP 404" error and no data. This is a backend decision; the frontend does not require it.
+
 | Query parameter | Meaning |
 |---|---|
 | `source=fixtures` | Read `contracts/examples/*.json`. A striped banner and per-record badges mark everything as a fixture. |
@@ -38,9 +40,21 @@ powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1
 
 This starts the static server, loads `frontend/tests/index.html` in headless Chrome or Edge, prints each result, and exits non-zero on failure. On any OS you can also serve the repository root and open `/frontend/tests/index.html` in a browser.
 
-The tests cover filtering, comparison compatibility messages, provenance and evidence-class labels, missing-data display, HTTP 501 handling, ranking input guards (no simulation inputs), assistant attribution, the simulation label, isolation of simulation modules (import-graph check), HTML-injection safety, and the demo step order.
+The tests cover filtering, comparison compatibility messages, provenance and evidence-class labels, missing-data display, HTTP 501 handling, ranking guards (unresolved inputs, simulations reached directly or through interpretations, broken provenance, cycles), withheld interpretations, assistant attribution, the simulation label, isolation of simulation modules (import-graph check), HTML-injection safety, and the demo step order.
 
-Test records in `frontend/tests/samples.js` are test-only, marked `"fixture": true`, use `example.invalid` URLs, and are never loaded by the app.
+Base test records live in `tests/fixtures/frontend/records.json` (spec §2.2: mock data only in `tests/fixtures/`; that directory is owned by `test/qa-demo`). `frontend/tests/samples.js` only clones them and applies per-test overrides. All are marked `"fixture": true`, use `example.invalid` URLs, and are never loaded by the app.
+
+### Browser checks (keyboard, mobile, served at `/`)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1 [-OutDir shots] [-Headed]
+```
+
+Drives Chrome/Edge through the DevTools Protocol with real key events: skip link, Tab order and visible focus rings, Enter/Space activation, search empty state, the judge demo by keyboard (focus stays in the demo bar), and the mobile menu (Enter opens it, Escape closes it and returns focus). It emulates a 390 px mobile viewport on every route and checks for horizontal scroll. It also serves `frontend/` at `/` as FastAPI would and checks asset paths, same-origin API calls, and fixture mode with and without a `/contracts/examples` mount. Use `-Headed` to watch it.
+
+### Ranking and interpretation guards
+
+`static/js/model/trace.js` walks each finding's `derived_from` chain. A finding counts as evidence-backed only if every link resolves to a loaded finding, every node passes the schema's provenance rules, there are no cycles, no node is an `illustrative_simulation`, and the chain ends in at least one `measured` finding. Rankings withhold any item whose inputs fail this. The Interpretation view withholds failing interpretations: their statement is hidden and the reasons are listed.
 
 ## Layout
 
@@ -67,8 +81,13 @@ frontend/
     views/                   dashboard, explorer, compare, rank, interpret, integrations, context
     integrations/            assistant.js, simulation.js (isolated integration points)
   tests/                     Browser test harness and tests
-  tools/                     serve.ps1, run-tests.ps1
+  tools/                     serve.ps1, run-tests.ps1, browser-check.ps1
+tests/fixtures/frontend/     Base test records (QA-owned directory)
 ```
+
+## Judge demo limitation
+
+Until the backend implements `GET /api/rankings` and the data workstream registers measured NASA records, the walkthrough **cannot show a real ranking or a real safety insight**. The Rank step shows the HTTP 501 "not implemented" state, and the demo text says so. In fixture mode, the Interpret step shows only the labelled placeholder interpretation.
 
 ## Scientific-integrity behaviour
 
@@ -88,7 +107,7 @@ frontend/
 |---|---|
 | Backend (`feat/backend-science`) | Endpoints in spec §5.1 with contract-shaped JSON and `Error` bodies on non-2xx. Serve `frontend/` at `/` (e.g. FastAPI `StaticFiles(directory="frontend", html=True)` mounted after the API routes). Rankings: `{items:[{investigation_id, score, rationale, inputs}]}`. An optional `criteria` array is displayed verbatim if present. |
 | Data (`feat/nasa-data-tars`) | Investigations and findings with complete `sources` (title, url, retrieved, page, quote, archive_id where known). "TARS" is still undefined in spec §4, so `integrations/assistant.js` targets only `POST /api/assistant/ask`. |
-| QA (`test/qa-demo`) | `frontend/tools/run-tests.ps1` exit code; stable selectors: `#main`, `#nav a[href="#/explorer"]`, `.demo-bar`, `[data-status]` on the test page. The demo steps are in `static/js/demo.js` (`DEMO_STEPS`). |
+| QA (`test/qa-demo`) | Owns `tests/fixtures/frontend/` and CI. `frontend/tools/run-tests.ps1` and `browser-check.ps1` exit codes; stable selectors: `#main`, `#nav a[href="#/explorer"]`, `.demo-bar`, `[data-status]` on the test page. The demo steps are in `static/js/demo.js` (`DEMO_STEPS`). |
 
 ## Proposed contract addition (not yet in v0.1.0)
 

@@ -2,9 +2,14 @@
 // (GET /api/rankings?context=). This module never computes scores; it only
 // checks what the backend returns against spec §5.1 before it is shown.
 //
+// An item is shown only if every supporting finding it cites resolves to a
+// loaded finding and traces back, without any illustrative simulation, to
+// measured evidence. Anything else is withheld with the reason.
+//
 // Must not import any simulation module (spec §2.3).
 
 import { ENVIRONMENTS } from "./evidence.js";
+import { traceSupport } from "./trace.js";
 
 export const RANKING_CONTEXTS = Object.freeze(
   Object.entries(ENVIRONMENTS).map(([key, label]) => ({ key, label })),
@@ -14,9 +19,13 @@ const ALLOWED_INPUT_CLASSES = new Set(["measured", "interpretation"]);
 
 /**
  * Check a ranking response.
- * - Items whose inputs include an illustrative_simulation finding are rejected.
- * - Inputs that cannot be resolved against loaded findings are flagged.
- * - Items with a non-numeric score or no rationale are rejected.
+ *
+ * Withheld when:
+ * - investigation_id, a numeric score, a rationale, or inputs are missing;
+ * - any input ID does not resolve to a loaded finding;
+ * - any input is not measured or interpretation;
+ * - any input's evidence chain fails `traceSupport` (unresolved parents,
+ *   bad provenance, cycles, or an illustrative simulation anywhere upstream).
  *
  * @param {{items?: import("../api/types.js").RankingItem[]}} response
  * @param {Map<string, import("../api/types.js").Finding>} findingsById
@@ -28,7 +37,6 @@ export function reviewRankings(response, findingsById) {
 
   for (const item of items) {
     const problems = [];
-    const warnings = [];
     if (!item || typeof item.investigation_id !== "string") problems.push("Missing investigation_id.");
     if (!item || typeof item.score !== "number" || !Number.isFinite(item.score)) problems.push("Score is not a number.");
     if (!item || typeof item.rationale !== "string" || item.rationale.trim() === "") problems.push("No rationale given.");
@@ -39,17 +47,20 @@ export function reviewRankings(response, findingsById) {
     for (const id of inputs) {
       const f = findingsById.get(id);
       if (!f) {
-        warnings.push(`Input ${id} is not among the loaded findings.`);
+        problems.push(`Supporting finding ${id} is not among the loaded findings, so the ranking cannot be traced.`);
         continue;
       }
       if (!ALLOWED_INPUT_CLASSES.has(f.evidence_class)) {
         problems.push(`Input ${id} is ${f.evidence_class}; rankings may use only measured or interpretation findings.`);
+      } else {
+        const trace = traceSupport(f, findingsById);
+        for (const r of trace.reasons) problems.push(`Input ${id}: ${r}`);
       }
       resolved.push(f);
     }
 
-    const entry = { item, inputs: resolved, problems, warnings };
-    (problems.length ? rejected : accepted).push(entry);
+    const entry = { item, inputs: resolved, problems: [...new Set(problems)] };
+    (entry.problems.length ? rejected : accepted).push(entry);
   }
 
   accepted.sort((a, b) => b.item.score - a.item.score);

@@ -27,7 +27,7 @@ export const DEMO_STEPS = [
     title: "Rank",
     route: "#/rank",
     seconds: 15,
-    say: "Choose a crewed environment. Scores come only from the backend, cite their supporting findings, and are not risk values.",
+    say: "Choose a crewed environment. Scores come only from the backend, must trace to measured evidence, and are not risk values. Until the backend ranking and NASA data exist, this step shows the HTTP 501 “not implemented” state, not a ranking.",
   },
   {
     key: "interpret",
@@ -71,6 +71,8 @@ export function createDemo(hooks) {
     }
     const step = DEMO_STEPS[index];
     const elapsed = Math.round((Date.now() - startedAt) / 1000);
+    // Keep keyboard focus in the bar across re-renders.
+    const focused = bar.contains(document.activeElement) ? document.activeElement.dataset.action : null;
     bar.hidden = false;
     mount(
       bar,
@@ -84,14 +86,18 @@ export function createDemo(hooks) {
         "div",
         { class: "demo-controls" },
         (timeEl = h("span", { class: "demo-time mono", role: "timer", "aria-live": "off" }, `${elapsed}s / ${DEMO_TARGET_SECONDS}s`)),
-        h("button", { type: "button", class: "btn btn-ghost", onclick: back, disabled: index === 0 }, "Back"),
+        h("button", { type: "button", class: "btn btn-ghost", onclick: back, disabled: index === 0, "data-action": "back" }, "Back"),
         index < DEMO_STEPS.length - 1
-          ? h("button", { type: "button", class: "btn btn-primary", onclick: next }, "Next")
-          : h("button", { type: "button", class: "btn btn-primary", onclick: restart }, "Restart"),
-        h("button", { type: "button", class: "btn btn-ghost", onclick: restart, title: "Restart the demonstration" }, "↺"),
-        h("button", { type: "button", class: "btn btn-ghost", onclick: stop }, "Exit"),
+          ? h("button", { type: "button", class: "btn btn-primary", onclick: next, "data-action": "next" }, "Next")
+          : h("button", { type: "button", class: "btn btn-primary", onclick: restart, "data-action": "next" }, "Restart"),
+        h("button", { type: "button", class: "btn btn-ghost", onclick: restart, title: "Restart the demonstration", "aria-label": "Restart the demonstration", "data-action": "restart" }, "↺"),
+        h("button", { type: "button", class: "btn btn-ghost", onclick: stop, "data-action": "exit" }, "Exit"),
       ),
     );
+    if (focused) {
+      const target = bar.querySelector(`[data-action="${focused}"]:not([disabled])`) || bar.querySelector('[data-action="next"]');
+      target?.focus();
+    }
   }
 
   async function goTo(i) {

@@ -6,9 +6,16 @@
 #
 # On macOS/Linux use:  python3 -m http.server 8765   (from the repository root)
 
-param([int]$Port = 8765)
+#   -Root frontend   serve frontend/ itself at "/", the way the FastAPI backend will
+#                    (used to check that the app's relative URLs work there).
 
-$root = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+#   -MountContracts  with -Root, also serve contracts/examples/ at /contracts/examples/
+#                    (what app.mount("/contracts/examples", StaticFiles(...)) would do).
+
+param([int]$Port = 8765, [string]$Root = "", [switch]$MountContracts)
+
+$repo = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
+$root = if ($Root) { (Resolve-Path (Join-Path $repo $Root)).Path } else { $repo }
 $types = @{
   ".html" = "text/html; charset=utf-8"; ".js" = "text/javascript; charset=utf-8"
   ".css" = "text/css; charset=utf-8"; ".json" = "application/json; charset=utf-8"
@@ -26,9 +33,11 @@ try {
     $res = $ctx.Response
     try {
       $rel = [Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath).TrimStart("/")
-      if ($rel -eq "") { $rel = "frontend/index.html" }
-      $full = [IO.Path]::GetFullPath((Join-Path $root $rel))
-      if (-not $full.StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) {
+      if ($rel -eq "" -and -not (Test-Path (Join-Path $root "index.html"))) { $rel = "frontend/index.html" }
+      $base = $root
+      if ($MountContracts -and $rel.StartsWith("contracts/examples/")) { $base = $repo }
+      $full = [IO.Path]::GetFullPath((Join-Path $base $rel))
+      if (-not $full.StartsWith($base, [StringComparison]::OrdinalIgnoreCase)) {
         $res.StatusCode = 403
       } elseif (Test-Path $full -PathType Container) {
         $full = Join-Path $full "index.html"

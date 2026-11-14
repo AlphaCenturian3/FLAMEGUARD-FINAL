@@ -1,0 +1,53 @@
+{
+  "_comment": "Test-only base records for the frontend browser tests (frontend/tests/). Invented placeholder content, not NASA data. Never loaded by the app. Owner of this directory: test/qa-demo (spec section 4); added by feat/frontend-dashboard under spec section 2.2 rule 2.",
+  "source": {
+    "title": "TEST SOURCE",
+    "url": "https://example.invalid/test",
+    "retrieved": "2026-11-14"
+  },
+  "investigation": {
+    "fixture": true,
+    "id": "test-investigation",
+    "name": "TEST INVESTIGATION",
+    "acronym": null,
+    "platform": null,
+    "objectives": [],
+    "relevant_environments": [],
+    "sources": [{ "title": "TEST SOURCE", "url": "https://example.invalid/test", "retrieved": "2026-11-14" }]
+  },
+  "measured": {
+    "fixture": true,
+    "id": "test-measured",
+    "investigation_id": "test-investigation",
+    "evidence_class": "measured",
+    "statement": "TEST measured placeholder",
+    "value": null,
+    "unit": null,
+    "uncertainty": null,
+    "provenance": {
+      "manifest_id": "test-dataset",
+      "sources": [{ "title": "TEST SOURCE", "url": "https://example.invalid/test", "retrieved": "2026-11-14" }]
+    }
+  },
+  "interpretation": {
+    "fixture": true,
+    "id": "test-interpretation",
+    "investigation_id": "test-investigation",
+    "evidence_class": "interpretation",
+    "statement": "TEST interpretation placeholder",
+    "provenance": {
+      "derived_from": ["test-measured"],
+      "method": "test-method v0",
+      "generated_by": "FlameGuard-SI"
+    }
+  },
+  "illustrative_simulation": {
+    "fixture": true,
+    "id": "test-simulation",
+    "investigation_id": "test-investigation",
+    "evidence_class": "illustrative_simulation",
+    "statement": "TEST simulation placeholder",
+    "label": "Fluid and thermal transport model. No combustion chemistry.",
+    "provenance": { "model": "test-model", "model_version": "0.0.0" }
+  }
+}

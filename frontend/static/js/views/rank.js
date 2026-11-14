@@ -27,7 +27,8 @@ export function render(ctx) {
       h("ul", null,
         h("li", null, "Criteria and weights are defined by the backend ranking module (spec §5.1, GET /api/rankings?context=)."),
         h("li", null, "Every ranked item must list the findings it relies on. Only ", evidenceBadge("measured"), " and ", evidenceBadge("interpretation"), " findings are accepted."),
-        h("li", null, "Items that cite an ", evidenceBadge("illustrative_simulation"), " finding, lack a rationale, or have a non-numeric score are withheld and listed below."),
+        h("li", null, "Every supporting finding must resolve to a loaded record and trace back to measured evidence. Items with unresolved findings, broken provenance, or an ", evidenceBadge("illustrative_simulation"), " anywhere in the chain (directly or through an interpretation) are withheld and listed below."),
+        h("li", null, "Items without a rationale or with a non-numeric score are also withheld."),
       ),
       h("div", { id: "criteria-detail" }),
     ),
@@ -64,7 +65,7 @@ export function render(ctx) {
         ? h(
             "ol",
             { class: "ranking" },
-            accepted.map(({ item, inputs, warnings }, i) =>
+            accepted.map(({ item, inputs }, i) =>
               h(
                 "li",
                 { class: "card rank-item" },
@@ -76,7 +77,6 @@ export function render(ctx) {
                   h("p", null, h("span", { class: "muted" }, "Backend score: "), h("strong", { class: "mono" }, String(item.score)), h("span", { class: "muted small" }, " (relative ordering, not a risk value)")),
                   h("p", null, h("span", { class: "muted" }, "Rationale (FlameGuard-SI): "), item.rationale),
                   h("p", { class: "small" }, "Supporting findings: ", inputs.map((f) => h("span", { class: "chip" }, evidenceBadge(f.evidence_class), " ", f.id, isFixture(f) ? [" ", fixtureBadge()] : null))),
-                  warnings.length ? h("ul", { class: "warn-text small" }, warnings.map((w) => h("li", null, w))) : null,
                 ),
               ),
             ),

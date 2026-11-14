@@ -4,6 +4,7 @@ import { evidenceBadge, findingCard, provenanceBlock, resourcePanel, sourceItem 
 import { ApiError } from "../static/js/api/errors.js";
 import { safeHttpUrl } from "../static/js/ui/dom.js";
 import { DEMO_STEPS, DEMO_TARGET_SECONDS, createDemo } from "../static/js/demo.js";
+import { interpretationCard } from "../static/js/views/interpret.js";
 
 test("ui: every finding card shows its evidence class label and fixture badge", () => {
   for (const [f, label] of [
@@ -67,6 +68,37 @@ test("ui: 501 resource panel says not implemented and shows nothing invented", (
   assert.includes(el.textContent, "HTTP 501");
   const err = resourcePanel({ state: "error", error: new ApiError(0, "network_error", "down") }, "Rankings", "GET /api/rankings");
   assert.equal(err.getAttribute("role"), "alert");
+});
+
+test("interpret: fully traced interpretation is shown with its statement and evidence", () => {
+  const m = measured("m1", "a");
+  const i = interpretation("i1", "a", ["m1"]);
+  const el = interpretationCard(i, new Map([m, i].map((f) => [f.id, f])), undefined);
+  assert.equal(el.dataset.support, "supported");
+  assert.includes(el.textContent, "TEST interpretation i1");
+  assert.includes(el.textContent, "Traced to 1 measured record");
+  assert.ok(!el.textContent.includes("Withheld"));
+});
+
+test("interpret: unsupported interpretations are withheld with a reason and hidden statement", () => {
+  const m = measured("m1", "a");
+  const badM = measured("m-bad", "a", { provenance: { manifest_id: "x", sources: [] } });
+  const sim = simulation("s1", "a");
+  const cases = [
+    [interpretation("i-missing", "a", ["ghost"]), "ghost"],
+    [interpretation("i-sim", "a", ["m1", "s1"]), "Depends on illustrative simulation s1"],
+    [interpretation("i-badm", "a", ["m-bad"]), "cites no source"],
+    [interpretation("i-nasa", "a", ["m1"], { provenance: { derived_from: ["m1"], method: "x", generated_by: "NASA" } }), "not attributed to FlameGuard-SI"],
+    [interpretation("i-nomethod", "a", ["m1"], { provenance: { derived_from: ["m1"], generated_by: "FlameGuard-SI" } }), "does not state its method"],
+  ];
+  for (const [i, reason] of cases) {
+    const byId = new Map([m, badM, sim, i].map((f) => [f.id, f]));
+    const el = interpretationCard(i, byId, undefined);
+    assert.equal(el.dataset.support, "withheld", `${i.id} should be withheld`);
+    assert.includes(el.textContent, "Withheld");
+    assert.includes(el.textContent, reason);
+    assert.ok(!el.textContent.includes(`TEST interpretation ${i.id}`), `${i.id} statement must not be presented`);
+  }
 });
 
 test("ui: unknown evidence class badge is flagged", () => {

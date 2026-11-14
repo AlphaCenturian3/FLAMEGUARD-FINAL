@@ -12,6 +12,7 @@ import {
   SIMULATION_LABEL,
 } from "../static/js/model/evidence.js";
 import { reviewRankings } from "../static/js/model/ranking.js";
+import { traceSupport } from "../static/js/model/trace.js";
 
 // ---------- Filtering ----------
 const INVS = [
@@ -163,13 +164,93 @@ test("ranking: items citing simulation inputs are withheld", () => {
   assert.includes(res.rejected[0].problems.join(" "), "illustrative_simulation");
 });
 
-test("ranking: unknown input ids are warned, accepted sorted by score", () => {
+test("ranking: accepted items are sorted by score; empty response is empty", () => {
   const byId = new Map(FINDINGS.map((f) => [f.id, f]));
   const res = reviewRankings(
-    { items: [{ investigation_id: "b", score: 1, rationale: "r", inputs: ["fb"] }, { investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "ghost"] }] },
+    { items: [{ investigation_id: "b", score: 1, rationale: "r", inputs: ["fb"] }, { investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "fi"] }] },
     byId,
   );
   assert.deepEqual(res.accepted.map((e) => e.item.investigation_id), ["a", "b"]);
-  assert.includes(res.accepted[0].warnings[0], "ghost");
   assert.deepEqual(reviewRankings({}, byId), { accepted: [], rejected: [] });
+});
+
+// Regression: unresolved supporting IDs used to be accepted with a warning.
+test("ranking: item with an unresolved supporting finding ID is withheld", () => {
+  const byId = new Map(FINDINGS.map((f) => [f.id, f]));
+  const res = reviewRankings({ items: [{ investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "ghost"] }] }, byId);
+  assert.equal(res.accepted.length, 0);
+  assert.equal(res.rejected.length, 1);
+  assert.includes(res.rejected[0].problems.join(" "), "ghost is not among the loaded findings");
+});
+
+// Regression: an interpretation derived from a simulation could carry it into a ranking.
+test("ranking: simulation reaching a ranking through an interpretation is withheld", () => {
+  const sim = simulation("s1", "a");
+  const viaSim = interpretation("i-sim", "a", ["s1"]);
+  const mixed = interpretation("i-mixed", "a", ["fa", "s1"]);
+  const deep = interpretation("i-deep", "a", ["i-sim"]);
+  const byId = new Map([...FINDINGS, sim, viaSim, mixed, deep].map((f) => [f.id, f]));
+  const res = reviewRankings(
+    {
+      items: [
+        { investigation_id: "a", score: 3, rationale: "r", inputs: ["i-sim"] },
+        { investigation_id: "a", score: 2, rationale: "r", inputs: ["fa", "i-mixed"] },
+        { investigation_id: "a", score: 1, rationale: "r", inputs: ["i-deep"] },
+      ],
+    },
+    byId,
+  );
+  assert.equal(res.accepted.length, 0, "no item may be accepted");
+  assert.equal(res.rejected.length, 3);
+  for (const r of res.rejected) assert.includes(r.problems.join(" "), "Depends on illustrative simulation s1");
+});
+
+test("ranking: interpretation with broken parent, bad provenance, or cycle is withheld", () => {
+  const orphan = interpretation("i-orphan", "a", ["missing-parent"]);
+  const badMeasured = measured("m-bad", "a", { provenance: { sources: [] } });
+  const onBad = interpretation("i-bad", "a", ["m-bad"]);
+  const c1 = interpretation("c1", "a", ["c2"]);
+  const c2 = interpretation("c2", "a", ["c1"]);
+  const byId = new Map([...FINDINGS, orphan, badMeasured, onBad, c1, c2].map((f) => [f.id, f]));
+  const res = reviewRankings(
+    {
+      items: [
+        { investigation_id: "a", score: 1, rationale: "r", inputs: ["i-orphan"] },
+        { investigation_id: "a", score: 1, rationale: "r", inputs: ["i-bad"] },
+        { investigation_id: "a", score: 1, rationale: "r", inputs: ["c1"] },
+        { investigation_id: "a", score: 1, rationale: "r", inputs: ["m-bad"] },
+      ],
+    },
+    byId,
+  );
+  assert.equal(res.accepted.length, 0);
+  assert.includes(res.rejected[0].problems.join(" "), "missing-parent");
+  assert.includes(res.rejected[1].problems.join(" "), "no manifest_id");
+  assert.includes(res.rejected[2].problems.join(" "), "Circular derivation");
+  assert.includes(res.rejected[3].problems.join(" "), "cites no source");
+});
+
+// ---------- Evidence-chain tracing ----------
+test("trace: interpretation chain ending in valid measured records is supported", () => {
+  const i2 = interpretation("i2", "a", ["fi", "fb"]);
+  const byId = new Map([...FINDINGS, i2].map((f) => [f.id, f]));
+  const t = traceSupport(i2, byId);
+  assert.equal(t.supported, true, t.reasons.join(" | "));
+  assert.deepEqual(t.measuredRoots.map((f) => f.id).sort(), ["fa", "fb"]);
+});
+
+test("trace: simulation, unresolved parent, cycle, and no measured root are unsupported", () => {
+  const sim = simulation("s1", "a");
+  const viaSim = interpretation("i-sim", "a", ["s1"]);
+  const orphan = interpretation("i-orphan", "a", ["nope"]);
+  const self = interpretation("i-self", "a", ["i-self"]);
+  const byId = new Map([...FINDINGS, sim, viaSim, orphan, self].map((f) => [f.id, f]));
+  assert.includes(traceSupport(viaSim, byId).reasons.join(" "), "Depends on illustrative simulation s1");
+  assert.includes(traceSupport(sim, byId).reasons.join(" "), "is an illustrative simulation, not evidence");
+  assert.includes(traceSupport(orphan, byId).reasons.join(" "), "nope (cited by i-orphan) is not among the loaded findings");
+  assert.includes(traceSupport(self, byId).reasons.join(" "), "Circular derivation");
+  const noParents = interpretation("i-empty", "a", []);
+  const t = traceSupport(noParents, byId);
+  assert.equal(t.supported, false);
+  assert.includes(t.reasons.join(" "), "does not list the findings it is derived from");
 });

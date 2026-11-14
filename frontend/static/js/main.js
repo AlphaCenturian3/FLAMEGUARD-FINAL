@@ -95,11 +95,14 @@ function renderRoute() {
   /** @type {ViewContext} */
   const ctx = { store, params, demo, onLeave: (fn) => cleanups.push(fn) };
   mount(main, route.view.render(ctx));
-  // Move focus to the new page heading for keyboard and screen-reader users.
+  // On navigation (not the first page load, so the skip link stays the first
+  // Tab stop), move focus to the new heading for keyboard and screen-reader users.
   const heading = main.querySelector("h1");
-  if (heading && !demo.active()) heading.focus({ preventScroll: true });
+  if (heading && !demo.active() && !firstRender) heading.focus({ preventScroll: true });
   if (!demo.active()) window.scrollTo(0, 0);
+  firstRender = false;
 }
+let firstRender = true;
 
 function renderBanner() {
   if (source.kind === "fixtures") {
@@ -141,6 +144,13 @@ async function checkHealth() {
     }
   }
 }
+
+// The skip link must not change the hash (the router would treat "#main" as a route).
+document.querySelector(".skip-link")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  main.focus();
+  main.scrollIntoView();
+});
 
 menuButton?.addEventListener("click", () => {
   const open = document.body.classList.toggle("nav-open");
