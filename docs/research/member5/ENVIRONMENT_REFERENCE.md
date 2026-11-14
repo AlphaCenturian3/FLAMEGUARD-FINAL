@@ -45,7 +45,7 @@
 
 19 quote citations in `environment_reference.json`:
 
-- **10** were verified automatically against the live pages (NSSDC fact sheets; NASA combustion page) with `python -m flameguard.research.verify_sources docs/research/member5/environment_reference.json`.
+- **10** were verified automatically against the live pages (NSSDC fact sheets; NASA combustion page) with `python -m research.verify_sources docs/research/member5/environment_reference.json`.
 - **9** are PDF sources and were verified **manually**: the PDF text was extracted with `pypdf` in a scratch environment and the whitespace-normalised quote was found on the cited page. Quotes avoid fragments where text extraction merged words.
 
 PDF SHA-256 values at retrieval:

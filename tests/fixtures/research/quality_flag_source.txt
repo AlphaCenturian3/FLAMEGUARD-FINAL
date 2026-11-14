@@ -1,0 +1,4 @@
+FIXTURE source document. This file contains no NASA evidence.
+FIXTURE quote recorded for the caution flag.
+FIXTURE quote recorded for the exclusion flag.
+FIXTURE quote recorded for the missing-value flag.

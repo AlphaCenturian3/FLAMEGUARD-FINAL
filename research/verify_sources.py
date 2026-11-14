@@ -2,7 +2,7 @@
 
 Usage (needs network; not part of the offline test suite)::
 
-    python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json \
+    python -m research.verify_sources docs/research/member5/evidence_reported.json \
         docs/research/member5/investigations.json
 
 NTRS citation pages are rendered by JavaScript, so for ``ntrs.nasa.gov/citations/<id>``

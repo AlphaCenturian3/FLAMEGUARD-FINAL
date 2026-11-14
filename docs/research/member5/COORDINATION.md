@@ -1,10 +1,10 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 21:50 UTC (Member 5 FLEX scientific approval at PR #4 `2092cdd`; CP1 head `297b9a0` verified by Member 5's review, 0 of 4 approvals). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Integration update:** CP1 merged as `f7cef55674885c68f5edd56e3650da7668464ce4`. PR #3 remains a draft and is not merged. The integration branch includes CP1 via a non-rewriting merge to preserve its already-published history; no shared contract is changed here. Ranking criteria remain proposed and ranking output remains disabled.
 
-PR #3 adds only new files:
+Member 5-owned content in this branch:
 
-- `backend/flameguard/research/`
+- `research/` (non-runtime reference implementation)
 - `config/research_relevance_criteria_v1.proposed.json`
 - `docs/research/member5/`
 - `tests/research/` and `tests/fixtures/research/`
@@ -161,9 +161,9 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 |---|---|---|
 | Card corrections, FLEX verification, D-01 preparation documents | Coordinator instructions B and C | Done (prepared; not approved) |
 | Keep `tests/research/` (D-09) | Member 1 owner response | In place |
-| S9 and S10 independent tests, `excluded` handling in the reference ranking, Q3 quote checks of curation notes | Member 1 requests | **Authorized, deferred until the CP1 contract is merged** |
-| Move the reference code to `research/` (D-08) | Member 1 plus Command Center | **Authorized, after CP1** |
-| D-03 and D-04 reference-implementation alignment | Member 1 owner responses | **Authorized, after CP1** |
+| S9 and S10 independent tests, `excluded` handling in the reference ranking, Q3 quote checks of curation notes | Member 1 requests | **Authorized; integrated after CP1** |
+| Move the reference code to `research/` (D-08) | Member 1 plus Command Center | **Authorized; integrated after CP1** |
+| D-03 and D-04 reference-implementation alignment | Member 1 owner responses | **Authorized; integrated after CP1** |
 | Card status `wording_confirmed_by_member1` | Member 1 request (6883984161) | Done |
 | Redraft criteria to gates (E1–E3) plus C, T, D with gravity-only C; record the dominance invariant; reference-table labels | Member 1 revision request; coordinator authorization (documentation only) | **Done as proposals** (revision 2: `CRITERIA_ENVIRONMENT_CONTEXT.md`, `ENVIRONMENT_REFERENCE.md`, `environment_reference.json`, `WEIGHT_SENSITIVITY.md`); not approved; E2 pending M3 |
 | Q3 spot-check of Member 3's FLEX transcription (PR #4) and quality-flag review | Member 3 request (PR #4, #6); spec §4.2; coordinator A‴ | **Done (executor record)**: `Q3_FLEX_SPOTCHECK.md`; Member 5's personal confirmation optional |
@@ -173,11 +173,14 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 | Weight freeze (`config/ranking_criteria_v1.json`) | — | **Not authorized** (needs M1 and M3) |
 | Ranking activation | — | **Not authorized** (needs the freeze plus measured data) |
 
-## 8. After CP1 merges (not before)
+## 8. CP1 integration record
 
-1. Re-check against `main`, then rebase PR #3 (no force-push to anyone else's branch).
-2. Apply the alignment: `backend/flameguard/research/` → `research/`, keep `tests/research/`, and wait for Member 1's `pythonpath` PR.
-3. Add the S9 and S10 tests and `excluded` handling; apply D-03 and D-04.
-4. Rerun ruff, pytest, the provenance check and `verify_sources`; request a fresh review.
+Approved post-CP1 scope from `docs/CP1_WORKSTREAMS.md` and the Member 1 requests above:
+
+1. Fetched `main` and verified CP1 merge `f7cef55674885c68f5edd56e3650da7668464ce4`. PR #3 already had a published head, so `main` was merged into the feature branch instead of rebasing; this preserves history and honors the no-force-push restriction.
+2. Moved all reference modules from `backend/flameguard/research/` to top-level `research/`. Production ranking and comparison remain Member 1's responsibility. `tests/research/` and its fixtures stay in place.
+3. Updated the reference ranking to exclude `excluded` records and all transitive interpretation descendants (S9), rejecting cycles and unresolved parents (S3). Added independent S9 and S10 cases using explicitly marked fixture-only data; no NASA measurements or flags were added.
+4. Kept strict comparability opt-in so the default follows CP1 S5. Ranking criteria are still proposed, ranking stays disabled, and no weights were frozen.
+5. Validation on the integrated branch: `ruff check .` passed; `ruff format --check .` reported 48 files already formatted; `pytest` passed 362 tests; `python tools/check_data_provenance.py` passed with 0 datasets registered; the source verifier reported 29/43 quotes found, 14 classified for manual checking, and 0 failed. The existing manual PDF checks remain documented in `SOURCE_AUDIT.md`.
 
 CP1 rebase readiness (trial merges only, nothing pushed): `29c7078` 191 passed; `b89604a` 209 passed; `ca128d0` 220 passed; `2ce0d53` 279 passed; **`a6876d1` (current) no conflicts, 299 passed**.

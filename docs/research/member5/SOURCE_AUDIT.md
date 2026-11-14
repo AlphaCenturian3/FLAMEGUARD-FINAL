@@ -12,7 +12,7 @@
 
 ## Methods
 
-- **Automated:** `python -m flameguard.research.verify_sources <files>`. The tool fetches each URL and checks that the quote appears after normalising whitespace and HTML entities only. For `ntrs.nasa.gov/citations/<id>` it checks the public NTRS API record (title and abstract), because the citation page renders with JavaScript.
+- **Automated:** `python -m research.verify_sources <files>`. The tool fetches each URL and checks that the quote appears after normalising whitespace and HTML entities only. For `ntrs.nasa.gov/citations/<id>` it checks the public NTRS API record (title and abstract), because the citation page renders with JavaScript.
 - **Manual (PDF):** PDF sources are not parsed by the tool (that would need a new dependency, which is Member 1's decision). Each PDF was downloaded on 2026-11-14, its text was extracted with `pypdf` in a scratch environment outside the repository, and the whitespace-normalised quote was found on the cited PDF page. Quotes avoid fragments where text extraction merged or split words. The check was done by Claude (executor), not by an independent person.
 - **Independent check:** pending. Member 1 assigned the quote and source check to Member 3 (PR #3). A member other than the author spot-checks and signs below.
 

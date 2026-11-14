@@ -7,9 +7,9 @@ import math
 from pathlib import Path
 
 import pytest
-
-from flameguard.research.common import NOT_A_RISK_SCORE
-from flameguard.research.ranking import (
+from research.common import NOT_A_RISK_SCORE
+from research.evidence import exclusion_dependent_ids
+from research.ranking import (
     EXPECTED_CRITERIA,
     RankingInputError,
     load_criteria,
@@ -117,8 +117,8 @@ def test_reported_only_investigation_is_excluded_with_reason(fixtures, criteria)
 def test_interpretation_traceability_is_inherited(fixtures, criteria):
     out = _rank(LUNAR_MATERIALS, fixtures, criteria)
     trace = out["explanations"]["fixture-inv-c"]["criteria"]["source_traceability"]
-    # fixture-a-1 is fully traceable; the second parent does not resolve and counts as 0.
-    assert trace["per_record"]["fixture-c-1"] == pytest.approx(0.5)
+    # The second parent resolves, but its source quote is unrecorded.
+    assert trace["per_record"]["fixture-c-1"] == pytest.approx(0.875)
 
 
 def test_no_conditions_means_not_assessed_not_neutral(fixtures, criteria):
@@ -212,9 +212,13 @@ def test_unverified_measurements_are_never_ranked(fx, criteria):
 
 
 def test_interpretation_of_unverified_data_loses_its_traceability(fx, criteria):
-    a, c = _real(fx, "fixture-a-1"), _real(fx, "fixture-c-1")
+    a, b, c = (
+        _real(fx, "fixture-a-1"),
+        _real(fx, "fixture-b-1"),
+        _real(fx, "fixture-c-1"),
+    )
     approved = {**criteria, **APPROVED}
-    out = rank_investigations(LUNAR_MATERIALS, [a, c], approved)  # a-1 not verified
+    out = rank_investigations(LUNAR_MATERIALS, [a, b, c], approved)  # measurements not verified
     trace = out["explanations"]["fixture-inv-c"]["criteria"]["source_traceability"]
     assert trace["per_record"]["fixture-c-1"] == 0
     assert trace["status"] == "partially_missing"
@@ -251,3 +255,79 @@ def test_bad_weights_are_rejected(criteria):
     bad = {**criteria, "criteria": [dict(c) for c in criteria["criteria"]]}
     bad["criteria"][0]["weight"] = 0.5
     assert any("sum to 1" in e for e in validate_criteria(bad))
+
+
+def _excluded_fixture(fx):
+    record = _real(fx, "fixture-a-1")
+    record.update(value=None, value_status="excluded")
+    record["curation_notes"] = [
+        {
+            "kind": "exclusion",
+            "note": "FIXTURE exclusion reason.",
+            "generated_by": "FlameGuard-SI",
+            "flag_ref": {"manifest_id": "fixture-quality-flags-1", "flag_id": "F1"},
+            "source": {
+                "title": "FIXTURE source",
+                "url": "https://example.invalid/fixture",
+                "page": 1,
+                "quote": "FIXTURE source quote.",
+                "retrieved": "2026-11-14",
+                "archive_id": None,
+            },
+        }
+    ]
+    return record
+
+
+def test_excluded_and_transitively_dependent_records_are_never_ranked(fx, criteria):
+    excluded = _excluded_fixture(fx)
+    first = _real(fx, "fixture-c-1")
+    first["derived_from"] = [excluded["id"]]
+    second = {**first, "id": "fixture-dependent-2", "derived_from": [first["id"]]}
+    approved = {**criteria, **APPROVED}
+
+    out = rank_investigations(
+        LUNAR_MATERIALS,
+        [excluded, first, second],
+        approved,
+        verified_manifest_ids={"fixture-manifest-a"},
+    )
+
+    assert out["ranking"]["items"] == []
+    assert out["release_status"] == "evidence_insufficient"
+    assert {r["id"] for r in out["excluded_records"]} == {
+        excluded["id"],
+        first["id"],
+        second["id"],
+    }
+
+
+def test_broken_derivation_chains_fail_closed(fx, criteria):
+    child = _real(fx, "fixture-c-1")
+    child["derived_from"] = ["missing"]
+    with pytest.raises(RankingInputError, match="S3.*unresolved"):
+        rank_investigations(LUNAR_MATERIALS, [child], criteria)
+
+    left = _real(fx, "fixture-c-1")
+    right = {**left, "id": "fixture-cycle-right"}
+    left["derived_from"] = [right["id"]]
+    right["derived_from"] = [left["id"]]
+    with pytest.raises(RankingInputError, match="S3.*cycle"):
+        rank_investigations(LUNAR_MATERIALS, [left, right], criteria)
+
+
+def test_exclusion_dependency_graph_is_transitive_and_rejects_broken_chains(fx):
+    excluded = _excluded_fixture(fx)
+    one = _real(fx, "fixture-c-1")
+    one["derived_from"] = [excluded["id"]]
+    two = {**one, "id": "fixture-dependent-2", "derived_from": [one["id"]]}
+    clean = _real(fx, "fixture-c-1")
+    clean["id"] = "fixture-clean"
+    clean["derived_from"] = ["fixture-a-2"]
+    measured = _real(fx, "fixture-a-2")
+
+    assert exclusion_dependent_ids([excluded, measured, one, two, clean]) == {
+        excluded["id"],
+        one["id"],
+        two["id"],
+    }

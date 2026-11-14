@@ -45,7 +45,7 @@ from collections.abc import Collection, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from flameguard.research.common import (
+from research.common import (
     CONDITION_KEYS,
     DATE_RE,
     ENVIRONMENTS,
@@ -56,9 +56,10 @@ from flameguard.research.common import (
     URL_RE,
     VOCABULARY,
 )
-from flameguard.research.evidence import (
+from research.evidence import (
     Record,
     contract_evidence_class,
+    exclusion_dependent_ids,
     missing_fields,
     validate_evidence,
 )
@@ -339,8 +340,11 @@ def rank_investigations(
 
     excluded_records: list[dict[str, Any]] = []
     valid: list[Record] = []
+    structurally_valid: list[Record] = []
     for r in records:
         problems = validate_evidence(r)
+        if not problems:
+            structurally_valid.append(r)
         if r.get("fixture") and not allow_fixtures:
             problems.append("fixture records are refused outside tests")
         if (
@@ -356,6 +360,21 @@ def rank_investigations(
             excluded_records.append({"id": r.get("id"), "reasons": problems})
         else:
             valid.append(r)
+
+    try:
+        exclusion_dependent = exclusion_dependent_ids(structurally_valid)
+    except ValueError as exc:
+        raise RankingInputError(f"S3: {exc}") from exc
+    for record in valid:
+        if record["id"] in exclusion_dependent:
+            excluded_records.append(
+                {
+                    "id": record["id"],
+                    "reasons": ["excluded value or derived_from ancestor is unusable under S9"],
+                }
+            )
+    valid = [record for record in valid if record["id"] not in exclusion_dependent]
+
     index = {r["id"]: r for r in valid}
 
     universe = sorted(set(investigation_ids or []) | {r.get("investigation_id") for r in records})

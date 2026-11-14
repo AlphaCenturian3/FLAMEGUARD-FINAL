@@ -1,9 +1,7 @@
-"""Shared vocabulary for the research package.
+"""Research-only mirror of the merged contract v0.2.0 vocabulary.
 
-The quantity vocabulary, condition keys, environments and topics mirror the contract
-v0.2.0 *proposal* (PR #1, branch ``contract/cp1-v0.2-proposal``), which is not merged.
-If that proposal changes, update this file in the same PR. New keys must go through a
-contract PR first (CP1 plan, rule D5); do not add them here on their own.
+New keys must go through a contract PR first (CP1 plan, rule D5); do not add them here
+on their own.
 """
 
 import re
@@ -56,7 +54,7 @@ FIRE_SAFETY_TOPICS: tuple[str, ...] = (
     "other",
 )
 
-VALUE_STATUSES = ("reported", "not_reported", "not_applicable")
+VALUE_STATUSES = ("reported", "not_reported", "not_applicable", "excluded")
 
 #: Member 5 evidence categories. See ``evidence.contract_evidence_class`` for the mapping
 #: to the contract's ``evidence_class``.

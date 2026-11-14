@@ -32,14 +32,14 @@ Cards are qualitative. ``disclaimer`` must equal ``NOT_FLIGHT_QUALIFIED`` and
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from flameguard.research.common import (
+from research.common import (
     ENVIRONMENTS,
     EXTRAPOLATED_ENVIRONMENTS,
     ID_RE,
     NOT_FLIGHT_QUALIFIED,
     banned_phrases_in,
 )
-from flameguard.research.evidence import Record
+from research.evidence import Record
 
 THEMES = (
     "material_selection",

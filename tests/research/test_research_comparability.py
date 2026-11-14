@@ -1,8 +1,7 @@
 """Numerical comparison is refused unless evidence is scientifically comparable."""
 
 import pytest
-
-from flameguard.research.comparability import (
+from research.comparability import (
     IncomparableEvidenceError,
     check_comparability,
     numeric_difference,
@@ -96,8 +95,25 @@ def test_strict_mode_requires_core_conditions_to_be_known(fx):
     a, b = fx("fixture-a-1"), fx("fixture-a-2")
     for r in (a, b):
         r["conditions"]["oxygen_mole_fraction"] = None
-    strict = check_comparability([a, b])
+    strict = check_comparability([a, b], strict=True)
     assert not strict.comparable
     assert any("not reported for any record" in r for r in strict.reasons)
-    # Contract rule S5 alone accepts a key that is null for every row.
+    # CP1 S5 allows a condition that is null for every row; strict mode is opt-in.
+    assert check_comparability([a, b]).comparable
     assert check_comparability([a, b], strict=False).comparable
+
+
+def test_excluded_value_is_never_comparable(fx):
+    a, b = fx("fixture-a-1"), fx("fixture-a-2")
+    b.update(value=None, value_status="excluded")
+    result = check_comparability([a, b])
+    assert not result.comparable
+    assert any("excluded" in reason for reason in result.reasons)
+
+
+def test_exclusion_dependent_interpretation_is_never_a_comparison_row(fx):
+    interp = fx("fixture-c-1")
+    interp["evidence_category"] = "interpreted"
+    result = check_comparability([fx("fixture-a-1"), interp])
+    assert not result.comparable
+    assert any("only measured evidence" in reason for reason in result.reasons)

@@ -1,9 +1,8 @@
 """Evidence structure: citations, missing data, measured vs reported vs interpreted."""
 
 import pytest
-
-from flameguard.research.common import CONDITION_KEYS
-from flameguard.research.evidence import (
+from research.common import CONDITION_KEYS
+from research.evidence import (
     contract_evidence_class,
     index_records,
     missing_fields,
@@ -104,6 +103,49 @@ def test_interpreted_records_need_derivation_and_method(fx):
     assert any("derived_from" in e for e in errors)
     assert any("method" in e for e in errors)
     assert any("generated_by" in e for e in errors)
+
+
+def _excluded_fixture(fx):
+    rec = fx("fixture-a-1")
+    rec.update(value=None, value_status="excluded")
+    rec["curation_notes"] = [
+        {
+            "kind": "exclusion",
+            "note": "FIXTURE exclusion reason.",
+            "generated_by": "FlameGuard-SI",
+            "flag_ref": {"manifest_id": "fixture-quality-flags-1", "flag_id": "F1"},
+            "source": {
+                "title": "FIXTURE source",
+                "url": "https://example.invalid/fixture",
+                "page": 1,
+                "quote": "FIXTURE source quote.",
+                "retrieved": "2026-11-14",
+                "archive_id": None,
+            },
+        }
+    ]
+    return rec
+
+
+def test_excluded_value_keeps_measured_provenance_and_attribution(fx):
+    rec = _excluded_fixture(fx)
+    assert validate_evidence(rec) == []
+    assert rec["value"] is None
+    assert rec["manifest_id"] and rec["locator"] and rec["sources"]
+
+
+def test_excluded_value_cannot_be_numeric_unattributed_or_interpreted(fx):
+    rec = _excluded_fixture(fx)
+    rec["value"] = 1.0
+    assert any("never filled in" in error for error in validate_evidence(rec))
+
+    rec = _excluded_fixture(fx)
+    rec.pop("curation_notes")
+    assert any("attributed exclusion note" in error for error in validate_evidence(rec))
+
+    rec = _excluded_fixture(fx)
+    rec["evidence_category"] = "interpreted"
+    assert any("must be measured evidence" in error for error in validate_evidence(rec))
 
 
 def test_every_fixture_validates_and_lists_all_condition_keys(fixtures):

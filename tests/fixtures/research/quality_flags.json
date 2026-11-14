@@ -1,0 +1,36 @@
+{
+  "fixture": true,
+  "manifest_id": "fixture-quality-flags-1",
+  "records": [
+    {
+      "id": "F-fixture-1",
+      "ranking_use": "caution",
+      "locator": "FIXTURE table 0, row 2",
+      "field": "flame_spread_rate",
+      "source": {
+        "page": 1,
+        "quote": "FIXTURE quote recorded for the caution flag."
+      }
+    },
+    {
+      "id": "F-fixture-2",
+      "ranking_use": "exclude",
+      "locator": "FIXTURE table 0, row 3",
+      "field": "flame_spread_rate",
+      "source": {
+        "page": 1,
+        "quote": "FIXTURE quote recorded for the exclusion flag."
+      }
+    },
+    {
+      "id": "F-fixture-3",
+      "ranking_use": "not_available",
+      "locator": "FIXTURE table 0, row 1",
+      "field": "flame_spread_rate",
+      "source": {
+        "page": 1,
+        "quote": "FIXTURE quote recorded for the missing-value flag."
+      }
+    }
+  ]
+}

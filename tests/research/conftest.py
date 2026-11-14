@@ -1,10 +1,14 @@
 import copy
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 RESEARCH_DOCS = ROOT / "docs" / "research" / "member5"
 CRITERIA_FILE = ROOT / "config" / "research_relevance_criteria_v1.proposed.json"
 FIXTURE_FILE = ROOT / "tests" / "fixtures" / "research" / "fixture_evidence.json"

@@ -53,5 +53,5 @@ Status key: **Done** (implemented and tested in this PR), **Partial**, **Gap** (
 | Judge path Find → Compare → Rank → Interpret → Moon/Mars (kickoff R4) | **Gap** | Not connected to the UI or TARS. Needs Members 1 and 2 after CP1. |
 | TARS narrative separate from NASA statements | **Blocked** | TARS retrieval is Member 3, assistant Member 1 (CP1 §4.1) |
 | Isolation from other members' work | Done | Only new files; `app.py`, `contracts/`, `frontend/` and `data/` untouched |
-| Placement matches CP1 ownership | **Gap** | `backend/flameguard/research/` and `tests/research/` fall in Member 1's area under the CP1 proposal. Decisions D-08 to D-10. |
+| Placement matches CP1 ownership | **Done after CP1** | Reference code is in non-runtime `research/`; tests remain in `tests/research/` and fixtures in `tests/fixtures/research/`, per `docs/CP1_WORKSTREAMS.md` and D-08 to D-10. |
 | QA review (kickoff R5) | **Blocked** | The brief names Member 4; the CP1 proposal says there is no Member 4 (decision D-11) |

@@ -40,13 +40,13 @@ Relevance is computed from structured fields, not guessed from free text:
 | Safeguard | Where it is enforced |
 |---|---|
 | Ranks relevance, not danger | Disclaimer on every output; rationale ends "Research relevance only, not fire risk." |
-| Only measured or interpreted evidence is scored (contract §5.1) | `ranking.SCORED_CATEGORIES`. Quoted statements are listed as context. |
-| Comparability before numerical comparison | `comparability.require_comparable` (contract rule S5, plus a strict rule for core conditions) |
+| Only eligible measured or interpreted evidence is scored (contract §5.1) | `ranking.SCORED_CATEGORIES`. Quoted statements are listed as context. Excluded measurements and all their interpretation descendants are removed under S9. |
+| Comparability before numerical comparison | `comparability.require_comparable` follows contract S5 by default; the stricter core-condition proposal is opt-in. |
 | Score components explained | `explanations[investigation].criteria`, with weight, score, weighted contribution, and matched, unmatched and missing items |
 | Missing or incomparable evidence shown | `missing_evidence`, `excluded`, `excluded_records` |
 | No ranking from fabricated data | Fixtures are refused unless `allow_fixtures=True` (tests only). Fixture output is `fixture_demo_only`. Fixture and real records cannot be mixed. |
 | Simulations never feed the ranking | `RankingInputError` on any simulation record. The package does not import simulation code (tested). |
-| Missing inputs visible, not hidden in a zero | Each criterion has a `status`: `complete`, `partially_missing` or `not_assessed` |
+| Missing inputs visible, not hidden in a zero | Each criterion has a `status`: `complete`, `partially_missing` or `not_assessed`. Broken or unresolved `derived_from` chains fail closed under S3. |
 
 ## Gates (`release_status`)
 
@@ -61,7 +61,7 @@ A real `measured` record counts only if its `manifest_id` is in `verified_manife
 
 ## Output
 
-`rank_investigations()` returns a `ranking` object shaped like `ranking.schema.json` in the v0.2.0 proposal (rule S6 is tested), plus `disclaimer`, `release_status`, `explanations` and `excluded_records`.
+`rank_investigations()` is an independent research reference, not production code. It returns a `ranking` object used to test the method and S6-style invariants, plus `disclaimer`, `release_status`, `explanations` and `excluded_records`. Runtime ranking belongs to Member 1.
 
 ## Current result on real data
 
@@ -71,7 +71,7 @@ No measured or interpreted NASA records have been imported, and the criteria are
 
 - **D-02:** the kickoff specifies a 0–3 rubric per criterion; this implementation uses continuous 0–1 fractions.
 - **D-03:** missing inputs currently count as 0, with a visible `partially_missing` status. The alternative is moving the item to "insufficient evidence".
-- **D-04:** the strict comparability rule.
+- **D-04:** the stricter comparability rule is opt-in; contract S5 is the default.
 - **D-07:** fuel phase, thickness and ignition conditions are not in the contract's `conditions` yet.
 
 ## Known limitations of the method

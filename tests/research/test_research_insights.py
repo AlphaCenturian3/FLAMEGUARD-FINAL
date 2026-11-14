@@ -2,9 +2,9 @@
 
 import copy
 
-from flameguard.research.common import NOT_FLIGHT_QUALIFIED
-from flameguard.research.evidence import index_records
-from flameguard.research.insights import THEMES, themes_covered, validate_card, validate_cards
+from research.common import NOT_FLIGHT_QUALIFIED
+from research.evidence import index_records
+from research.insights import THEMES, themes_covered, validate_card, validate_cards
 
 
 def test_real_cards_are_valid_and_cover_every_theme(real_cards, real_evidence):

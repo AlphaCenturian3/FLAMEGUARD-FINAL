@@ -10,7 +10,7 @@ A record is a plain JSON-compatible dict, so it can sit next to contract objects
 ``statement``          What the record says, in plain language.
 ``quantity``           Vocabulary key, or ``None`` for a qualitative statement.
 ``value`` / ``unit``   Value as reported. ``None`` when missing. Never estimated.
-``value_status``       ``reported`` | ``not_reported`` | ``not_applicable``.
+``value_status``       ``reported`` | ``not_reported`` | ``not_applicable`` | ``excluded``.
 ``uncertainty``        As reported by the source, or ``None``.
 ``conditions``         Every key in ``CONDITION_KEYS``; ``None`` = not reported.
 ``sources``            Contract ``Source`` objects (title, url, page, quote, retrieved,
@@ -28,6 +28,8 @@ A record is a plain JSON-compatible dict, so it can sit next to contract objects
 ``source_claim_strength``  For ``reported`` records: ``experimental_result`` |
                        ``stated_objective`` | ``hypothesis_under_test`` |
                        ``source_statement``. Required for reported records.
+``curation_notes``    For measured records: FlameGuard-SI cautions or exclusions attributed
+                       to a quality flag and its recorded source passage.
 ``fixture``            ``True`` only for test fixtures (never NASA data).
 =====================  =====================================================================
 
@@ -45,7 +47,7 @@ Evidence categories:
 from collections.abc import Iterable, Mapping
 from typing import Any
 
-from flameguard.research.common import (
+from research.common import (
     CONDITION_KEYS,
     DATE_RE,
     DOI_RE,
@@ -149,6 +151,18 @@ def validate_evidence(record: Any) -> list[str]:
 
     errors += _validate_value(record, rid)
     errors += _validate_conditions(record.get("conditions"), rid)
+    errors += _validate_curation_notes(record, rid)
+
+    if record["value_status"] == "excluded":
+        if category != "measured":
+            errors.append(f"{rid}: excluded values must be measured evidence")
+        if record["quantity"] is None:
+            errors.append(f"{rid}: excluded measurements must retain their quantity")
+        notes = record.get("curation_notes")
+        if not isinstance(notes, list) or not any(
+            isinstance(note, Mapping) and note.get("kind") == "exclusion" for note in notes
+        ):
+            errors.append(f"{rid}: excluded values need an attributed exclusion note")
 
     sources = record["sources"]
     if not isinstance(sources, list):
@@ -214,6 +228,52 @@ def validate_evidence(record: Any) -> list[str]:
         if isinstance(text, str):
             for phrase in banned_phrases_in(text):
                 errors.append(f"{rid}: {field} contains banned phrase '{phrase}'")
+    return errors
+
+
+def _validate_curation_notes(record: Record, rid: str) -> list[str]:
+    notes = record.get("curation_notes")
+    if notes is None:
+        return []
+    if record["evidence_category"] != "measured":
+        return [f"{rid}: curation_notes are allowed only on measured evidence"]
+    if not isinstance(notes, list) or not notes:
+        return [f"{rid}: curation_notes must be a non-empty list"]
+
+    errors = []
+    for i, note in enumerate(notes):
+        where = f"{rid}.curation_notes[{i}]"
+        if not isinstance(note, Mapping):
+            errors.append(f"{where}: note must be an object")
+            continue
+        if note.get("kind") not in ("caution", "exclusion"):
+            errors.append(f"{where}: kind must be 'caution' or 'exclusion'")
+        if not isinstance(note.get("note"), str) or not note["note"].strip():
+            errors.append(f"{where}: note text is required")
+        if note.get("generated_by") != GENERATED_BY:
+            errors.append(f"{where}: generated_by must be {GENERATED_BY}")
+
+        flag_ref = note.get("flag_ref")
+        if (
+            not isinstance(flag_ref, Mapping)
+            or set(flag_ref) != {"manifest_id", "flag_id"}
+            or not all(isinstance(flag_ref.get(k), str) and flag_ref[k].strip() for k in flag_ref)
+        ):
+            errors.append(f"{where}: flag_ref needs manifest_id and flag_id")
+
+        source = note.get("source")
+        source_errors = validate_source(source, f"{where}.source")
+        errors.extend(source_errors)
+        if isinstance(source, Mapping) and (
+            not isinstance(source.get("quote"), str) or not source["quote"].strip()
+        ):
+            errors.append(f"{where}: source needs a recorded quote")
+
+    has_exclusion = any(
+        isinstance(note, Mapping) and note.get("kind") == "exclusion" for note in notes
+    )
+    if has_exclusion and record["value_status"] != "excluded":
+        errors.append(f"{rid}: an exclusion note requires value_status 'excluded'")
     return errors
 
 
@@ -297,3 +357,35 @@ def index_records(records: Iterable[Record]) -> dict[str, Record]:
             raise ValueError(f"duplicate evidence id '{rid}'")
         index[rid] = rec
     return index
+
+
+def exclusion_dependent_ids(records: Iterable[Record]) -> set[str]:
+    """Find excluded findings and every interpretation derived from them.
+
+    Broken provenance is rejected rather than treated as independent evidence.
+    """
+    index = index_records(records)
+    state: dict[str, bool] = {}
+    visiting: set[str] = set()
+
+    def depends(record_id: str) -> bool:
+        if record_id in state:
+            return state[record_id]
+        if record_id not in index:
+            raise ValueError(f"unresolved derived_from id {record_id!r}")
+        if record_id in visiting:
+            raise ValueError(f"derived_from cycle through {record_id!r}")
+
+        visiting.add(record_id)
+        record = index[record_id]
+        parents = record.get("derived_from") or []
+        dependent = record.get("value_status") == "excluded"
+        if record.get("evidence_category") == "interpreted":
+            for parent_id in parents:
+                parent_dependent = depends(parent_id)
+                dependent = parent_dependent or dependent
+        visiting.remove(record_id)
+        state[record_id] = dependent
+        return dependent
+
+    return {record_id for record_id in index if depends(record_id)}

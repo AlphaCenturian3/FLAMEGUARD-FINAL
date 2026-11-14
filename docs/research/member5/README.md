@@ -17,7 +17,9 @@
 | `RANKING_METHODOLOGY.md` | How the research-relevance score works, its gates, and what it is not. |
 | `COORDINATION.md` | Roster conflict, GitHub identities and approvals, ownership boundary, decision log D-01 to D-12 (provisional vs approved), CP1 rebase readiness. |
 
-Code: `backend/flameguard/research/`. Proposed criteria: `config/research_relevance_criteria_v1.proposed.json`. Tests: `tests/research/`, with fixtures in `tests/fixtures/research/` (`fixture: true`; not NASA data).
+Code: `research/` (non-runtime reference implementation only; production ranking and comparison belong to Member 1). Proposed criteria: `config/research_relevance_criteria_v1.proposed.json`. Tests: `tests/research/`, with fixtures in `tests/fixtures/research/` (`fixture: true`; not NASA data).
+
+Run the reference source checker from the repository root with `python -m research.verify_sources <files>`. The package is not part of the backend runtime.
 
 ## Kickoff reconciliation
 
@@ -39,7 +41,7 @@ The kickoff's wording was kept where a source supports it. Where the kickoff par
 
 All sources were retrieved on 2026-11-14.
 
-- **Quotes:** 43 quote citations in `evidence_reported.json` (17), `investigations.json` (7) and `environment_reference.json` (19). Running `python -m flameguard.research.verify_sources` on the three files gave **29 found, 14 need manual check, 0 failed**. The 14 are PDF quotes (white paper, FLEX report, NASA habitation and atmosphere documents). Each was checked by extracting the PDF text in a scratch environment and was found word for word on the cited page; hashes are in `SOURCE_AUDIT.md`. For NTRS records the check uses the public NTRS API record, because the citation pages render with JavaScript.
+- **Quotes:** 43 quote citations in `evidence_reported.json` (17), `investigations.json` (7) and `environment_reference.json` (19). The current automated run of `python -m research.verify_sources` reported **29 found, 14 classified for manual checking, 0 failed**. The PDF checks and hashes are documented in `SOURCE_AUDIT.md`; an automated match is not claimed for those PDFs. For NTRS records the checker uses the public NTRS API record, because the citation pages render with JavaScript.
 - **DOIs:** checked against the DataCite registry (`api.datacite.org/dois/<doi>`): title, publisher (NASA PSI), type (Dataset), landing URL and rights.
 
 | Investigation | Subject | PSI / dataset DOI | Test-level data imported |

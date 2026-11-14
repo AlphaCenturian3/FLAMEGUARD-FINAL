@@ -4,9 +4,8 @@ import json
 from pathlib import Path
 
 import pytest
-
-from flameguard.research.common import ENVIRONMENTS, GRAVITY_ENVIRONMENTS
-from flameguard.research.evidence import validate_source
+from research.common import ENVIRONMENTS, GRAVITY_ENVIRONMENTS
+from research.evidence import validate_source
 
 FILE = (
     Path(__file__).resolve().parents[2]

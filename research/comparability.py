@@ -1,6 +1,7 @@
-"""Scientific comparability gate for numerical comparisons.
+"""Research-only reference for the contract's scientific comparability rules.
 
-Implements rule S5 of the contract v0.2.0 proposal and, by default, one stricter rule:
+Implements rule S5 of contract v0.2.0. Strict mode is an optional, stricter research
+proposal and is not the default:
 
 S5 (always):
 - every record is ``measured`` evidence with the same ``quantity`` and ``unit``
@@ -19,8 +20,8 @@ Any numerical operation on evidence must go through ``require_comparable``.
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from flameguard.research.common import CONDITION_KEYS
-from flameguard.research.evidence import Record
+from research.common import CONDITION_KEYS
+from research.evidence import Record
 
 CORE_CONDITION_KEYS: tuple[str, ...] = (
     "gravity_environment",
@@ -47,7 +48,7 @@ class ComparabilityResult:
     unit: str | None
 
 
-def check_comparability(records: Sequence[Record], *, strict: bool = True) -> ComparabilityResult:
+def check_comparability(records: Sequence[Record], *, strict: bool = False) -> ComparabilityResult:
     """Decide whether ``records`` can be compared numerically, giving one reason per problem."""
     reasons: list[str] = []
     if len(records) < 2:
@@ -92,7 +93,7 @@ def check_comparability(records: Sequence[Record], *, strict: bool = True) -> Co
     return ComparabilityResult(not reasons, tuple(reasons), quantity, unit)
 
 
-def require_comparable(records: Sequence[Record], *, strict: bool = True) -> ComparabilityResult:
+def require_comparable(records: Sequence[Record], *, strict: bool = False) -> ComparabilityResult:
     """Like ``check_comparability`` but raises ``IncomparableEvidenceError`` on failure."""
     result = check_comparability(records, strict=strict)
     if not result.comparable:
@@ -100,7 +101,7 @@ def require_comparable(records: Sequence[Record], *, strict: bool = True) -> Com
     return result
 
 
-def numeric_difference(a: Record, b: Record, *, strict: bool = True) -> float:
+def numeric_difference(a: Record, b: Record, *, strict: bool = False) -> float:
     """Return ``b.value - a.value``, only after the comparability gate passes."""
     require_comparable([a, b], strict=strict)
     return float(b["value"]) - float(a["value"])

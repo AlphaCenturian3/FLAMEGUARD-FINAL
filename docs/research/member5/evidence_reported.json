@@ -1,6 +1,6 @@
 {
   "status": "draft_pending_scientific_review",
-  "note": "Quoted qualitative statements from NASA sources (evidence_category 'reported'). No numeric measurements are imported here. Each quote was checked word-for-word against the source text on the retrieval date; rerun with: python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json (PDF sources are reported as needing manual verification).",
+  "note": "Quoted qualitative statements from NASA sources (evidence_category 'reported'). No numeric measurements are imported here. Each quote was checked word-for-word against the source text on the retrieval date; rerun with: python -m research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json (PDF sources are reported as needing manual verification).",
   "records": [
     {
       "id": "m5-bass2-flow-flareup",

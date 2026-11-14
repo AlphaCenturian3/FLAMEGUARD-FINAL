@@ -1,7 +1,7 @@
-"""Research interpretation, relevance ranking and Moon/Mars insight cards (Member 5).
+"""Research-only reference code for interpretation, ranking and comparison (Member 5).
 
-Status: draft, pending CP1 (contract v0.2.0) and scientific review by Member 1.
-Nothing in this package is wired into the API yet; ``app.py`` is unchanged.
+This package is deliberately outside ``backend/flameguard``. Runtime ranking and
+comparison belong to Member 1 and must not import this package.
 
 Integrity rules this package enforces (master spec section 2):
 
@@ -12,6 +12,6 @@ Integrity rules this package enforces (master spec section 2):
 - Simulation output is rejected as an input. This package must not import simulation code.
 """
 
-from flameguard.research.common import NOT_A_RISK_SCORE
+from research.common import NOT_A_RISK_SCORE
 
 __all__ = ["NOT_A_RISK_SCORE"]
