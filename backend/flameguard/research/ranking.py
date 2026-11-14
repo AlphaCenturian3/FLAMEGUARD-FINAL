@@ -25,14 +25,23 @@ Only ``measured`` and ``interpreted`` records are scored (contract 5.1: ranking 
 are measured or interpretation only). ``reported`` statements are listed as context.
 Simulations raise an error. Fixtures are refused unless ``allow_fixtures=True`` (tests).
 
-An output is ``released`` only if the criteria file is ``approved`` with named reviewers
-and no fixture was used. Otherwise it is ``provisional_not_for_release`` or
-``fixture_demo_only``.
+Gates (``release_status``):
+
+- ``disabled_criteria_not_frozen``: real records, but the criteria file is not
+  ``approved`` with named reviewers. No item is scored (CP1: no ranking output before R1).
+- ``evidence_insufficient``: criteria approved, but no investigation has verified
+  measured or interpreted evidence. Real measured records count only if their
+  ``manifest_id`` is in ``verified_manifest_ids``.
+- ``fixture_demo_only``: fixture records (tests). Never released.
+- ``released``: approved criteria and at least one scored investigation.
+
+Each criterion in ``explanations`` has a ``status`` (``complete``, ``partially_missing``
+or ``not_assessed``) so a missing input is never hidden inside a zero.
 """
 
 import json
 import math
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -279,6 +288,19 @@ def _completeness(recs: Sequence[Record]) -> dict[str, Any]:
 # --------------------------------------------------------------------------- ranking
 
 
+def _criterion_status(part: Mapping[str, Any]) -> str:
+    """Make missing inputs visible instead of hiding them inside a zero.
+
+    ``not_assessed``: the question gave nothing to assess. ``partially_missing``: some
+    inputs were not reported by the source. ``complete``: every input was reported.
+    """
+    if any("not assessed" in n for n in part.get("notes", [])):
+        return "not_assessed"
+    if part.get("missing") or any(v < 1 for v in part.get("per_record", {}).values()):
+        return "partially_missing"
+    return "complete"
+
+
 def _reject_simulations(records: Sequence[Record]) -> None:
     for r in records:
         marks = (r.get("evidence_category"), r.get("evidence_class"))
@@ -294,9 +316,15 @@ def rank_investigations(
     criteria: Mapping[str, Any],
     *,
     investigation_ids: Iterable[str] | None = None,
+    verified_manifest_ids: Collection[str] | None = None,
     allow_fixtures: bool = False,
 ) -> dict[str, Any]:
-    """Rank investigations by research relevance to ``question``. See module docstring."""
+    """Rank investigations by research relevance to ``question``. See module docstring.
+
+    ``verified_manifest_ids`` is the set of manifest ids that passed the provenance check
+    and the loader (Member 3 data, Member 1 loader B1). A real ``measured`` record whose
+    ``manifest_id`` is not in it is excluded, so no ranking runs on unverified values.
+    """
     errors = validate_question(question) + validate_criteria(criteria)
     if errors:
         raise RankingInputError("; ".join(errors))
@@ -305,6 +333,9 @@ def rank_investigations(
     if len(fixture_flags) > 1:
         raise RankingInputError("fixture and real records cannot be ranked together")
     uses_fixtures = fixture_flags == {True}
+    criteria_frozen = criteria["status"] == "approved" and bool(criteria["approved_by"])
+    disabled = not uses_fixtures and not criteria_frozen
+    verified = set(verified_manifest_ids or ())
 
     excluded_records: list[dict[str, Any]] = []
     valid: list[Record] = []
@@ -312,6 +343,15 @@ def rank_investigations(
         problems = validate_evidence(r)
         if r.get("fixture") and not allow_fixtures:
             problems.append("fixture records are refused outside tests")
+        if (
+            not r.get("fixture")
+            and r.get("evidence_category") == "measured"
+            and r.get("manifest_id") not in verified
+        ):
+            problems.append(
+                "manifest_id is not a verified manifest entry; measured values are used only "
+                "after Member 3's import and the provenance check"
+            )
         if problems:
             excluded_records.append({"id": r.get("id"), "reasons": problems})
         else:
@@ -326,10 +366,18 @@ def rank_investigations(
         mine = [r for r in valid if r["investigation_id"] == inv]
         scored = [r for r in mine if r["evidence_category"] in SCORED_CATEGORIES]
         context = [r["id"] for r in mine if r["evidence_category"] == "reported"]
-        if not scored:
-            reason = "no verified measured or interpreted evidence imported"
+        if disabled or not scored:
+            if not scored:
+                reason = "insufficient evidence: no verified measured or interpreted evidence"
+            else:
+                reason = f"{len(scored)} eligible record(s) not scored"
             if context:
                 reason += f"; {len(context)} quoted source statement(s) available as context only"
+            if disabled:
+                reason += (
+                    "; ranking disabled until the criteria are frozen and approved (R1, "
+                    "approvers named in approved_by)"
+                )
             excluded.append({"investigation_id": inv, "reason": reason})
             continue
         parts = {
@@ -370,6 +418,7 @@ def rank_investigations(
                     "weight": weights[c],
                     "score": parts[c]["score"],
                     "weighted": weights[c] * parts[c]["score"],
+                    "status": _criterion_status(parts[c]),
                     **{k: v for k, v in parts[c].items() if k not in ("score", "inputs")},
                 }
                 for c in EXPECTED_CRITERIA
@@ -384,10 +433,12 @@ def rank_investigations(
 
     if uses_fixtures:
         release_status = "fixture_demo_only"
-    elif criteria["status"] == "approved" and criteria["approved_by"]:
-        release_status = "released"
+    elif disabled:
+        release_status = "disabled_criteria_not_frozen"
+    elif not items:
+        release_status = "evidence_insufficient"
     else:
-        release_status = "provisional_not_for_release"
+        release_status = "released"
 
     ranking = {
         "contract_version": TARGET_CONTRACT,

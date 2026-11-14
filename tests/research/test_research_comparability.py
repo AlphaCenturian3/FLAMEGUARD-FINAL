@@ -27,6 +27,37 @@ def test_different_conditions_block_comparison(fx):
     assert err.value.reasons == result.reasons
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "expected"),
+    [
+        ("unit", "cm/s", "units are never converted"),
+        ("conditions.fuel_or_material", "fixture-material-z", "'fuel_or_material' differs"),
+        ("conditions.sample_geometry", "fixture-thick-slab", "'sample_geometry' differs"),
+        ("conditions.pressure_kpa", 70.0, "'pressure_kpa' differs"),
+        ("conditions.oxygen_mole_fraction", 0.30, "'oxygen_mole_fraction' differs"),
+        ("conditions.gravity_environment", "partial_gravity", "'gravity_environment' differs"),
+        ("conditions.flow_velocity_mm_s", 100, "'flow_velocity_mm_s' differs"),
+        ("conditions.flow_configuration", "opposed", "'flow_configuration' differs"),
+        ("conditions.diluent", "helium", "'diluent' differs"),
+    ],
+)
+def test_each_inconsistent_condition_blocks_comparison(fx, field, value, expected):
+    """Kickoff requirement: no cross-comparison across inconsistent units, fuel, pressure,
+    O2, gravity or flow without an explicit comparability rationale (none is accepted)."""
+    a, b = fx("fixture-a-1"), fx("fixture-a-2")
+    assert check_comparability([a, b]).comparable
+    target = b
+    *path, key = field.split(".")
+    for part in path:
+        target = target[part]
+    target[key] = value
+    result = check_comparability([a, b])
+    assert not result.comparable
+    assert any(expected in r for r in result.reasons), result.reasons
+    with pytest.raises(IncomparableEvidenceError):
+        numeric_difference(a, b)
+
+
 def test_missing_value_blocks_comparison(fx):
     a, b = fx("fixture-a-1"), fx("fixture-a-2")
     b.update(value=None, value_status="not_reported")

@@ -159,30 +159,78 @@ def test_fixture_and_real_records_cannot_be_ranked_together(fx, real_evidence, c
 
 
 def test_real_register_yields_no_fabricated_ranking(real_evidence, register, criteria):
-    out = rank_investigations(
-        LUNAR_MATERIALS,
-        real_evidence,
-        criteria,
-        investigation_ids=[i["id"] for i in register],
-    )
+    ids = [i["id"] for i in register if i["record_type"] == "investigation"]
+    real_evidence = [r for r in real_evidence if r["investigation_id"] in ids]
+    out = rank_investigations(LUNAR_MATERIALS, real_evidence, criteria, investigation_ids=ids)
     assert out["ranking"]["items"] == []
-    assert out["release_status"] == "provisional_not_for_release"
-    excluded = {e["investigation_id"] for e in out["ranking"]["excluded"]}
-    assert excluded == {"bass-ii", "flex", "sofie", "saffire", "fm2"}
+    assert out["release_status"] == "disabled_criteria_not_frozen"
+    excluded = {e["investigation_id"]: e["reason"] for e in out["ranking"]["excluded"]}
+    assert set(excluded) == {"bass-ii", "flex", "sofie", "saffire", "fm2"}
+    assert all("insufficient evidence" in r for r in excluded.values())
     assert out["excluded_records"] == []
+    # Even with approved criteria, the real register stays evidence-insufficient.
+    approved = {**criteria, "status": "approved", "approved_by": ["Member 1", "Member 3"]}
+    out = rank_investigations(LUNAR_MATERIALS, real_evidence, approved)
+    assert out["ranking"]["items"] == []
+    assert out["release_status"] == "evidence_insufficient"
 
 
-def test_release_requires_approved_criteria(fx, criteria):
-    real = fx("fixture-a-1")
-    real.pop("fixture")
-    assert rank_investigations(LUNAR_MATERIALS, [real], criteria)["release_status"] == (
-        "provisional_not_for_release"
+def _real(fx, rid):
+    rec = fx(rid)
+    rec.pop("fixture")
+    return rec
+
+
+APPROVED = {"status": "approved", "approved_by": ["Member 1", "Member 3"]}
+
+
+def test_ranking_is_disabled_until_criteria_are_frozen(fx, criteria):
+    real = _real(fx, "fixture-a-1")
+    out = rank_investigations(
+        LUNAR_MATERIALS, [real], criteria, verified_manifest_ids={"fixture-manifest-a"}
     )
-    approved = {**criteria, "status": "approved", "approved_by": ["Member 1"]}
-    assert rank_investigations(LUNAR_MATERIALS, [real], approved)["release_status"] == "released"
+    assert out["release_status"] == "disabled_criteria_not_frozen"
+    assert out["ranking"]["items"] == []
+    assert "disabled until the criteria are frozen" in out["ranking"]["excluded"][0]["reason"]
     unnamed = {**criteria, "status": "approved", "approved_by": []}
     with pytest.raises(RankingInputError, match="reviewers"):
         rank_investigations(LUNAR_MATERIALS, [real], unnamed)
+
+
+def test_unverified_measurements_are_never_ranked(fx, criteria):
+    real = _real(fx, "fixture-a-1")
+    approved = {**criteria, **APPROVED}
+    out = rank_investigations(LUNAR_MATERIALS, [real], approved)
+    assert out["release_status"] == "evidence_insufficient"
+    assert out["ranking"]["items"] == []
+    assert "not a verified manifest entry" in out["excluded_records"][0]["reasons"][0]
+    out = rank_investigations(
+        LUNAR_MATERIALS, [real], approved, verified_manifest_ids={"fixture-manifest-a"}
+    )
+    assert out["release_status"] == "released"
+    assert [it["investigation_id"] for it in out["ranking"]["items"]] == ["fixture-inv-a"]
+
+
+def test_interpretation_of_unverified_data_loses_its_traceability(fx, criteria):
+    a, c = _real(fx, "fixture-a-1"), _real(fx, "fixture-c-1")
+    approved = {**criteria, **APPROVED}
+    out = rank_investigations(LUNAR_MATERIALS, [a, c], approved)  # a-1 not verified
+    trace = out["explanations"]["fixture-inv-c"]["criteria"]["source_traceability"]
+    assert trace["per_record"]["fixture-c-1"] == 0
+    assert trace["status"] == "partially_missing"
+
+
+def test_criterion_status_makes_missing_inputs_visible(fixtures, criteria):
+    out = _rank(LUNAR_MATERIALS, fixtures, criteria)
+    b = out["explanations"]["fixture-inv-b"]["criteria"]
+    assert b["condition_match"]["status"] == "partially_missing"
+    assert b["data_completeness"]["status"] == "partially_missing"
+    a = out["explanations"]["fixture-inv-a"]["criteria"]
+    assert a["condition_match"]["status"] == "complete"
+    none = _rank({**LUNAR_MATERIALS, "conditions": {}}, fixtures, criteria)
+    assert none["explanations"]["fixture-inv-a"]["criteria"]["condition_match"]["status"] == (
+        "not_assessed"
+    )
 
 
 @pytest.mark.parametrize(
