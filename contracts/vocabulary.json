@@ -1,5 +1,5 @@
 {
-  "vocabulary_version": "0.2.0",
+  "vocabulary_version": "0.2.1",
   "note": "Quantity keys, units and physical bounds. quantity_rules.schema.json enforces exactly these; a test keeps the two identical. Extend only through a contract PR. Unit '1' means dimensionless.",
   "quantities": {
     "flame_spread_rate": {
@@ -27,6 +27,26 @@
       "unit": "K",
       "description": "Flame or gas temperature as reported by the source.",
       "exclusiveMinimum": 0
+    },
+    "initial_droplet_diameter": {
+      "unit": "mm",
+      "description": "Droplet diameter at the source-defined time zero, as reported (FLEX: when the igniters are turned on). A droplet size, not a flame size.",
+      "minimum": 0
+    },
+    "visible_flame_extinction_diameter": {
+      "unit": "mm",
+      "description": "Droplet diameter at the moment the visible flame extinguished, as reported by the source. A droplet size, not a flame size. Defined only for tests that ended in extinction.",
+      "minimum": 0
+    },
+    "burning_rate_constant": {
+      "unit": "mm2/s",
+      "description": "Droplet burning-rate constant K: the rate of decrease of droplet diameter squared with time (slope of D^2 versus t), as reported by the source. Not a flame spread rate; never interchangeable with flame_spread_rate.",
+      "minimum": 0
+    },
+    "burn_time": {
+      "unit": "s",
+      "description": "Duration of burning, as defined and reported by the source.",
+      "minimum": 0
     }
   }
 }
