@@ -194,10 +194,11 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
   - **`value_status`** is `reported`, `not_reported` or `not_applicable`. A missing value is `null` and can never be filled in.
   - **A numeric value** needs a `quantity` from `contracts/vocabulary.json`, exactly that unit, and must fall within that quantity's physical bounds. A string value is allowed only for a qualitative statement, with `quantity` and `unit` both `null`.
   - `quantity`, `value` and `unit` are always present. `null` is written out explicitly, never left out.
+  - **Interpretation findings** must list `limitations` (at least 1) and may list `relevant_environments`. Measured findings may have neither, because environment relevance is an interpretation.
   - **`conditions`** is required on measured findings. Every key is present (`null` = not reported). Key names carry the units, and unknown keys are rejected.
 - `Comparison`: rows for one quantity. Every row must carry `evidence_class: "measured"`. `comparable: true` needs at least 2 rows, all `reported`, and no reasons. `comparable: false` needs at least one reason. The backend never converts units, interpolates or fills gaps.
 - `Ranking`: frozen criteria with weights. Each score is the weighted sum of its criterion scores, and each criterion score lists its input findings, which are measured or interpretation only. Investigations left out of the ranking appear in `excluded` with a reason.
-- `AssistantAnswer`: `mode` is `ai`, `fallback_quotes` or `no_evidence`. Every mode except `no_evidence` needs at least one citation. Citations are findings only.
+- `AssistantAnswer`: `mode` is `ai`, `fallback_quotes` or `no_evidence`. Every mode except `no_evidence` needs at least one citation. `limitations` is required: at least one entry in `ai` and `fallback_quotes` modes, so TARS always states uncertainty. Citations are findings only.
 - `SimulationResult`: `illustrative_simulation` with the required label. `verification_status` is `unverified` or `numerically_verified` only.
 - `DataManifest`: the registry of every data file in `data/`.
 - `Error`: `{"error": {"code", "message"}}`, where `code` is `not_implemented`, `not_found`, `invalid_request` or `unavailable`.

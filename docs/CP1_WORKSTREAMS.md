@@ -219,7 +219,9 @@ CP5  submission (M5 Q6 complete, M1 verified)
 
 Every PR merges only with CI green, a review from the owner of each area it touches, and the independent reviewer from spec §4.4 for scientific work.
 
-## P0 contract additions (decision required before approval; not applied to this PR)
+## P0 contract additions (decision required before approval)
+
+**On branch `contract/cp1-p0-additions` (draft PR #4) these are applied. On PR #1 alone they are not.**
 
 **Assessment.** Neither field is needed for P0 items 1 to 3: the explorer, comparison and ranking. Ranking by environment already works through `Investigation.relevant_environments`. Both fields are needed for P0 item 4 (traceable interpretation and TARS):
 - R3 cannot tag a recommendation as lunar or Martian.

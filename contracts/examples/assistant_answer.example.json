@@ -17,5 +17,8 @@
       }
     }
   ],
-  "generated_by": "FlameGuard-SI"
+  "generated_by": "FlameGuard-SI",
+  "limitations": [
+    "FIXTURE limitation: answer is assembled from quotes only."
+  ]
 }

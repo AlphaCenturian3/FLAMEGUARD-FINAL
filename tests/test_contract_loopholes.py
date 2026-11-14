@@ -179,3 +179,45 @@ def test_unformatted_validators_still_reject_bad_dates():
 
 def test_already_closed_names_are_real_cases():
     assert ALREADY_CLOSED <= {c[0] for c in CASES}
+
+
+# --- P0 additions (draft PR #4): environment tags and limitations -------------
+
+P0_CASES = [
+    (
+        "measured-with-environment-tag",
+        MEASURED,
+        "finding",
+        _set(["relevant_environments"], ["lunar_base"]),
+    ),
+    ("measured-with-limitations", MEASURED, "finding", _set(["limitations"], ["x"])),
+    ("interp-without-limitations", INTERP, "finding", _delete(["limitations"])),
+    ("interp-empty-limitations", INTERP, "finding", _set(["limitations"], [])),
+    ("interp-blank-limitation", INTERP, "finding", _set(["limitations"], [""])),
+    ("interp-unknown-environment", INTERP, "finding", _set(["relevant_environments"], ["moon"])),
+    ("interp-empty-environments", INTERP, "finding", _set(["relevant_environments"], [])),
+    ("answer-without-limitations", ANSWER, "assistant_answer", _delete(["limitations"])),
+    ("answer-fallback-empty-limitations", ANSWER, "assistant_answer", _set(["limitations"], [])),
+]
+
+
+@pytest.mark.parametrize(
+    ("case", "example", "schema", "mutate"), P0_CASES, ids=[c[0] for c in P0_CASES]
+)
+def test_p0_addition_rule_holds(validator_for, case, example, schema, mutate):
+    doc = copy.deepcopy(_load(example))
+    mutate(doc)
+    with pytest.raises(ValidationError):
+        validator_for(f"{schema}.schema.json").validate(doc)
+
+
+def test_no_evidence_answer_may_have_no_limitations(validator_for):
+    doc = copy.deepcopy(_load(ANSWER))
+    doc.update(mode="no_evidence", citations=[], limitations=[])
+    validator_for("assistant_answer.schema.json").validate(doc)
+
+
+def test_interpretation_environment_tag_is_optional(validator_for):
+    doc = copy.deepcopy(_load(INTERP))
+    del doc["relevant_environments"]
+    validator_for("finding.schema.json").validate(doc)

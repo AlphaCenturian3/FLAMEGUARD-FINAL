@@ -9,7 +9,8 @@
     "answer",
     "mode",
     "citations",
-    "generated_by"
+    "generated_by",
+    "limitations"
   ],
   "additionalProperties": false,
   "properties": {
@@ -56,6 +57,14 @@
     },
     "generated_by": {
       "const": "FlameGuard-SI"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Uncertainty and limits of the answer (TARS identifies uncertainty). At least one entry in ai and fallback_quotes modes."
     }
   },
   "if": {
@@ -71,6 +80,9 @@
   "then": {
     "properties": {
       "citations": {
+        "minItems": 1
+      },
+      "limitations": {
         "minItems": 1
       }
     }

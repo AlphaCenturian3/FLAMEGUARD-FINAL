@@ -95,7 +95,13 @@
         "method": "fixture-method",
         "method_version": "0",
         "generated_by": "FlameGuard-SI"
-      }
+      },
+      "relevant_environments": [
+        "lunar_base"
+      ],
+      "limitations": [
+        "FIXTURE limitation: tested conditions differ from lunar gravity and habitat atmosphere."
+      ]
     }
   ],
   "total": 3
