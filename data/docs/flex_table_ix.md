@@ -19,6 +19,19 @@
 
 A second person should still review the CSV against the rendered page before this data is used in the demo.
 
+### What GitHub CI checks, and what runs only locally
+
+The raw PDF is never committed (spec §2.4), so **GitHub CI cannot compare the CSV with the PDF.**
+
+| Check | Where it runs | Needs the PDF? |
+|---|---|---|
+| Manifest schema, file SHA-256, evidence-class rules (`tools/check_data_provenance.py`) | CI and local | No |
+| CSV structure, dash cells empty and declared, no zero substitution, dates, flag rules (FLEX-010 `exclude`, every dash flagged `not_available`, contamination on every row) (`tests/test_flex_dataset.py`) | CI and local | No |
+| Cell-by-cell CSV vs PDF (150 cells), PDF SHA-256, every manifest and flag quote verbatim on its cited page (`tools/verify_flex_table_ix.py`) | **Local only** (needs the PDF in `data/raw/` and PyMuPDF) | Yes |
+| Visual check of every cell against a 250-dpi render | **Manual, local** | Yes |
+
+A green CI run therefore shows that the files are internally consistent and match their registered checksums. It does **not** re-prove the transcription. Re-run `tools/verify_flex_table_ix.py` locally after any edit to the CSV, the flags or the manifest quotes, and paste its output in the PR. Last local run: 2026-11-14, passed (150 cells, 7 manifest quotes, 43 flags).
+
 ## Columns
 
 | Column | Table IX heading | Unit | Notes |
