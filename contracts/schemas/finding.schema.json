@@ -58,7 +58,7 @@
     },
     "uncertainty": {
       "$ref": "common.schema.json#/$defs/text_or_null",
-      "description": "As reported by the source; never invented."
+      "description": "Uncertainty exactly as reported by the source; never invented, and never a FlameGuard-SI assessment (those go in curation_notes)."
     },
     "conditions": {
       "$ref": "conditions.schema.json"
@@ -98,6 +98,14 @@
         "minLength": 1
       },
       "description": "Interpretation findings only, and required there: assumptions, extrapolation limits and uncertainty of the interpretation. A measured finding uses the source-reported `uncertainty`."
+    },
+    "curation_notes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common.schema.json#/$defs/curation_note"
+      },
+      "description": "Measured findings only. FlameGuard-SI cautions and exclusions, each attributed and, for exclusions, traced to a quality flag."
     }
   },
   "allOf": [
@@ -208,7 +216,78 @@
         },
         "required": [
           "limitations"
-        ]
+        ],
+        "not": {
+          "required": [
+            "curation_notes"
+          ]
+        }
+      }
+    },
+    {
+      "description": "withheld: measured only, value null (via value_matches_status), and at least one exclusion note.",
+      "if": {
+        "required": [
+          "value_status"
+        ],
+        "properties": {
+          "value_status": {
+            "const": "withheld"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "curation_notes"
+        ],
+        "properties": {
+          "evidence_class": {
+            "const": "measured"
+          },
+          "curation_notes": {
+            "contains": {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "exclusion"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "An exclusion note means the value is withheld, so an excluded value can never stay numerically available.",
+      "if": {
+        "required": [
+          "curation_notes"
+        ],
+        "properties": {
+          "curation_notes": {
+            "contains": {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "exclusion"
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "value_status": {
+            "const": "withheld"
+          }
+        }
       }
     }
   ]

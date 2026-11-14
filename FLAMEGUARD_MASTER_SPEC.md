@@ -193,7 +193,9 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
 - `Investigation`: a NASA investigation, with `datasets` pointing to manifest ids.
 - `Finding`: one `measured` value or one `interpretation`.
   - **A measured finding** needs a `locator` (where in the source) and a manifest id.
-  - **`value_status`** is `reported`, `not_reported` or `not_applicable`. A missing value is `null` and can never be filled in.
+  - **`value_status`** is `reported`, `not_reported`, `not_applicable` or `withheld`. A missing value is `null` and can never be filled in.
+    - `withheld` means the source reports a value, but FlameGuard-SI excludes it after a reviewed quality flag. Its value is `null`, it needs an attributed exclusion note that references the flag, and it keeps full measured provenance.
+  - **`uncertainty`** holds only uncertainty the source reports. FlameGuard-SI cautions and exclusions go in **`curation_notes`** (measured findings only, always `generated_by: "FlameGuard-SI"`). See `contracts/README.md` conventions 9 and 10.
   - **A numeric value** needs a `quantity` from `contracts/vocabulary.json`, exactly that unit, and must fall within that quantity's physical bounds. A string value is allowed only for a qualitative statement, with `quantity` and `unit` both `null`.
   - `quantity`, `value` and `unit` are always present. `null` is written out explicitly, never left out.
   - **Interpretation findings** must list `limitations` (at least 1) and may list `relevant_environments`. Measured findings may have neither, because environment relevance is an interpretation.

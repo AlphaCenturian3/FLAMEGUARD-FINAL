@@ -6,7 +6,7 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 
 | Schema | Used by |
 |---|---|
-| `schemas/common.schema.json` | Shared definitions: ids, environments, value status, dates, URLs |
+| `schemas/common.schema.json` | Shared definitions: ids, environments, value status, curation notes, dates, URLs |
 | `schemas/quantity_rules.schema.json` | Quantity → unit and physical bounds, kept identical to `vocabulary.json` by a test |
 | `schemas/source.schema.json` | Citation embedded in every scientific object |
 | `schemas/conditions.schema.json` | Experimental conditions on findings and comparison rows |
@@ -37,7 +37,20 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 6. **IDs** use one pattern (`^[a-z0-9][a-z0-9_.-]*$`, at most 128 characters) in three separate spaces: manifest ids, investigation ids and finding ids. Each id is unique within its own space. `Finding.provenance.derived_from` uses finding ids. `manifest.derived_from` uses manifest ids.
 7. **Simulations** exist only as `SimulationResult`. The `Finding`, `Comparison`, `Ranking` and `AssistantAnswer` schemas reject `illustrative_simulation`, and no extra keys are allowed that could carry simulated values.
 8. **Planned endpoints** return `501` with an `Error` body until they are implemented.
-9. **Data-quality flags** (decision C3): a value that Member 3's flags file marks `exclude` is **not emitted** as a numeric `Finding`, so ranking, compare and TARS never see it. A `caution` reason is copied into that finding's `uncertainty`. A `not_available` cell is `not_reported`. Source files are never edited to remove a value.
+9. **Data-quality flags** (decision C3, corrected at CP1). Four cases stay distinct, and the schema enforces it:
+
+   | Case | `value_status` | `value` | Explanation goes in |
+   |---|---|---|---|
+   | Source-reported uncertainty | `reported` | the number | `uncertainty`: **only** text the source itself reports |
+   | Curator caution (flag `caution`) | `reported` | the number | `curation_notes[]` with `kind: "caution"`, `generated_by: "FlameGuard-SI"` |
+   | Excluded measurement (flag `exclude`) | `withheld` | `null` | `curation_notes[]` with `kind: "exclusion"`, a reason, and a `flag_ref` (`manifest_id` + `flag_id`) to the reviewed quality-flag record. The printed value stays in the registered source file that the `locator` points to |
+   | Missing in the source (dash, `not_available`) | `not_reported` | `null` | nothing; an exclusion note is not allowed |
+
+   - `withheld` is allowed only on measured findings, and keeps every measured provenance requirement (`manifest_id`, `locator`, `sources`).
+   - An exclusion note forces `withheld`, so an excluded value can never stay numerically available.
+   - `curation_notes` is not allowed on interpretation findings, which use `limitations`.
+   - Source files are never edited to remove a value.
+10. **`uncertainty` is source text only.** FlameGuard-SI judgments never go in it. The Q3 spot check verifies `uncertainty` against the source, along with values and quotes.
 
 ## Rules schemas cannot express
 
@@ -54,6 +67,7 @@ These rules span several files or depend on computed values. Each one has a memb
 | S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | M1 (B4) / M5 (Q2) |
 | S7 | List `total` equals `len(items)` | M1 (B2) / M1 (Q1 integration) and M2 (Q4) |
 | S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources, and was returned by `retrieve()` | M1 (B6) with M3 (T1) / M5 (Q2) |
+| S9 | **Withheld findings** are never ranking inputs, never count as reported evidence in a score, and appear in `/api/compare` only as non-comparable rows (the schema already forbids `comparable: true` with them). TARS may cite one only to explain an exclusion, and never states the withheld number. | M1 (B3, B4, B6) / M5 (Q2) |
 
 ## Changing the contract
 
@@ -73,6 +87,7 @@ Follow spec §5.4. The PR touches only `contracts/`, the spec and the version co
 | Date pattern, `http(s)` URL pattern, non-empty strings or `null` | `"retrieved": "yesterday"`, `"url": "x"` and empty quotes were accepted |
 | Manifest schema mirrors the provenance checker (a test checks they agree); interpretations live under `data/curated/interpretations/` | The schema accepted measured entries with no sources or rights status, which the tool rejected |
 | Strict JSON parsing (S0) | `NaN` passed every numeric bound |
+| **Attribution correction (CP1):** `curation_notes` (FlameGuard-SI cautions and exclusions); `value_status: "withheld"`; `uncertainty` reserved for source text | C3 had put FlameGuard-SI caution text into `uncertainty` ("as reported by the source"), and excluded values simply vanished. Readers could not tell source uncertainty from curator judgment, or an excluded value from a missing one. The change is additive: every document that was valid before is still valid |
 | `/api/compare` (501 stub); `error.code` enum; shared `common.schema.json` | Comparison had no endpoint, and environment and id rules were duplicated |
 | Removed `validated_against_measured` from simulations | No reference format exists for it yet |
 | **P0 additions (PR #5):** `Finding.relevant_environments` and `Finding.limitations` (interpretation only; limitations required there); `AssistantAnswer.limitations` (required; at least 1 in `ai`/`fallback_quotes`) | Moon/Mars recommendations (R3) need an environment tag, and TARS must identify uncertainty. Both schemas forbid extra keys, so adding the fields after CP1 would be a breaking change |

@@ -19,8 +19,10 @@
       "enum": [
         "reported",
         "not_reported",
-        "not_applicable"
-      ]
+        "not_applicable",
+        "withheld"
+      ],
+      "description": "reported: the source gives a value. not_reported: the source gives none. not_applicable: no value applies (qualitative statement). withheld: the source reports a value, but FlameGuard-SI excludes it from use after a reviewed quality flag; the value is null here and stays as printed in the source file the locator points to."
     },
     "environment": {
       "enum": [
@@ -53,7 +55,7 @@
       "pattern": "^https?://[^\\s]+$"
     },
     "value_matches_status": {
-      "description": "reported needs a non-null value; not_reported/not_applicable need null.",
+      "description": "reported needs a non-null value; not_reported, not_applicable and withheld need null.",
       "allOf": [
         {
           "if": {
@@ -86,7 +88,8 @@
               "value_status": {
                 "enum": [
                   "not_reported",
-                  "not_applicable"
+                  "not_applicable",
+                  "withheld"
                 ]
               }
             },
@@ -103,6 +106,62 @@
           }
         }
       ]
+    },
+    "curation_note": {
+      "description": "A FlameGuard-SI quality assessment of a measured value. Never source text; source-reported uncertainty belongs in `uncertainty`.",
+      "type": "object",
+      "required": [
+        "kind",
+        "note",
+        "generated_by"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "caution",
+            "exclusion"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable reason."
+        },
+        "generated_by": {
+          "const": "FlameGuard-SI"
+        },
+        "flag_ref": {
+          "type": "object",
+          "required": [
+            "manifest_id",
+            "flag_id"
+          ],
+          "additionalProperties": false,
+          "description": "The reviewed quality-flag record behind this note (data/curated/interpretations/quality/).",
+          "properties": {
+            "manifest_id": {
+              "$ref": "#/$defs/id"
+            },
+            "flag_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "exclusion"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "flag_ref"
+        ]
+      }
     }
   }
 }
