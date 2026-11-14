@@ -32,6 +32,20 @@ The raw PDF is never committed (spec §2.4), so **GitHub CI cannot compare the C
 
 A green CI run therefore shows that the files are internally consistent and match their registered checksums. It does **not** re-prove the transcription. Re-run `tools/verify_flex_table_ix.py` locally after any edit to the CSV, the flags or the manifest quotes, and paste its output in the PR. Last local run: 2026-11-14, passed (150 cells, 7 manifest quotes, 43 flags).
 
+### Cited pages: printed vs PDF
+
+The manifest `sources[].page` and the flags file's `source_printed_page` hold the report's **printed** page numbers. In this PDF (SHA-256 `b4f6ca98…e79d`), the PDF page index is always **printed + 6**, because the front matter is unnumbered or roman-numbered. `tools/verify_flex_table_ix.py` uses this offset, and every cited quote was found at it.
+
+| Printed page | PDF page | Cited for |
+|---|---|---|
+| 16 | 22 | §5.1 shutter speed; §5.2 contamination |
+| 17 | 23 | §5.2 contamination assertions (methanol, heptane) |
+| 19 | 25 | Appendix A.1 column definitions (dash meaning, extrapolation) |
+| 20 | 26 | Table IX (FLEX-001 to FLEX-010) |
+| 29–38 | 35–44 | Appendix B, Figure 5–14 captions (FLEX-001 to FLEX-010) |
+
+Member 5's PR #3 cites this same report by **PDF** page (8 and 19, which are printed 2 and 13). The team has not yet chosen one convention for `Source.page`.
+
 ## Columns
 
 | Column | Table IX heading | Unit | Notes |
