@@ -92,7 +92,7 @@ Secrets such as AI API keys come only from environment variables (see `.env.exam
 
 ## 4. Team ownership
 
-**Proposed for CP1, not approved.** The active team is Members 1, 2, 3 and 5. There is no Member 4. A GitHub username counts only once that member confirms it in their CP1 approval. The evidence for each one is recorded on PR #1.
+**Proposed for CP1, not approved.** The active team is proposed as Members 1, 2, 3 and 5. **Member 4 (QA) is unresolved:** the earlier project roster lists a Member 4 for QA, and this proposal removes the role. The team must confirm explicitly, in PR #1, either that Member 4 does not exist or who holds the role, before the ownership and review tables in §4 are frozen at CP1. Until then no GitHub account is assigned to Member 4, and the QA duties stay with the members listed below. A GitHub username counts only once that member confirms it in their CP1 approval. The evidence for each one is recorded on PR #1.
 
 | Member | GitHub (status) | Branch | Responsibility | Owns (writes) |
 |---|---|---|---|---|
@@ -141,6 +141,8 @@ Ranking, comparability and evidence logic each run in exactly one place in the s
 | Evidence retrieval (T1) | Member 3, `backend/flameguard/evidence/` | none |
 
 `backend/flameguard/research/` is not an allowed package.
+
+**Frontend display checks (Member 2).** `frontend/` may run fail-closed checks before it displays a result. For example, `traceSupport()` and `reviewRankings()` withhold a ranking item or interpretation whose inputs do not resolve, fail provenance, trace back to a simulation, or cite an `excluded` value, and say why. These checks are not a second implementation: they never compute, re-weight or re-order scores, never decide comparability, and never show anything the backend did not return. The display follows the backend's `rank` order and `comparable` decision.
 
 ### 4.4 Independent review
 
@@ -193,7 +195,8 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
 - `Investigation`: a NASA investigation, with `datasets` pointing to manifest ids.
 - `Finding`: one `measured` value or one `interpretation`.
   - **A measured finding** needs a `locator` (where in the source) and a manifest id.
-  - **`value_status`** is `reported`, `not_reported` or `not_applicable`. A missing value is `null` and can never be filled in.
+  - **`value_status`** is `reported`, `not_reported`, `not_applicable` or `excluded`. A missing value is `null` and can never be filled in. `excluded` means the source prints a value that a FlameGuard-SI data-quality flag excludes from quantitative use. The value is `null`, and an exclusion note gives the reason (rule S9).
+  - **`uncertainty`** holds only what the source reports. FlameGuard-SI caution and exclusion judgments go in **`curation_notes`** (measured findings only). Each note is attributed to FlameGuard-SI, points to its data-quality flag, and quotes the NASA passage it relies on.
   - **A numeric value** needs a `quantity` from `contracts/vocabulary.json`, exactly that unit, and must fall within that quantity's physical bounds. A string value is allowed only for a qualitative statement, with `quantity` and `unit` both `null`.
   - `quantity`, `value` and `unit` are always present. `null` is written out explicitly, never left out.
   - **Interpretation findings** must list `limitations` (at least 1) and may list `relevant_environments`. Measured findings may have neither, because environment relevance is an interpretation.
@@ -265,3 +268,4 @@ All times are **proposed**. The team confirms them. Submission closes Sunday, No
    - a claim-strength or "reported statement" evidence class;
    - a structured research-question ranking context;
    - a stricter comparability mode that blocks comparisons when a core condition is unreported for every row.
+10. Team roster: whether Member 4 (QA) exists and, if so, who it is (§4). It must be confirmed explicitly before CP1 freezes §4; no account is assigned in the meantime.

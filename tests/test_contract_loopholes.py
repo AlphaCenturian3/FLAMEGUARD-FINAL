@@ -221,3 +221,79 @@ def test_interpretation_environment_tag_is_optional(validator_for):
     doc = copy.deepcopy(_load(INTERP))
     del doc["relevant_environments"]
     validator_for("finding.schema.json").validate(doc)
+
+
+# --- Curation notes and exclusions (CP1 amendment) -----------------------------
+
+EXCLUDED = "finding.measured_excluded.example.json"
+CAUTION_NOTE = {
+    "kind": "caution",
+    "text": "FIXTURE caution",
+    "generated_by": "FlameGuard-SI",
+    "flag_ref": {"manifest_id": "fixture-dataset-1.flags", "flag_id": "FIXTURE-F009"},
+    "source": {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "quote": "FIXTURE QUOTE PLACEHOLDER",
+        "retrieved": "2026-11-14",
+    },
+}
+
+CURATION_CASES = [
+    ("note-attributed-to-nasa", EXCLUDED, _set(["curation_notes", 0, "generated_by"], "NASA")),
+    ("note-without-attribution", EXCLUDED, _delete(["curation_notes", 0, "generated_by"])),
+    ("note-without-source", EXCLUDED, _delete(["curation_notes", 0, "source"])),
+    ("note-source-null-quote", EXCLUDED, _set(["curation_notes", 0, "source", "quote"], None)),
+    ("note-without-flag-ref", EXCLUDED, _delete(["curation_notes", 0, "flag_ref"])),
+    (
+        "note-bad-flag-manifest-id",
+        EXCLUDED,
+        _set(["curation_notes", 0, "flag_ref", "manifest_id"], "Bad Id"),
+    ),
+    ("note-unknown-kind", EXCLUDED, _set(["curation_notes", 0, "kind"], "opinion")),
+    ("note-carries-value", EXCLUDED, _set(["curation_notes", 0, "value"], 0.37)),
+    ("note-empty-text", EXCLUDED, _set(["curation_notes", 0, "text"], "")),
+    ("excluded-with-value", EXCLUDED, _set(["value"], 0.37)),
+    ("excluded-without-notes", EXCLUDED, _delete(["curation_notes"])),
+    ("excluded-with-caution-only", EXCLUDED, _set(["curation_notes"], [CAUTION_NOTE])),
+    ("exclusion-note-on-reported-value", EXCLUDED, _set(["value_status"], "reported")),
+    ("empty-curation-notes", MEASURED, _set(["curation_notes"], [])),
+    ("interp-with-curation-notes", INTERP, _set(["curation_notes"], [CAUTION_NOTE])),
+    ("interp-excluded", INTERP, _set(["value_status"], "excluded")),
+]
+
+
+@pytest.mark.parametrize(
+    ("case", "example", "mutate"), CURATION_CASES, ids=[c[0] for c in CURATION_CASES]
+)
+def test_curation_rule_holds(validator_for, case, example, mutate):
+    doc = copy.deepcopy(_load(example))
+    mutate(doc)
+    with pytest.raises(ValidationError):
+        validator_for("finding.schema.json").validate(doc)
+
+
+def test_exclusion_note_requires_excluded_status(validator_for):
+    """A reported number carrying an exclusion note is rejected by the note rule itself."""
+    doc = copy.deepcopy(_load(EXCLUDED))
+    doc.update(value_status="reported", value=0.37)
+    with pytest.raises(ValidationError):
+        validator_for("finding.schema.json").validate(doc)
+
+
+def test_caution_note_on_reported_measured_value_is_allowed(validator_for):
+    doc = copy.deepcopy(_load(MEASURED))
+    doc["curation_notes"] = [CAUTION_NOTE]
+    validator_for("finding.schema.json").validate(doc)
+    assert doc["uncertainty"] is None  # curation text never goes into uncertainty
+
+
+def test_excluded_row_makes_comparison_non_comparable(validator_for):
+    v = validator_for("comparison.schema.json")
+    doc = copy.deepcopy(_load(COMPARE))
+    doc["rows"][0].update(value=None, value_status="excluded")
+    v.validate(doc)  # allowed while comparable is false
+    doc["comparable"] = True
+    doc["non_comparable_reasons"] = []
+    with pytest.raises(ValidationError):
+        v.validate(doc)

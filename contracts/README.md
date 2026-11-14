@@ -37,7 +37,11 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 6. **IDs** use one pattern (`^[a-z0-9][a-z0-9_.-]*$`, at most 128 characters) in three separate spaces: manifest ids, investigation ids and finding ids. Each id is unique within its own space. `Finding.provenance.derived_from` uses finding ids. `manifest.derived_from` uses manifest ids.
 7. **Simulations** exist only as `SimulationResult`. The `Finding`, `Comparison`, `Ranking` and `AssistantAnswer` schemas reject `illustrative_simulation`, and no extra keys are allowed that could carry simulated values.
 8. **Planned endpoints** return `501` with an `Error` body until they are implemented.
-9. **Data-quality flags** (decision C3): a value that Member 3's flags file marks `exclude` is **not emitted** as a numeric `Finding`, so ranking, compare and TARS never see it. A `caution` reason is copied into that finding's `uncertainty`. A `not_available` cell is `not_reported`. Source files are never edited to remove a value.
+9. **Data-quality flags** (decision C3, amended): flags are FlameGuard-SI curation judgments, so they never go into `uncertainty`, which holds only what the source reports.
+   - A `caution` flag becomes a `curation_notes` entry with `kind: "caution"`, `generated_by: "FlameGuard-SI"`, a `flag_ref` (flags manifest id and flag id) and the exact NASA `source` quote it relies on.
+   - A value flagged `exclude` is emitted with `value_status: "excluded"`, `value: null`, and a `curation_notes` entry with `kind: "exclusion"` that gives the reason. The printed number stays only in the registered source file at `locator`, so it cannot reach ranking, compare or TARS (rule S9), and the dashboard can still say what was excluded and why.
+   - A `not_available` cell is `not_reported`.
+   - Source files are never edited to remove a value.
 
 ## Rules schemas cannot express
 
@@ -54,6 +58,7 @@ These rules span several files or depend on computed values. Each one has a memb
 | S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | M1 (B4) / M5 (Q2) |
 | S7 | List `total` equals `len(items)` | M1 (B2) / M1 (Q1 integration) and M2 (Q4) |
 | S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources, and was returned by `retrieve()` | M1 (B6) with M3 (T1) / M5 (Q2) |
+| S9 | **Exclusions.** No finding with `value_status: "excluded"` is a ranking input, a comparison row counted as comparable (also schema-enforced), a `retrieve()` result or an assistant citation. Each `curation_notes[].flag_ref` resolves to a row of a registered interpretation-class flags file whose `ranking_use` matches the note's `kind` | M1 (B1, B3, B4, B6) with M3 (T1, D4) / M5 (Q2) |
 
 ## Changing the contract
 
@@ -75,4 +80,5 @@ Follow spec §5.4. The PR touches only `contracts/`, the spec and the version co
 | Strict JSON parsing (S0) | `NaN` passed every numeric bound |
 | `/api/compare` (501 stub); `error.code` enum; shared `common.schema.json` | Comparison had no endpoint, and environment and id rules were duplicated |
 | Removed `validated_against_measured` from simulations | No reference format exists for it yet |
+| **CP1 amendment:** `Finding.curation_notes` (measured only; attributed to FlameGuard-SI; `flag_ref` + exact NASA quote) and `value_status: "excluded"` (value `null`, exclusion note required); `uncertainty` is source-reported only; rule S9 | C3 put FlameGuard-SI caution text into the source-reported `uncertainty` field, and excluded values vanished without an explanation the dashboard could show |
 | **P0 additions (PR #5):** `Finding.relevant_environments` and `Finding.limitations` (interpretation only; limitations required there); `AssistantAnswer.limitations` (required; at least 1 in `ai`/`fallback_quotes`) | Moon/Mars recommendations (R3) need an environment tag, and TARS must identify uncertainty. Both schemas forbid extra keys, so adding the fields after CP1 would be a breaking change |

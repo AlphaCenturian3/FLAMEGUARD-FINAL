@@ -1,0 +1,72 @@
+{
+  "fixture": true,
+  "id": "fixture-finding-measured-3",
+  "investigation_id": "fixture-investigation-1",
+  "evidence_class": "measured",
+  "statement": "FIXTURE PLACEHOLDER. The source prints a value here, but a FlameGuard-SI data-quality flag excludes it from quantitative use.",
+  "quantity": "flame_spread_rate",
+  "value": null,
+  "unit": "mm/s",
+  "value_status": "excluded",
+  "uncertainty": null,
+  "curation_notes": [
+    {
+      "kind": "exclusion",
+      "text": "FIXTURE: the printed table value conflicts with a figure caption in the same source; excluded until resolved.",
+      "generated_by": "FlameGuard-SI",
+      "flag_ref": {
+        "manifest_id": "fixture-dataset-1.flags",
+        "flag_id": "FIXTURE-F001"
+      },
+      "source": {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "page": "1",
+        "quote": "FIXTURE QUOTE PLACEHOLDER",
+        "retrieved": "2026-11-14",
+        "archive_id": null
+      }
+    },
+    {
+      "kind": "caution",
+      "text": "FIXTURE: imaging caveat that applies to the whole test.",
+      "generated_by": "FlameGuard-SI",
+      "flag_ref": {
+        "manifest_id": "fixture-dataset-1.flags",
+        "flag_id": "FIXTURE-F002"
+      },
+      "source": {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "page": "1",
+        "quote": "FIXTURE QUOTE PLACEHOLDER",
+        "retrieved": "2026-11-14",
+        "archive_id": null
+      }
+    }
+  ],
+  "conditions": {
+    "gravity_environment": "microgravity",
+    "oxygen_mole_fraction": null,
+    "pressure_kpa": null,
+    "flow_velocity_mm_s": null,
+    "flow_configuration": null,
+    "diluent": null,
+    "fuel_or_material": null,
+    "sample_geometry": null
+  },
+  "provenance": {
+    "manifest_id": "fixture-dataset-1",
+    "locator": "FIXTURE table 0, row 2",
+    "sources": [
+      {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "page": null,
+        "quote": null,
+        "retrieved": "2026-11-14",
+        "archive_id": null
+      }
+    ]
+  }
+}

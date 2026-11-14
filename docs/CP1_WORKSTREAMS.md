@@ -2,7 +2,7 @@
 
 **Status:** proposal. Nobody starts feature work until CP1 passes: Members 1, 2, 3 and 5 declare their GitHub usernames in spec §4 and approve the contract v0.2.0 PR, and it is merged. Until then, only the "Start now" items below are allowed.
 
-**Team:** Members 1, 2, 3 and 5. There is no Member 4. Ownership, TARS, the interface matrix, the one-implementation rule and the independent-review matrix are in spec §4.1 to §4.4.
+**Team:** Members 1, 2, 3 and 5 (proposed). Whether a Member 4 (QA) exists is **unresolved** and needs explicit team confirmation before CP1 (spec §4, §8 item 10); no account is assigned to it. Ownership, TARS, the interface matrix, the one-implementation rule and the independent-review matrix are in spec §4.1 to §4.4.
 
 **Product priority, in order:**
 1. NASA evidence explorer
@@ -144,7 +144,7 @@ Every item must keep the rules in spec §2.
 | `docs/research/member5/insight_cards.json` (6 cards) | Interpretation findings in `data/curated/interpretations/` (R2/R3), with `derived_from` pointing to curated measured ids | Cards become traceable through S3 |
 | `docs/research/member5/investigations.json` | Member 3 merges it into `data/curated/investigations.json` (D1), keeping the candidate PSI ids until they are confirmed | Single investigations file |
 | `tests/research/` (98 tests passing on the branch) | stays | Member 5's test folder (replaces the earlier `tests/integrity/` proposal) |
-| References to "Member 4 / QA" | the assigned member in the item map | There is no Member 4 |
+| References to "Member 4 / QA" | the assigned member in the item map, unless the team confirms a Member 4 | Roster unresolved (spec §8 item 10) |
 
 Member 1 answers for each record in `evidence_reported.json` how it maps. This applies the existing contract and changes nothing:
 - `stated_objective` → `Investigation.objectives`;
@@ -241,7 +241,7 @@ They were added before CP1 because `Finding` and `AssistantAnswer` reject unknow
 |---|---|---|---|
 | C1 | TARS = **Traceable Analysis and Research Support** | decided | spec §4.1, §8 |
 | C2 | Condition values may be converted by **exact defined factors only**, in Member 3's curation tool. The as-printed value stays in the registered source file. Quantity values are never converted | accepted | `contracts/README.md` convention 4 |
-| C3 | A value flagged `exclude` is not emitted as a numeric `Finding`. A `caution` reason goes into `uncertainty`. Nothing is deleted from the source files | accepted | `contracts/README.md` convention 9 |
+| C3 | **Amended (pending Members 1 and 3):** a value flagged `exclude` is emitted with `value_status: "excluded"`, `value: null` and an attributed `curation_notes` exclusion note, so it never reaches ranking, compare or TARS (S9) and the reason can still be shown. A `caution` reason goes into `curation_notes`, never into the source-reported `uncertainty`. Nothing is deleted from the source files | amendment proposed | `contracts/README.md` convention 9, rule S9 |
 | C4 | FLEX quantities (`burning_rate_constant`, `visible_flame_extinction_diameter`, `burn_time`, `initial_droplet_diameter`) | accepted. Implemented **after CP1** in a separate reviewed contract PR (Member 3, D5). Not in this PR | this table |
 | C5 | `test/qa-demo` | open: keep it untouched (recommendation: delete at CP4) | this table |
 | — | PRs #2, #3 and #4 | not merged before CP1 | spec §6 |

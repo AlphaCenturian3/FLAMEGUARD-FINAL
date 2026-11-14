@@ -16,11 +16,79 @@
       ]
     },
     "value_status": {
+      "description": "excluded: the source prints a value, but a FlameGuard-SI data-quality flag excludes it from quantitative use. The value is null here; the printed value stays only in the registered source file at the finding's locator.",
       "enum": [
         "reported",
         "not_reported",
-        "not_applicable"
+        "not_applicable",
+        "excluded"
       ]
+    },
+    "curation_note": {
+      "description": "A FlameGuard-SI curation judgment about a measured value (decision C3, amended). Never source-reported uncertainty. Linked to the data-quality flag that records it and to the exact NASA passage it relies on.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "text",
+        "generated_by",
+        "flag_ref",
+        "source"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "caution",
+            "exclusion"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generated_by": {
+          "const": "FlameGuard-SI"
+        },
+        "flag_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "manifest_id",
+            "flag_id"
+          ],
+          "properties": {
+            "manifest_id": {
+              "$ref": "#/$defs/id",
+              "description": "Manifest id of the interpretation-class data-quality flags file."
+            },
+            "flag_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "description": "Row id within that flags file."
+            }
+          }
+        },
+        "source": {
+          "description": "The NASA passage the note relies on. An exact quote is required.",
+          "allOf": [
+            {
+              "$ref": "source.schema.json"
+            },
+            {
+              "required": [
+                "quote"
+              ],
+              "properties": {
+                "quote": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        }
+      }
     },
     "environment": {
       "enum": [
@@ -53,7 +121,7 @@
       "pattern": "^https?://[^\\s]+$"
     },
     "value_matches_status": {
-      "description": "reported needs a non-null value; not_reported/not_applicable need null.",
+      "description": "reported needs a non-null value; not_reported/not_applicable/excluded need null.",
       "allOf": [
         {
           "if": {
@@ -86,7 +154,8 @@
               "value_status": {
                 "enum": [
                   "not_reported",
-                  "not_applicable"
+                  "not_applicable",
+                  "excluded"
                 ]
               }
             },
