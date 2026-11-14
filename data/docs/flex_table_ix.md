@@ -30,7 +30,7 @@ The raw PDF is never committed (spec §2.4), so **GitHub CI cannot compare the C
 | Cell-by-cell CSV vs PDF (150 cells), PDF SHA-256, every manifest and flag quote verbatim on its cited page (`tools/verify_flex_table_ix.py`) | **Local only** (needs the PDF in `data/raw/` and PyMuPDF) | Yes |
 | Visual check of every cell against a 250-dpi render | **Manual, local** | Yes |
 
-A green CI run therefore shows that the files are internally consistent and match their registered checksums. It does **not** re-prove the transcription. Re-run `tools/verify_flex_table_ix.py` locally after any edit to the CSV, the flags or the manifest quotes, and paste its output in the PR. Last local run: 2026-11-14, passed (150 cells, 7 manifest quotes, 43 flags).
+A green CI run therefore shows that the files are internally consistent and match their registered checksums. It does **not** re-prove the transcription. Re-run `tools/verify_flex_table_ix.py` locally after any edit to the CSV, the flags or the manifest quotes, and paste its output in the PR. Last local run: 2026-11-14, passed (150 cells, 7 manifest quotes, 45 flags, 20 quotes inside flag reasons).
 
 ### Cited pages: printed vs PDF
 
@@ -96,7 +96,7 @@ Usage flags are in a separate file, `data/curated/interpretations/quality/flex_t
 | `not_available` | Printed dash. No value exists. Never zero, never estimated, never a confirmed no-extinction event |
 | `caution` | Usable, but the caveat must be shown with the value |
 
-The flags (43 in total):
+The flags (45 in total: 1 `exclude`, 9 `not_available`, 35 `caution`). Flag ids are stable: F001–F043 keep their meaning, and F044–F045 were appended on 2026-11-14 after Member 5's Q3 spot-check (findings S-2, S-3).
 
 - **Disputed:** FLEX-010 burning rate. `exclude`. The value stays `0.37` in the measured file; see the conflict below.
 - **Printed dashes (9 cells):** all `not_available`.
@@ -109,12 +109,14 @@ The flags (43 in total):
   - FLEX-007 burning rate: droplet obscured by the luminous flame.
   - FLEX-008 initial diameter and burning rate: soot noise.
   - FLEX-001 outcome: printed Disruption, but the caption says it probably coincided with extinction.
-- **Contamination:** every row (`contamination_caveat`). Methanol disruption FLEX-001 is flagged as probably contaminant-driven; heptane disruptions FLEX-007, -008 and -009 as possibly contaminant-driven.
+  - FLEX-010 initial diameter (F044, S-2): saturated HiBMs image; the size depended on the image quad-slice (Figure 14 caption, p. 38).
+  - FLEX-010 burn time (F045, S-3, `derivation_unverified`): the droplet left all camera fields of view early, and the report does not state how 13.6 s was obtained. **Derivation not verified; the printed value is kept and is not judged incorrect.**
+- **Contamination:** every row (`contamination_caveat`). The reason now also quotes the authors' p. 17 assertions that burning-rate constants, droplet history, flame size and flame history were "minimally influenced by the contaminant" (S-5). These are the authors' assessments, so the caution stays. Methanol disruption FLEX-001 is flagged as probably contaminant-driven; heptane disruptions FLEX-007, -008 and -009 as possibly contaminant-driven.
 - **Calibration:** FLEX-002 to FLEX-006.
 
 ## Limitations and caveats
 
-1. **Fuel-needle contamination (section 5.2, pages 16–17).** All tests in this report used conformally coated needles. The deployed droplet "contained an unknown amount of the conformal coating." The authors assert that burning-rate constants and flame histories were minimally influenced. They also state that disruptive extinction of methanol is probably due to the contaminant, and that disruptive extinction of heptane may be. **FLEX-001 is a methanol disruption, so treat that outcome as possibly contaminant-driven.**
+1. **Fuel-needle contamination (section 5.2, pages 16–17).** All tests in this report used conformally coated needles. The deployed droplet "contained an unknown amount of the conformal coating." The authors assert (p. 17): "(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant." and "(2) The flame size and flame history were similarly minimally influenced by the contaminant." These are the authors' assessments, not independent measurements, and the contamination caution is kept on every row. They also state that disruptive extinction of methanol is probably due to the contaminant, and that disruptive extinction of heptane may be. **FLEX-001 is a methanol disruption, so treat that outcome as possibly contaminant-driven.**
 2. **Early-test imaging (section 5.1, page 16).** FLEX-001 to FLEX-009 used a 1/30 s shutter. Igniter glow made droplet size ambiguous during ignition, and more so than in later tests.
 3. **Calibration tests.** The Figure 6–10 captions describe FLEX-002 to FLEX-006 as calibration runs. The FLEX-001 caption calls it "the first FLEX test". The identifiers of FLEX-001 to FLEX-009 contain `CAL`, but the captions for 007 to 009 do not call them calibration runs. LLUV camera settings were not optimal for 001 to 006.
 4. **Per-test notes from Appendix B captions:**
@@ -123,7 +125,7 @@ The flags (43 in total):
    - FLEX-006: the droplet drifted out of the HiBMs FOV and back in.
    - FLEX-008: significant sooting; the droplet drifted out of the HiBMs and color FOVs.
    - FLEX-009: very poor deployment; the droplet left all FOVs shortly after ignition; no IPSU data was downlinked.
-   - FLEX-010: see the conflict below.
+   - FLEX-010: the droplet hit the igniter and "quickly moved west out of the fields of view" of all three cameras; "The HiBMs produced a saturated image that influenced the droplet size measurement." See also the conflict below, and flags F044 (initial diameter) and F045 (burn time derivation not verified).
 5. **Unresolved conflict for FLEX-010.** Table IX prints a burning rate of `.37` mm²/s. The Figure 14 caption (printed page 38) says "no burning rate constant or extinction droplet diameter is reported". The CSV keeps the table value as printed. **Do not use FLEX-010's burning rate in any ranking or comparison until this is resolved,** for example against the PSI electronic data files.
 6. **Scope.** ISS microgravity, free-floating droplets, near-ambient temperature. Rows 1–9 are near 1 atm air (O₂/N₂ 0.21/0.79); row 10 is about 3 atm O₂/N₂/CO₂ 0.21/0.09/0.70. The rows do not cover the full FLEX test matrix and are not a statistical sample.
 7. **Report coverage note.** The report's title says March 2009 to December 2011, while Appendix A's text says "March 2009 through December 2010". Table IX itself runs to FLEX-280 (12/8/11).

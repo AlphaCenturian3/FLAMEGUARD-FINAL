@@ -176,5 +176,59 @@ def test_flags_entry_is_interpretation_of_measured(flags):
     assert e["method"]
 
 
+def test_flag_counts_and_stable_ids(flags):
+    # Existing ids F001-F043 are never renumbered; new flags are appended.
+    assert [f["flag_id"] for f in flags] == [f"F{i:03d}" for i in range(1, len(flags) + 1)]
+    uses = [f["ranking_use"] for f in flags]
+    assert (uses.count("exclude"), uses.count("not_available"), uses.count("caution")) == (1, 9, 35)
+
+
+def test_flex_010_initial_diameter_has_imaging_caution(flags, rows):
+    """Q3 finding S-2 (Member 5): saturated HiBMs image, Figure 14 caption."""
+    hit = [
+        f
+        for f in flags
+        if (f["flex_test"], f["field"], f["flag"])
+        == ("FLEX-010", "initial_droplet_diameter_mm", "imaging_uncertainty")
+    ]
+    assert len(hit) == 1 and hit[0]["ranking_use"] == "caution"
+    assert hit[0]["source_printed_page"] == "38"
+    row = next(r for r in rows if r["flex_test"] == "FLEX-010")
+    assert row["initial_droplet_diameter_mm"] == "3.86"  # printed value untouched
+
+
+def test_flex_010_burn_time_derivation_unverified_not_rejected(flags, rows):
+    """Q3 finding S-3: derivation unverified; the printed value is kept and not judged wrong."""
+    hit = [f for f in flags if (f["flex_test"], f["field"]) == ("FLEX-010", "burn_time_s")]
+    assert [f["flag"] for f in hit] == ["derivation_unverified"]
+    assert hit[0]["ranking_use"] == "caution"  # not exclude
+    assert "not judged incorrect" in hit[0]["reason"]
+    row = next(r for r in rows if r["flex_test"] == "FLEX-010")
+    assert row["burn_time_s"] == "13.6"
+
+
+def test_contamination_reason_keeps_caution_and_adds_mitigating_assertion(flags):
+    """Q3 suggestion S-5: quote the authors' p. 17 assertion; keep the limitation."""
+    contam = [f for f in flags if f["flag"] == "contamination_caveat"]
+    assert len(contam) == 10
+    for f in contam:
+        assert f["ranking_use"] == "caution"
+        assert "unknown amount of conformal coating" in f["reason"]
+        assert "minimally influenced by the contaminant" in f["reason"]
+    embedded = vft.reason_quotes(contam)
+    assert len(embedded) == 20 and {q["page"] for q in embedded} == {"17"}
+
+
+def test_reason_quotes_parser_and_check():
+    fl = [{"flag_id": "X", "reason": 'see p. 17: "alpha beta" and p. 38: "gamma"'}]
+    assert vft.reason_quotes(fl) == [
+        {"quote": "alpha beta", "page": "17", "flag_id": "X"},
+        {"quote": "gamma", "page": "38", "flag_id": "X"},
+    ]
+    pages = {17: "xx alpha  beta yy", 38: "nothing"}
+    errs = vft.check_quotes(vft.reason_quotes(fl), lambda p: pages[p])
+    assert len(errs) == 1 and "gamma" in errs[0]
+
+
 def test_manifest_is_valid_json_utf8():
     json.loads((ROOT / "data/manifest.json").read_text(encoding="utf-8"))

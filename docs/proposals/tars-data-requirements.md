@@ -25,7 +25,7 @@ In the current contract TARS is the assistant behind `POST /api/assistant/ask` (
 
 - `data/curated/flex_tp2015216046_table_ix_001_010.csv`: 10 FLEX tests, `measured`, all cells verified against the PDF.
 - Manifest entry `nasa-tp-2015-216046.table-ix.flex-001-010`, with 7 verbatim quotes (table title, A.1 dash definition, contamination, shutter speed, two figure captions).
-- `data/curated/interpretations/quality/flex_tp2015216046_table_ix_001_010.flags.csv`: 43 source-cited usage flags (`interpretation`).
+- `data/curated/interpretations/quality/flex_tp2015216046_table_ix_001_010.flags.csv`: 45 source-cited usage flags (`interpretation`).
 - `data/docs/flex_table_ix.md`: data dictionary and caveats.
 
 ## Open questions for the backend owner

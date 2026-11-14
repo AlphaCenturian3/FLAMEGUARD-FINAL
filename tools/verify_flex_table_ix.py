@@ -49,8 +49,23 @@ FLAG_TYPES = {
     "contamination_caveat",
     "disruption_possibly_contaminant",
     "calibration_test",
+    "derivation_unverified",
 }
 RANKING_USE = {"exclude", "caution", "not_available"}
+# A reason may quote the report as  p. <printed page>: "<verbatim text>"  ; such quotes are
+# checked against the PDF exactly like source_quote.
+_REASON_QUOTE = re.compile(r'p\. (\d+): "([^"]+)"')
+
+
+def reason_quotes(flags: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Quotes embedded in flag reasons, as {quote, page, flag_id} records."""
+    return [
+        {"quote": q, "page": p, "flag_id": f["flag_id"]}
+        for f in flags
+        for p, q in _REASON_QUOTE.findall(f["reason"])
+    ]
+
+
 PDF_SHA256 = "b4f6ca983e2792c33a0b92220a791a818f426bb635b94f7fd33dc8c9c471e79d"
 PRINTED_TO_PDF_PAGE_OFFSET = 6  # printed page 20 is PDF page 26 in this report
 TABLE_IX_PRINTED_PAGE = 20
@@ -236,6 +251,8 @@ def main(argv: list[str] | None = None) -> int:
             page_text,
         )
     ]
+    embedded = reason_quotes(flags)
+    errors += [f"flag reason {e}" for e in check_quotes(embedded, page_text)]
 
     if errors:
         print("FLEX Table IX verification FAILED:")
@@ -246,7 +263,8 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"FLEX Table IX verification passed: {len(csv_rows)} rows, {cells} cells match the PDF; "
         f"PDF sha256 matches; manifest quotes found verbatim; "
-        f"{len(flags)} flags valid with verbatim quotes."
+        f"{len(flags)} flags valid with verbatim quotes; "
+        f"{len(embedded)} quotes inside flag reasons verbatim."
     )
     return 0
 
