@@ -92,23 +92,61 @@ Secrets such as AI API keys come only from environment variables (see `.env.exam
 
 ## 4. Team ownership
 
-| Branch | Workstream | Owner (GitHub) | Owns (writes) |
-|---|---|---|---|
-| `feat/backend-science` | Backend API, comparison, ranking, interpretation, assistant | _unassigned_ | `backend/`, `config/`, `data/curated/interpretations/`, `tests/backend/`, `pyproject.toml` |
-| `feat/frontend-dashboard` | Dashboard UI | _unassigned_ | `frontend/`, `tests/frontend/` |
-| `feat/nasa-data-tars` | NASA data acquisition, curation, provenance | _unassigned_ | `data/` (except `curated/interpretations/`), `tools/`, `tests/data/` |
-| `test/qa-demo` | QA, integration and integrity tests, demo, submission | _unassigned_ | `tests/integration/`, `tests/e2e/`, `.github/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/` |
-| shared | Contract and spec | all four | `contracts/`, `FLAMEGUARD_MASTER_SPEC.md`, root `tests/test_*.py` |
+**Proposed, not approved.** The active team is Members 1, 2, 3 and 5. There is no Member 4. GitHub usernames are filled in only when each member declares one; nobody is assigned on their behalf.
 
-Current collaborators: `AlphaCenturian3`, `buihhlong-a11y`. Two more members still need repository access.
-**Open question:** "TARS" in `feat/nasa-data-tars` is not defined anywhere yet. Define it here.
+| Member | GitHub | Branch | Responsibility | Owns (writes) |
+|---|---|---|---|---|
+| 1 | _not declared_ | `feat/backend-science` | Backend, physics, APIs, scientific implementation and integration; TARS backend | `backend/` (except `backend/flameguard/evidence/`), `config/` (except ranking criteria), `pyproject.toml`, `.github/workflows/`, `tests/backend/`, `tests/integration/` |
+| 2 | _not declared_ | `feat/frontend-dashboard` | Frontend, dashboard, visualizations and UX; TARS UI | `frontend/`, `tests/frontend/`, `tests/e2e/` |
+| 3 | _not declared_ | `feat/nasa-data-tars` | NASA datasets, provenance, TARS evidence integration and retrieval | `data/` (except `data/curated/interpretations/`), `tools/`, `backend/flameguard/evidence/`, `tests/data/`, `docs/verification/data_candidates.md` |
+| 5 | _not declared_ | `feat/research-fire-safety` (**proposed, not created**) | Research interpretation, scientific ranking guidance, Moon/Mars fire-safety recommendations, judge-demo narrative, independent scientific review | `data/curated/interpretations/`, `config/ranking_criteria_v*.json`, `docs/research/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/source_spotcheck.md`, `tests/integrity/` |
+| all | | | Contract and spec | `contracts/`, `FLAMEGUARD_MASTER_SPEC.md`, root `tests/test_*.py`, `docs/verification/` (shared log) |
+
+`test/qa-demo` stays on the remote unchanged until the team decides what happens to it. It has no owner and no work in progress, and nobody commits to it in the meantime. Its QA and demo duties are spread across the four members in the table above.
+
+### 4.1 TARS
+
+**Proposed definition:** *TARS (Traceable Analysis and Research Support)* is a source-grounded research assistant that cites evidence, identifies uncertainty, and never presents generated interpretations as NASA conclusions. Three members share it, and the split meets at one interface:
+
+| Part | Member | Location |
+|---|---|---|
+| Evidence retrieval | 3 | `backend/flameguard/evidence/` |
+| Assistant backend: endpoint, AI call, quotes-only fallback, reply checks | 1 | `backend/flameguard/assistant/` |
+| Assistant UI | 2 | `frontend/` |
+
+**Interface, Member 3 to Member 1:**
+
+```
+retrieve(question: str, investigation_ids: list[str] | None, limit: int) -> list[Finding]
+```
+
+- Pure Python and deterministic. It makes no network calls and no AI calls.
+- It returns only `measured` or `interpretation` findings that have already passed the loader (B1), each with its sources.
+- It never returns a `SimulationResult`.
+
+Member 1 cites only what `retrieve` returns.
+
+### 4.2 Independent review
+
+No member reviews their own scientific work. Each artifact needs approval from someone other than its author:
+
+| Artifact | Author | Independent reviewer |
+|---|---|---|
+| Curated measured data (D1 to D3) | 3 | 5 (source spot check Q3) |
+| Interpretations, Moon/Mars recommendations (R2, R3) | 5 | 3 (traceability: `derived_from`, quotes) **and** 1 (scientific soundness) |
+| Ranking criteria freeze (R1) | 5 | 1 and 3, approved before any ranking output exists |
+| Ranking, compare and assistant code (B3, B4, B6) | 1 | 5 (independent rule tests S5, S6, S8 in `tests/integrity/`) |
+| Evidence retrieval (T1) | 3 | 1 |
+| Dashboard (F1 to F8) | 2 | 1 (API use) and 5 (scientific wording, labels) |
+| Demo walkthrough (Q5) | 5 (narrative), 2 (UI path) | 3 runs it from a clean clone |
+| Submission checklist (Q6) | 5 | 1 verifies each item |
 
 Rules that keep the branches from conflicting:
 
 - Change files outside your own area only through a PR that requests review from that area's owner.
-- Dependency changes go in `pyproject.toml` through a small PR of their own, owned by backend. Never bundle them with feature work.
-- Only backend edits `backend/flameguard/api/app.py`. Backend also mounts `frontend/` at `/`.
-- Only QA edits `.github/workflows/`. Another workstream that needs a CI step asks QA.
+- Dependency changes go in `pyproject.toml` through a small PR of their own (Member 1). Never bundle them with feature work.
+- Only Member 1 edits `backend/flameguard/api/app.py`. Member 1 also mounts `frontend/` at `/`.
+- Only Member 1 edits `.github/workflows/`. Anyone who needs a CI step asks Member 1, and a second member reviews the change.
 
 ## 5. Integration contract (v0.2.0, proposed)
 
@@ -148,15 +186,15 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
 - `DataManifest`: the registry of every data file in `data/`.
 - `Error`: `{"error": {"code", "message"}}`, where `code` is `not_implemented`, `not_found`, `invalid_request` or `unavailable`.
 
-### 5.2a Data layout (data team to backend)
+### 5.2a Data layout
 
 | File | Contents | Owner | Manifest `evidence_class` |
 |---|---|---|---|
-| `data/curated/investigations.json` | JSON array of `Investigation` | data | `measured` |
-| `data/curated/findings/<investigation_id>.json` | JSON array of measured `Finding` | data | `measured` |
-| `data/curated/interpretations/<name>.json` | JSON array of interpretation `Finding` | backend | `interpretation` |
-| `data/simulated/<name>.json` | `SimulationResult` | backend | `illustrative_simulation` |
-| `config/ranking_criteria_v<N>.json` | Ranking criteria and weights, frozen in its own commit before any ranking output exists | backend | not data, so it is not in the manifest |
+| `data/curated/investigations.json` | JSON array of `Investigation` | Member 3 | `measured` |
+| `data/curated/findings/<investigation_id>.json` | JSON array of measured `Finding` | Member 3 | `measured` |
+| `data/curated/interpretations/<name>.json` | JSON array of interpretation `Finding` (including Moon/Mars recommendations) | Member 5 | `interpretation` |
+| `data/simulated/<name>.json` | `SimulationResult` | Member 1 | `illustrative_simulation` |
+| `config/ranking_criteria_v<N>.json` | Ranking criteria and weights, frozen in its own commit before any ranking output exists | Member 5 (Members 1 and 3 approve) | not data, so it is not in the manifest |
 
 The backend loads only manifest entries that pass `tools/check_data_provenance.py` and whose contents validate against the schemas. If a file fails, the backend fails closed: it skips the file and reports it, and never loads it partially.
 
@@ -169,7 +207,7 @@ The backend loads only manifest entries that pass `tools/check_data_provenance.p
 ### 5.4 Changing the contract
 
 1. Open a PR that changes `contracts/` only and bumps `CONTRACT_VERSION` (in `backend/flameguard/__init__.py`) and the spec version here.
-2. Backend and frontend owners both approve.
+2. Members 1 and 2 both approve. Members 3 and 5 also approve when a data, interpretation or ranking rule changes.
 3. Breaking changes bump the minor version while we are below 1.0.
 
 ## 6. Checkpoints
@@ -179,7 +217,7 @@ All times are **proposed**. The team confirms them. Submission closes Sunday, No
 | ID | Checkpoint | Exit criteria | Status |
 |---|---|---|---|
 | CP0 | Repository initialized | main, 4 branches, CI green on main | done: `3dc56ff`, CI run 43627519740 |
-| CP1 | Contract frozen | All four owners named in §4 and approve the contract PR; "TARS" defined; PR merged with CI green | open |
+| CP1 | Contract frozen | Members 1, 2, 3 and 5 each declare their GitHub username in §4 and explicitly approve the same PR head; TARS definition (§4.1) approved; `feat/research-fire-safety` and the fate of `test/qa-demo` decided; PR merged with CI green | open |
 | CP2 | First real data | ≥1 `measured` manifest entry passes provenance check; rights status recorded | open |
 | CP3 | First integration | Frontend renders backend data from CP2 on `main`; CI green | open |
 | CP4 | Demo freeze | `docs/DEMO.md` walkthrough passes on a clean clone; only fixes after this | open |
@@ -196,9 +234,9 @@ All times are **proposed**. The team confirms them. Submission closes Sunday, No
 
 1. Organizer ruling on pre-event work (§2.5).
 2. License for the submission: the Space Apps terms expect original content to be free or open source (Apache 2.0 is the default). No LICENSE file is added yet, so this is the team's call.
-3. Definition of "TARS" (§4).
-4. Owner names (§4).
+3. Approval of the TARS definition (§4.1).
+4. Member GitHub usernames (§4); whether to create `feat/research-fire-safety`; what happens to `test/qa-demo`.
 5. Hosting and deployment target for the demo.
-6. Repository access for the remaining two team members.
+6. Which GitHub account belongs to which member. Five accounts have access or a pending invitation, for four active members.
 7. Whether the AI assistant uses a live key at the demo, and who holds that key.
 8. Branch protection: GitHub blocks it on a private free-plan repo, so `main` stays green by team convention only.

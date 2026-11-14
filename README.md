@@ -47,14 +47,16 @@ Copy `.env.example` to `.env` for local settings. Never commit `.env`.
 
 ## Team
 
-Four parallel workstreams, each on its own branch. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and spec §4.
+Four active members (1, 2, 3 and 5), each on their own branch. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and spec §4. The ownership below is proposed until CP1.
 
-| Branch | Workstream |
-|---|---|
-| `feat/backend-science` | API, analysis, ranking, assistant |
-| `feat/frontend-dashboard` | Dashboard UI |
-| `feat/nasa-data-tars` | NASA data acquisition and provenance |
-| `test/qa-demo` | QA, integration tests, demo |
+| Member | Branch | Workstream |
+|---|---|---|
+| 1 | `feat/backend-science` | Backend, physics, APIs, integration, TARS backend |
+| 2 | `feat/frontend-dashboard` | Frontend, dashboard, visualizations, UX, TARS UI |
+| 3 | `feat/nasa-data-tars` | NASA datasets, provenance, TARS evidence retrieval |
+| 5 | `feat/research-fire-safety` (proposed) | Research interpretation, ranking guidance, Moon/Mars fire-safety recommendations |
+
+`test/qa-demo` is kept, unchanged, until the team decides what happens to it. QA and demo duties are shared across the four members.
 
 ## License
 

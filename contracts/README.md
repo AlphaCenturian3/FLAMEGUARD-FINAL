@@ -1,6 +1,6 @@
 # Integration contract v0.2.0 (proposed for CP1)
 
-This is the agreement between the backend, frontend and data workstreams, so each can develop independently. The summary is in master spec §5. The change log from v0.1.0 is at the bottom.
+This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TARS evidence) and 5 (research), so each can develop independently. The summary is in master spec §5. The change log from v0.1.0 is at the bottom.
 
 ## Files
 
@@ -37,23 +37,23 @@ This is the agreement between the backend, frontend and data workstreams, so eac
 
 ## Rules schemas cannot express
 
-These rules span several files or depend on computed values. Each one has an owner who writes the test for it.
+These rules span several files or depend on computed values. Each one has a member who enforces it in code and a different member who tests it independently (spec §4.2).
 
-| Rule | Statement | Tested by |
+| Rule | Statement | Enforced by / independently tested by |
 |---|---|---|
-| S0 | Registered JSON files contain no `NaN` or `Infinity` | `tools/check_data_provenance.py` (done) |
-| S1 | A measured finding's `manifest_id` points to a `measured` manifest entry whose file contains that finding | data D4, backend B1 |
-| S2 | `data/curated/findings/<id>.json` contains only findings with `investigation_id == <id>` | data D4 |
-| S3 | `derived_from` ids resolve to measured or interpretation findings, with no cycles | backend B5 |
-| S4 | `Investigation.datasets` ids resolve to manifest entries | data D4 |
-| S5 | **Comparison.** `comparable` is `false` when any row is not `reported`, when a condition key is reported with different values across rows, or when a condition key is reported for some rows and `null` for others. Each such case gives one reason. Every row's `finding_id` resolves to a measured finding with the same `quantity` and `unit`. | backend B3, QA Q1 |
-| S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | backend B4, QA Q1 |
-| S7 | List `total` equals `len(items)` | backend B2, QA Q1 |
-| S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources | backend B6, QA Q2 |
+| S0 | Registered JSON files contain no `NaN` or `Infinity` | `tools/check_data_provenance.py` (done; Member 3) / `tests/test_provenance.py` |
+| S1 | A measured finding's `manifest_id` points to a `measured` manifest entry whose file contains that finding | M3 (D4) / M1 (B1 loader) |
+| S2 | `data/curated/findings/<id>.json` contains only findings with `investigation_id == <id>` | M3 (D4) / M1 (B1 loader) |
+| S3 | `derived_from` ids resolve to measured or interpretation findings, with no cycles | M5 (R2, R3) / M3 (D4) |
+| S4 | `Investigation.datasets` ids resolve to manifest entries | M3 (D4) / M1 (B1 loader) |
+| S5 | **Comparison.** `comparable` is `false` when any row is not `reported`, when a condition key is reported with different values across rows, or when a condition key is reported for some rows and `null` for others. Each such case gives one reason. Every row's `finding_id` resolves to a measured finding with the same `quantity` and `unit`. | M1 (B3) / M5 (Q2) |
+| S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | M1 (B4) / M5 (Q2) |
+| S7 | List `total` equals `len(items)` | M1 (B2) / M1 (Q1 integration) and M2 (Q4) |
+| S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources, and was returned by `retrieve()` | M1 (B6) with M3 (T1) / M5 (Q2) |
 
 ## Changing the contract
 
-Follow spec §5.4. The PR touches only `contracts/`, the spec and the version constant. Both backend and frontend approve it; data and QA approve as well when their rules change. Bump `CONTRACT_VERSION`, the spec version and `vocabulary_version` together, since a test checks that they match. When you change `vocabulary.json`, update `quantity_rules.schema.json` to match exactly; a test checks this too.
+Follow spec §5.4. The PR touches only `contracts/`, the spec and the version constant. Members 1 and 2 approve it; Members 3 and 5 approve as well when a data, interpretation or ranking rule changes. Bump `CONTRACT_VERSION`, the spec version and `vocabulary_version` together, since a test checks that they match. When you change `vocabulary.json`, update `quantity_rules.schema.json` to match exactly; a test checks this too.
 
 ## Changes from v0.1.0
 
