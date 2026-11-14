@@ -16,6 +16,17 @@ Claim types keep observations apart from hypotheses:
 
 Cards are qualitative. ``disclaimer`` must equal ``NOT_FLIGHT_QUALIFIED`` and
 ``review_status`` starts as ``draft_pending_scientific_review``.
+
+``presentation`` says how a card may be shown (Member 1 review on PR #3, D-05):
+
+- ``accepted_pending_curation``: accepted as a future R3 interpretation once Member 3
+  curates its evidence as measured qualitative findings. Its finding must be an
+  ``experimental_result``. ``pending_on`` names what it waits for.
+- ``pending_measured_data``: may become R3 only after verified measured data exists
+  (``pending_on`` names it). Not shown as a finding until then.
+- ``research_context``: an open research question built on objectives, hypotheses or
+  source statements. Never shown as a FlameGuard-SI finding; ``open_question`` is
+  required and its finding cannot be an ``experimental_result``.
 """
 
 from collections.abc import Mapping, Sequence
@@ -45,7 +56,15 @@ FINDING_STRENGTHS = (
     "hypothesis_under_test",
     "source_statement",
 )
-REVIEW_STATUSES = ("draft_pending_scientific_review", "reviewed_by_member1", "withdrawn")
+#: ``member1_changes_applied``: Member 1's review was applied by Member 5; Member 1 has
+#: not yet confirmed the new wording. ``reviewed_by_member1`` needs that confirmation.
+REVIEW_STATUSES = (
+    "draft_pending_scientific_review",
+    "member1_changes_applied",
+    "reviewed_by_member1",
+    "withdrawn",
+)
+PRESENTATIONS = ("accepted_pending_curation", "pending_measured_data", "research_context")
 
 
 def _text(value: Any) -> bool:
@@ -70,6 +89,22 @@ def validate_card(card: Any, evidence: Mapping[str, Record]) -> list[str]:
         errors.append(f"{cid}: disclaimer must state the card is not flight-qualified")
 
     finding = card.get("finding") or {}
+    presentation = card.get("presentation")
+    if presentation not in PRESENTATIONS:
+        errors.append(f"{cid}: presentation must be one of {PRESENTATIONS}")
+    if presentation in ("accepted_pending_curation", "pending_measured_data") and not _text(
+        card.get("pending_on")
+    ):
+        errors.append(f"{cid}: a pending card must say what it waits for in pending_on")
+    if presentation == "accepted_pending_curation" and (
+        finding.get("strength") != "experimental_result"
+    ):
+        errors.append(f"{cid}: accepted_pending_curation needs an experimental_result finding")
+    if presentation == "research_context":
+        if not _text(card.get("open_question")):
+            errors.append(f"{cid}: research_context cards need an open_question")
+        if finding.get("strength") == "experimental_result":
+            errors.append(f"{cid}: research_context cannot present an experimental result")
     if not _text(finding.get("statement")):
         errors.append(f"{cid}: finding.statement is required")
     if finding.get("claim_type") not in FINDING_CLAIM_TYPES:
@@ -131,7 +166,7 @@ def validate_card(card: Any, evidence: Mapping[str, Record]) -> list[str]:
 
 
 def _texts(card: Mapping[str, Any]) -> list[tuple[str, str]]:
-    out = [("title", card.get("title"))]
+    out = [("title", card.get("title")), ("open_question", card.get("open_question"))]
     out.append(("finding.statement", (card.get("finding") or {}).get("statement")))
     out.append(("interpretation.text", (card.get("interpretation") or {}).get("text")))
     impl = card.get("implication") or {}

@@ -8,7 +8,7 @@
       "test_id": null,
       "evidence_category": "reported",
       "source_claim_strength": "experimental_result",
-      "statement": "BASS-II flames sustained at very low air flow speeds became dim and stable, and the authors report they can flare up quickly when air flow speed increases suddenly.",
+      "statement": "BASS-II authors report that flames sustained at very low air flow speeds can flare up quickly with a sudden increase in air flow speed.",
       "quantity": null,
       "value": null,
       "unit": null,
@@ -29,7 +29,7 @@
           "title": "Combustion of Solids in Microgravity: Results from the BASS-II Experiment",
           "url": "https://ntrs.nasa.gov/citations/20160000593",
           "page": "Abstract",
-          "quote": "In this state they are not particularly dangerous from a fire safety perspective, but they can flare up quickly with a sudden increase in air flow speed.",
+          "quote": "they can flare up quickly with a sudden increase in air flow speed.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20160000593"
         }
@@ -38,7 +38,8 @@
       "interpretation": null,
       "limitations": [
         "Abstract-level statement; the flow speeds, samples and test ids behind it are not imported.",
-        "Small samples in a small flow duct inside the Microgravity Science Glovebox, not habitat-scale fires."
+        "Small samples in a small flow duct inside the Microgravity Science Glovebox, not habitat-scale fires.",
+        "Quote trimmed to the observational clause (D-05, Member 1 review). The authors' preceding evaluation of fire-safety danger in the same sentence is deliberately not quoted or used."
       ],
       "relevant_environments": ["spacecraft", "space_station", "lunar_base", "pressurized_rover"],
       "extrapolation_warning": "Observed in microgravity. At lunar gravity buoyant flow is present, so low-flow behaviour seen on the ISS may not occur the same way.",
@@ -548,7 +549,7 @@
       "test_id": null,
       "evidence_category": "reported",
       "source_claim_strength": "source_statement",
-      "statement": "A research white paper hosted by NASA states that fire behaviour in partial gravity, such as on the Moon and Mars, cannot be expected to be interpolated between normal-gravity and microgravity data.",
+      "statement": "A decadal-survey white paper by Ya-Ting Liao, Luca Carmignani, Justin Niehaus and Michael Gollner (hosted on a NASA website) states that fire behaviour in partial gravity, such as on the Moon and Mars, cannot be expected to be interpolated between normal-gravity and microgravity data.",
       "quantity": null,
       "value": null,
       "unit": null,

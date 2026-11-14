@@ -1,6 +1,6 @@
 # Source quote verification audit (Member 5)
 
-**Run date:** 2026-11-14. **Scope:** every quote citation in `investigations.json` and `evidence_reported.json`.
+**Run date:** 2026-11-14 (re-run after Member 1's review trimmed the BASS-II flare-up quote to its observational clause). **Scope:** every quote citation in `investigations.json` and `evidence_reported.json`.
 
 **Result:** 21 quote citations (17 distinct quotes). **19 verified automatically**, **2 verified manually**, **0 failed**.
 
@@ -8,7 +8,7 @@
 
 - **Automated:** `python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json`. The tool fetches each URL and checks that the quote appears after normalising whitespace and HTML entities only. For `ntrs.nasa.gov/citations/<id>` it checks the public NTRS API record (title and abstract), because the citation page renders with JavaScript.
 - **Manual:** PDF sources are not parsed by the tool (that would need a new dependency, which is Member 1's decision). The PDF was downloaded on 2026-11-14 (SHA-256 `0e313e8f833a216e36f0f9a7effd4def7c2f3d5c985248615bb80653e8b8979a`), its text was extracted with `pypdf` in a scratch environment outside the repository, and the whitespace-normalised quote was found on **page 4**. The check was done by Claude (executor), not yet by an independent person.
-- **Independent check:** not done yet. Under spec §4.2 a member other than the author should spot-check these entries and sign below.
+- **Independent check:** not done yet. Member 1 assigned the quote and source check to Member 3 (PR #3). Under spec §4.2 a member other than the author should spot-check these entries and sign below.
 
 ## Per-citation results
 
