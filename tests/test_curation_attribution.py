@@ -15,7 +15,7 @@ EXAMPLES = ROOT / "contracts" / "examples"
 
 SOURCE_UNCERTAINTY = "finding.measured.example.json"
 CAUTION = "finding.measured_caution.example.json"
-WITHHELD = "finding.measured_withheld.example.json"
+EXCLUDED = "finding.measured_excluded.example.json"
 MISSING = "finding.measured_missing.example.json"
 INTERP = "finding.interpretation.example.json"
 COMPARE = "comparison.example.json"
@@ -38,7 +38,7 @@ def _kinds(doc):
 
 
 def test_four_cases_validate(finding):
-    for name in (SOURCE_UNCERTAINTY, CAUTION, WITHHELD, MISSING):
+    for name in (SOURCE_UNCERTAINTY, CAUTION, EXCLUDED, MISSING):
         finding.validate(_load(name))
 
 
@@ -57,14 +57,14 @@ def test_curator_caution_case():
 
 
 def test_excluded_case():
-    doc = _load(WITHHELD)
-    assert doc["value_status"] == "withheld" and doc["value"] is None
+    doc = _load(EXCLUDED)
+    assert doc["value_status"] == "excluded" and doc["value"] is None
     assert "exclusion" in _kinds(doc)
     note = next(n for n in doc["curation_notes"] if n["kind"] == "exclusion")
     assert note["note"] and note["flag_ref"]["manifest_id"] and note["flag_ref"]["flag_id"]
     prov = doc["provenance"]
     assert prov["locator"] and prov["sources"] and prov["manifest_id"]  # source traceability kept
-    assert doc["quantity"] and doc["unit"]  # still says WHAT was withheld
+    assert doc["quantity"] and doc["unit"]  # still says WHAT was excluded
 
 
 def test_missing_case():
@@ -83,16 +83,45 @@ def _set(key, value):
     return m
 
 
+FLAG = {"manifest_id": "fixture-quality-flags-1", "flag_id": "F1"}
+
+
+SOURCE = {
+    "title": "FIXTURE PLACEHOLDER SOURCE",
+    "url": "https://example.invalid/fixture",
+    "page": 1,
+    "quote": "FIXTURE recorded quote.",
+    "retrieved": "2026-11-14",
+}
+
+
 def _note(**fields):
-    base = {"kind": "caution", "note": "x", "generated_by": "FlameGuard-SI"}
+    """A valid note (every note carries flag_ref and source), changed only by `fields`."""
+    base = {
+        "kind": "caution",
+        "note": "x",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": FLAG,
+        "source": SOURCE,
+    }
     return {**base, **fields}
 
 
-FLAG = {"manifest_id": "fixture-quality-flags-1", "flag_id": "F1"}
+def _note_without_flag_ref(**fields):
+    note = _note(**fields)
+    del note["flag_ref"]
+    return note
+
+
+def _note_without(key, **fields):
+    note = _note(**fields)
+    del note[key]
+    return note
+
 
 REJECT = [
     # Excluded values can never be numerically available
-    ("withheld-with-value", WITHHELD, _set("value", 0.37)),
+    ("excluded-with-value", EXCLUDED, _set("value", 0.37)),
     (
         "exclusion-note-on-reported-value",
         CAUTION,
@@ -103,17 +132,61 @@ REJECT = [
         MISSING,
         _set("curation_notes", [_note(kind="exclusion", flag_ref=FLAG)]),
     ),
-    # Withheld needs a reason, attribution and a traceable flag
-    ("withheld-without-notes", WITHHELD, lambda d: d.pop("curation_notes")),
-    ("withheld-with-only-caution", WITHHELD, _set("curation_notes", [_note()])),
-    ("exclusion-without-flag-ref", WITHHELD, _set("curation_notes", [_note(kind="exclusion")])),
+    # Excluded needs a reason, attribution and a traceable flag
+    ("excluded-without-notes", EXCLUDED, lambda d: d.pop("curation_notes")),
+    ("excluded-with-only-caution", EXCLUDED, _set("curation_notes", [_note()])),
+    (
+        "exclusion-without-flag-ref",
+        EXCLUDED,
+        _set("curation_notes", [_note_without_flag_ref(kind="exclusion")]),
+    ),
+    ("caution-without-flag-ref", CAUTION, _set("curation_notes", [_note_without_flag_ref()])),
     (
         "exclusion-empty-reason",
-        WITHHELD,
+        EXCLUDED,
         _set("curation_notes", [_note(kind="exclusion", note="", flag_ref=FLAG)]),
     ),
+    # Every note carries the source passage it rests on, with a recorded quote
+    ("caution-without-source", CAUTION, _set("curation_notes", [_note_without("source")])),
+    (
+        "exclusion-without-source",
+        EXCLUDED,
+        _set("curation_notes", [_note_without("source", kind="exclusion")]),
+    ),
+    (
+        "source-null-quote",
+        CAUTION,
+        _set("curation_notes", [_note(source={**SOURCE, "quote": None})]),
+    ),
+    (
+        "source-empty-quote",
+        CAUTION,
+        _set("curation_notes", [_note(source={**SOURCE, "quote": ""})]),
+    ),
+    (
+        "source-quote-missing-key",
+        CAUTION,
+        _set("curation_notes", [_note(source={k: v for k, v in SOURCE.items() if k != "quote"})]),
+    ),
+    ("source-bad-url", CAUTION, _set("curation_notes", [_note(source={**SOURCE, "url": "x"})])),
+    (
+        "source-extra-key",
+        CAUTION,
+        _set("curation_notes", [_note(source={**SOURCE, "verified": True})]),
+    ),
+    (
+        "source-bad-date",
+        CAUTION,
+        _set("curation_notes", [_note(source={**SOURCE, "retrieved": "today"})]),
+    ),
+    # The old status name is gone, so it cannot be confused with the frontend's display "withheld"
+    ("legacy-withheld-status", EXCLUDED, _set("value_status", "withheld")),
     ("note-attributed-to-nasa", CAUTION, _set("curation_notes", [_note(generated_by="NASA")])),
-    ("note-unattributed", CAUTION, _set("curation_notes", [{"kind": "caution", "note": "x"}])),
+    (
+        "note-unattributed",
+        CAUTION,
+        _set("curation_notes", [{"kind": "caution", "note": "x", "flag_ref": FLAG}]),
+    ),
     ("note-unknown-kind", CAUTION, _set("curation_notes", [_note(kind="estimate")])),
     ("note-extra-key-value", CAUTION, _set("curation_notes", [_note(value=1.0)])),
     ("notes-empty-list", CAUTION, _set("curation_notes", [])),
@@ -122,13 +195,13 @@ REJECT = [
         CAUTION,
         _set("curation_notes", [_note(flag_ref={"manifest_id": "x"})]),
     ),
-    # Withheld is a measured-only status; notes are measured-only
-    ("withheld-interpretation", INTERP, _set("value_status", "withheld")),
+    # Excluded is a measured-only status; notes are measured-only
+    ("excluded-interpretation", INTERP, _set("value_status", "excluded")),
     ("curation-notes-on-interpretation", INTERP, _set("curation_notes", [_note()])),
-    # Provenance is not weakened for withheld values
-    ("withheld-without-locator", WITHHELD, lambda d: d["provenance"].pop("locator")),
-    ("withheld-without-sources", WITHHELD, lambda d: d["provenance"].update(sources=[])),
-    ("withheld-without-manifest-id", WITHHELD, lambda d: d["provenance"].pop("manifest_id")),
+    # Provenance is not weakened for excluded values
+    ("excluded-without-locator", EXCLUDED, lambda d: d["provenance"].pop("locator")),
+    ("excluded-without-sources", EXCLUDED, lambda d: d["provenance"].update(sources=[])),
+    ("excluded-without-manifest-id", EXCLUDED, lambda d: d["provenance"].pop("manifest_id")),
 ]
 
 
@@ -146,21 +219,21 @@ def test_caution_may_coexist_with_source_uncertainty(finding):
     finding.validate(doc)
 
 
-# --- Withheld values never make a comparison valid ------------------------------
+# --- Excluded values never make a comparison valid ------------------------------
 
 
-def _withheld_row(doc):
+def _excluded_row(doc):
     row = copy.deepcopy(doc["rows"][0])
     row.update(
-        finding_id="fixture-finding-measured-withheld-1", value=None, value_status="withheld"
+        finding_id="fixture-finding-measured-excluded-1", value=None, value_status="excluded"
     )
     return row
 
 
-def test_withheld_row_is_allowed_only_as_non_comparable(validator_for):
+def test_excluded_row_is_allowed_only_as_non_comparable(validator_for):
     v = validator_for("comparison.schema.json")
     doc = copy.deepcopy(_load(COMPARE))
-    doc["rows"].append(_withheld_row(doc))
+    doc["rows"].append(_excluded_row(doc))
     v.validate(doc)  # comparable: false, with reasons
     doc["comparable"] = True
     doc["non_comparable_reasons"] = []
@@ -169,10 +242,84 @@ def test_withheld_row_is_allowed_only_as_non_comparable(validator_for):
         v.validate(doc)
 
 
-def test_withheld_row_cannot_carry_a_value(validator_for):
+def test_excluded_row_cannot_carry_a_value(validator_for):
     doc = copy.deepcopy(_load(COMPARE))
-    row = _withheld_row(doc)
+    row = _excluded_row(doc)
     row["value"] = 0.37
     doc["rows"].append(row)
     with pytest.raises(ValidationError):
         validator_for("comparison.schema.json").validate(doc)
+
+
+# --- Flag mapping (rule S10, schema side) ---------------------------------------
+# The cross-file half of S10 (flag_ref resolves to a registered flag row, every flag row is
+# covered, quotes verified against the registered source) needs the curated files: Member 3
+# implements it in the derivation tool and tests/data/; Member 5 checks it independently.
+
+FLAG_RANKING_USE = {"caution": "caution", "exclusion": "exclude"}
+
+
+def _common():
+    path = ROOT / "contracts" / "schemas" / "common.schema.json"
+    return json.loads(path.read_text(encoding="utf-8"))["$defs"]
+
+
+def test_flag_mapping_is_exact():
+    kind = _common()["curation_note"]["properties"]["kind"]
+    assert kind["x-flag-ranking-use"] == FLAG_RANKING_USE
+    assert set(kind["enum"]) == set(FLAG_RANKING_USE)
+
+
+def test_not_available_is_neither_a_note_kind_nor_a_value_status():
+    common = _common()
+    kind = common["curation_note"]["properties"]["kind"]
+    assert "not_available" not in kind["enum"]
+    assert "not_available" not in kind["x-flag-ranking-use"].values()
+    assert "not_available" not in common["value_status"]["enum"]
+
+
+def test_not_available_cell_is_not_reported_without_a_note(finding):
+    doc = copy.deepcopy(_load(MISSING))
+    assert doc["value_status"] == "not_reported"
+    assert doc["value"] is None
+    assert "curation_notes" not in doc
+    finding.validate(doc)
+    doc["value_status"] = "not_available"  # the flags-file term must not pass through
+    with pytest.raises(ValidationError):
+        finding.validate(doc)
+
+
+@pytest.mark.parametrize("term", ["exclude", "not_available", "excluded", "withheld"])
+def test_flag_terms_are_not_note_kinds(finding, term):
+    doc = copy.deepcopy(_load(CAUTION))
+    assert _kinds(doc) == {"caution"}
+    doc["curation_notes"][0]["kind"] = term  # only the kind enum can reject this
+    with pytest.raises(ValidationError):
+        finding.validate(doc)
+
+
+def test_excluded_note_records_its_source_passage():
+    doc = _load(EXCLUDED)
+    note = next(n for n in doc["curation_notes"] if n["kind"] == "exclusion")
+    assert note["source"]["quote"] and note["source"]["url"].startswith("http")
+
+
+def test_recorded_quote_is_not_authenticated_by_the_schema(finding):
+    """The schema only checks that a non-empty quote is RECORDED. An invented quote with a
+    valid shape still passes, which is why rule S10(d) (Member 3, verification against the
+    registered source text) and Member 5's independent Q3 check exist. Never report a
+    quote as verified because it validates."""
+    doc = copy.deepcopy(_load(CAUTION))
+    doc["curation_notes"][0]["source"]["quote"] = "Invented text that appears in no source."
+    finding.validate(doc)
+
+
+def test_value_status_vocabulary_is_exact():
+    """`excluded` replaced the CP1 draft name `withheld`, which the frontend uses for its
+    display guard (spec §4.3). The old name must not come back as a value status."""
+    assert _common()["value_status"]["enum"] == [
+        "reported",
+        "not_reported",
+        "not_applicable",
+        "excluded",
+    ]

@@ -225,14 +225,14 @@
       }
     },
     {
-      "description": "withheld: measured only, value null (via value_matches_status), and at least one exclusion note.",
+      "description": "excluded: measured only, value null (via value_matches_status), and at least one exclusion note.",
       "if": {
         "required": [
           "value_status"
         ],
         "properties": {
           "value_status": {
-            "const": "withheld"
+            "const": "excluded"
           }
         }
       },
@@ -261,7 +261,7 @@
       }
     },
     {
-      "description": "An exclusion note means the value is withheld, so an excluded value can never stay numerically available.",
+      "description": "An exclusion note means the value is excluded, so an excluded value can never stay numerically available.",
       "if": {
         "required": [
           "curation_notes"
@@ -285,7 +285,7 @@
       "then": {
         "properties": {
           "value_status": {
-            "const": "withheld"
+            "const": "excluded"
           }
         }
       }

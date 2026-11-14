@@ -92,7 +92,7 @@ Secrets such as AI API keys come only from environment variables (see `.env.exam
 
 ## 4. Team ownership
 
-**Proposed for CP1, not approved.** The active team is Members 1, 2, 3 and 5. There is no Member 4. A GitHub username counts only once that member confirms it in their CP1 approval. The evidence for each one is recorded on PR #1.
+**Proposed for CP1, not approved.** The active team is Members 1, 2, 3 and 5. There is no Member 4 (Command Center roster decision, option (b), 2026-11-14, recorded on PR #1); no account is identified as Member 4. A GitHub username counts only once that member confirms it in their CP1 approval. The evidence for each one is recorded on PR #1.
 
 | Member | GitHub (status) | Branch | Responsibility | Owns (writes) |
 |---|---|---|---|---|
@@ -141,6 +141,8 @@ Ranking, comparability and evidence logic each run in exactly one place in the s
 | Evidence retrieval (T1) | Member 3, `backend/flameguard/evidence/` | none |
 
 `backend/flameguard/research/` is not an allowed package.
+
+**Frontend display checks (Member 2).** `frontend/` may run fail-closed checks before it displays a result. For example, `traceSupport()` and `reviewRankings()` withhold a ranking item or interpretation whose inputs do not resolve, fail provenance, trace back to a simulation, or cite a `excluded` value, and say why. These checks are not a second implementation: they never compute, re-weight or re-order scores, never decide comparability, and never show anything the backend did not return. The display follows the backend's `rank` order and `comparable` decision.
 
 ### 4.4 Independent review
 
@@ -193,9 +195,9 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
 - `Investigation`: a NASA investigation, with `datasets` pointing to manifest ids.
 - `Finding`: one `measured` value or one `interpretation`.
   - **A measured finding** needs a `locator` (where in the source) and a manifest id.
-  - **`value_status`** is `reported`, `not_reported`, `not_applicable` or `withheld`. A missing value is `null` and can never be filled in.
-    - `withheld` means the source reports a value, but FlameGuard-SI excludes it after a reviewed quality flag. Its value is `null`, it needs an attributed exclusion note that references the flag, and it keeps full measured provenance.
-  - **`uncertainty`** holds only uncertainty the source reports. FlameGuard-SI cautions and exclusions go in **`curation_notes`** (measured findings only, always `generated_by: "FlameGuard-SI"`). See `contracts/README.md` conventions 9 and 10.
+  - **`value_status`** is `reported`, `not_reported`, `not_applicable` or `excluded`. A missing value is `null` and can never be filled in.
+    - `excluded` means the source reports a value, but FlameGuard-SI excludes it after a reviewed quality flag. Its value is `null`, it needs an attributed exclusion note that references the flag, and it keeps full measured provenance.
+  - **`uncertainty`** holds only uncertainty the source reports. FlameGuard-SI cautions and exclusions go in **`curation_notes`** (measured findings only, always `generated_by: "FlameGuard-SI"`). See `contracts/README.md` conventions 9 and 10. Flags map exactly: `caution` → caution note, `exclude` → `excluded` plus an exclusion note, `not_available` → `not_reported` with no note. Every note has a `flag_ref` and a `source` with a recorded quote. The schema checks only shapes: a recorded quote is not an authenticated one. Member 3 verifies flag references, coverage and NASA quotes against the registered source, and Member 5 checks this independently (rule S10).
   - **A numeric value** needs a `quantity` from `contracts/vocabulary.json`, exactly that unit, and must fall within that quantity's physical bounds. A string value is allowed only for a qualitative statement, with `quantity` and `unit` both `null`.
   - `quantity`, `value` and `unit` are always present. `null` is written out explicitly, never left out.
   - **Interpretation findings** must list `limitations` (at least 1) and may list `relevant_environments`. Measured findings may have neither, because environment relevance is an interpretation.

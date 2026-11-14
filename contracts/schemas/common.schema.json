@@ -20,9 +20,9 @@
         "reported",
         "not_reported",
         "not_applicable",
-        "withheld"
+        "excluded"
       ],
-      "description": "reported: the source gives a value. not_reported: the source gives none. not_applicable: no value applies (qualitative statement). withheld: the source reports a value, but FlameGuard-SI excludes it from use after a reviewed quality flag; the value is null here and stays as printed in the source file the locator points to."
+      "description": "reported: the source gives a value. not_reported: the source gives none. not_applicable: no value applies (qualitative statement). excluded: the source reports a value, but FlameGuard-SI excludes it from use after a reviewed quality flag; the value is null here and stays as printed in the source file the locator points to."
     },
     "environment": {
       "enum": [
@@ -55,7 +55,7 @@
       "pattern": "^https?://[^\\s]+$"
     },
     "value_matches_status": {
-      "description": "reported needs a non-null value; not_reported, not_applicable and withheld need null.",
+      "description": "reported needs a non-null value; not_reported, not_applicable and excluded need null.",
       "allOf": [
         {
           "if": {
@@ -89,7 +89,7 @@
                 "enum": [
                   "not_reported",
                   "not_applicable",
-                  "withheld"
+                  "excluded"
                 ]
               }
             },
@@ -108,12 +108,14 @@
       ]
     },
     "curation_note": {
-      "description": "A FlameGuard-SI quality assessment of a measured value. Never source text; source-reported uncertainty belongs in `uncertainty`.",
+      "description": "A FlameGuard-SI quality assessment of a measured value. Never source text; source-reported uncertainty belongs in `uncertainty`. Every note carries a flag_ref and the source passage it rests on.",
       "type": "object",
       "required": [
         "kind",
         "note",
-        "generated_by"
+        "generated_by",
+        "flag_ref",
+        "source"
       ],
       "additionalProperties": false,
       "properties": {
@@ -121,7 +123,12 @@
           "enum": [
             "caution",
             "exclusion"
-          ]
+          ],
+          "x-flag-ranking-use": {
+            "caution": "caution",
+            "exclusion": "exclude"
+          },
+          "description": "Maps exactly to the quality-flag record's ranking_use as listed in x-flag-ranking-use (rule S10). A ranking_use of not_available produces no note: the finding is not_reported."
         },
         "note": {
           "type": "string",
@@ -138,7 +145,7 @@
             "flag_id"
           ],
           "additionalProperties": false,
-          "description": "The reviewed quality-flag record behind this note (data/curated/interpretations/quality/).",
+          "description": "The reviewed quality-flag record behind this note (data/curated/interpretations/quality/). Required for every note. The schema checks only its shape: rule S10 requires it to resolve to a registered flag row whose ranking_use matches kind, and that row's NASA quote to be verified against the registered source text.",
           "properties": {
             "manifest_id": {
               "$ref": "#/$defs/id"
@@ -148,19 +155,26 @@
               "minLength": 1
             }
           }
+        },
+        "source": {
+          "description": "The NASA source passage the flag rests on, with its quote as recorded. The schema checks only that a non-empty quote is recorded. That does NOT authenticate it: a quote counts as verified only after rule S10(d) checks it against the registered source text (Member 3) and Member 5 checks it independently (Q3).",
+          "allOf": [
+            {
+              "$ref": "source.schema.json"
+            },
+            {
+              "required": [
+                "quote"
+              ],
+              "properties": {
+                "quote": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
         }
-      },
-      "if": {
-        "properties": {
-          "kind": {
-            "const": "exclusion"
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "flag_ref"
-        ]
       }
     }
   }
