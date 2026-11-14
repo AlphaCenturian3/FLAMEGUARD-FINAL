@@ -1,10 +1,11 @@
 {
   "status": "draft_pending_review_by_member3",
-  "note": "Member 5 research register for the five initial investigations. Shaped like the contract Investigation object plus a 'member5' block. This is NOT curated data: Member 3 owns data/curated/investigations.json and the manifest. measured_records_imported is 0 for every investigation. No test-level NASA measurements have been imported.",
+  "note": "Member 5 research register for the five initial investigations plus one research synthesis. Shaped like the contract Investigation object plus a 'member5' block. This is NOT curated data: Member 3 owns data/curated/investigations.json and the manifest. measured_records_imported is 0 for every entry. No test-level NASA measurements have been imported. 'dataset_doi' is the investigation-level NASA PSI dataset DOI, checked against the DataCite registry; it is not the DOI of the quoted source.",
   "retrieved": "2026-11-14",
   "investigations": [
     {
       "id": "bass-ii",
+      "record_type": "investigation",
       "name": "Burning and Suppression of Solids-II",
       "acronym": "BASS-II",
       "platform": "International Space Station, Microgravity Science Glovebox",
@@ -28,20 +29,29 @@
           "quote": null,
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20160000593"
+        },
+        {
+          "title": "Burning and Suppression of Solids - II (NASA PSI dataset)",
+          "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25",
+          "page": null,
+          "quote": null,
+          "retrieved": "2026-11-14",
+          "archive_id": "PSI-25; DOI 10.60555/4qc4-de67"
         }
       ],
       "member5": {
         "research_subject": "Solid-material burning and flame spread",
-        "doi": null,
+        "psi_id": "PSI-25",
+        "dataset_doi": "10.60555/4qc4-de67",
+        "dataset_rights": "CC0-1.0 (DataCite rightsList)",
         "measured_records_imported": 0,
-        "verification": "Sources and quotes verified against NTRS records on 2026-11-14.",
-        "candidate_data_locations": [
-          {"label": "NASA PSI investigation PSI-25 (search result, link to BASS-II not verified)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-25"}
-        ]
+        "kickoff_ref": "M5-01",
+        "verification": "Quotes verified against NTRS records on 2026-11-14. DOI 10.60555/4qc4-de67 verified in DataCite: title 'Burning and Suppression of Solids - II', publisher NASA PSI, type Dataset, url PSI-25. Test-level files not inspected."
       }
     },
     {
       "id": "flex",
+      "record_type": "investigation",
       "name": "Flame Extinguishment Experiment",
       "acronym": "FLEX",
       "platform": "International Space Station, Combustion Integrated Rack (Multi-User Droplet Combustion Apparatus)",
@@ -65,21 +75,29 @@
           "quote": "It also presents the results of the first 284 tests performed.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "Flame Extinguishment Experiment (NASA PSI dataset)",
+          "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69",
+          "page": null,
+          "quote": null,
+          "retrieved": "2026-11-14",
+          "archive_id": "PSI-69; DOI 10.60555/mbq8-0451"
         }
       ],
       "member5": {
         "research_subject": "Liquid-droplet combustion and extinction",
-        "doi": null,
+        "psi_id": "PSI-69",
+        "dataset_doi": "10.60555/mbq8-0451",
+        "dataset_rights": "CC0-1.0 (DataCite rightsList)",
         "measured_records_imported": 0,
-        "verification": "Sources and quotes verified on 2026-11-14. The page issresearchproject.grc.nasa.gov/Investigations/FLEX/ did not resolve from the verification machine and is not used.",
-        "candidate_data_locations": [
-          {"label": "NTRS 20150023456 report tables (first 284 tests)", "url": "https://ntrs.nasa.gov/citations/20150023456"},
-          {"label": "NASA PSI investigation PSI-69 (search result, link to FLEX not verified)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-69"}
-        ]
+        "kickoff_ref": "M5-02",
+        "verification": "Quotes verified on 2026-11-14. DOI 10.60555/mbq8-0451 verified in DataCite: title 'Flame Extinguishment Experiment', publisher NASA PSI, type Dataset, url PSI-69. Test-level files not inspected. The page issresearchproject.grc.nasa.gov/Investigations/FLEX/ did not resolve and is not used."
       }
     },
     {
       "id": "sofie",
+      "record_type": "investigation",
       "name": "Solid Fuel Ignition and Extinction",
       "acronym": "SoFIE",
       "platform": "International Space Station, Combustion Integrated Rack (experiment insert)",
@@ -103,18 +121,29 @@
           "quote": null,
           "retrieved": "2026-11-14",
           "archive_id": null
+        },
+        {
+          "title": "SoFIE (NASA Science investigation page)",
+          "url": "https://science.nasa.gov/biological-physical/investigations/sofie/",
+          "page": null,
+          "quote": null,
+          "retrieved": "2026-11-14",
+          "archive_id": null
         }
       ],
       "member5": {
         "research_subject": "Solid-fuel ignition and flammability",
-        "doi": null,
+        "psi_id": null,
+        "dataset_doi": null,
+        "dataset_rights": null,
         "measured_records_imported": 0,
-        "verification": "Sources and quotes verified on 2026-11-14. No SoFIE test-level result publication has been reviewed yet.",
-        "candidate_data_locations": []
+        "kickoff_ref": "M5-03",
+        "verification": "Quotes verified on 2026-11-14. A DataCite title search (publisher NASA PSI) found no SoFIE dataset DOI; that does not prove none exists. No SoFIE test-level result publication reviewed."
       }
     },
     {
       "id": "saffire",
+      "record_type": "investigation",
       "name": "Spacecraft Fire Safety Experiment",
       "acronym": "Saffire",
       "platform": "Uncrewed Cygnus cargo vehicle after departure from the ISS",
@@ -142,16 +171,22 @@
       ],
       "member5": {
         "research_subject": "Larger-scale spacecraft fire behaviour",
-        "doi": null,
+        "psi_id": null,
+        "dataset_doi": null,
+        "dataset_rights": null,
         "measured_records_imported": 0,
-        "verification": "Sources and quotes verified against NTRS records on 2026-11-14.",
-        "candidate_data_locations": [
-          {"label": "NASA PSI investigation PSI-98 (search result, link to Saffire not verified)", "url": "https://psi.nasa.gov/physci/repo/data/investigations/PSI-98"}
-        ]
+        "kickoff_ref": "M5-04",
+        "psi_datasets_other_flights": [
+          {"flight": "SAFFIRE-I", "psi_id": "PSI-98", "doi": "10.60555/0t15-1z43", "rights": "CC0-1.0"},
+          {"flight": "SAFFIRE-II", "psi_id": "PSI-99", "doi": "10.60555/2chp-m469", "rights": "CC0-1.0"},
+          {"flight": "SAFFIRE-III", "psi_id": "PSI-100", "doi": "10.60555/040q-4h36", "rights": "CC0-1.0"}
+        ],
+        "verification": "Quotes verified against NTRS records on 2026-11-14. The quoted findings come from Saffire IV-VI reports. DataCite lists PSI datasets only for Saffire I-III (PSI-98/99/100); they are recorded as other flights and are NOT cited for the quoted findings."
       }
     },
     {
       "id": "fm2",
+      "record_type": "investigation",
       "name": "Flammability of Materials on the Moon",
       "acronym": "FM2",
       "platform": "Lunar surface payload (planned; flight status not verified)",
@@ -179,12 +214,40 @@
       ],
       "member5": {
         "research_subject": "Lunar partial-gravity research objectives",
-        "doi": null,
+        "psi_id": null,
+        "dataset_doi": null,
+        "dataset_rights": null,
         "measured_records_imported": 0,
-        "verification": "Sources and quotes verified on 2026-11-14. Whether FM2 has flown or returned data was NOT verified.",
-        "candidate_data_locations": [
-          {"label": "NTRS 20260000646 'Material Flammability at Lunar and Martian Gravity' (extended abstract; no abstract text in the NTRS API record; not reviewed)", "url": "https://ntrs.nasa.gov/citations/20260000646"}
-        ]
+        "kickoff_ref": "M5-05",
+        "verification": "Quotes verified on 2026-11-14. Whether FM2 has flown or returned data was NOT verified. No PSI dataset DOI found. NTRS 20260000646 'Material Flammability at Lunar and Martian Gravity' (2026 extended abstract) has no abstract text in the NTRS API record and was not reviewed."
+      }
+    },
+    {
+      "id": "partial-gravity-synthesis",
+      "record_type": "research_synthesis",
+      "name": "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires",
+      "acronym": null,
+      "platform": null,
+      "objectives": [],
+      "relevant_environments": ["lunar_base", "martian_base"],
+      "sources": [
+        {
+          "title": "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires (Liao et al., decadal-survey white paper hosted by NASA)",
+          "url": "https://smd-cms.nasa.gov/wp-content/uploads/2023/05/60_afb22b1e538432728848e83bb3ade8c2_LiaoYaTingT.pdf",
+          "page": null,
+          "quote": "Fire behavior in partial gravity (e.g., on Moon and Mars) cannot be expected to be interpolated between the data obtained in normal and microgravity conditions (which themselves are not yet fully understood).",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "member5": {
+        "research_subject": "Partial-gravity research needs (cross-cutting synthesis, not an investigation)",
+        "psi_id": null,
+        "dataset_doi": null,
+        "dataset_rights": null,
+        "measured_records_imported": 0,
+        "kickoff_ref": "M5-I04",
+        "verification": "Quote verified on 2026-11-14 by extracting the PDF text (pypdf, scratch environment). A community white paper authored by university and NASA researchers and hosted on a NASA site; it is not a NASA finding. Excluded from investigation rankings."
       }
     }
   ]

@@ -1,52 +1,64 @@
 # Member 5: research interpretation, relevance ranking and Moon/Mars insights
 
-**Status:** draft. Pending CP1 (contract v0.2.0) and scientific review by Member 1. Nothing here is wired into the API, and nothing here is curated data.
+**Status:** draft. Pending CP1 (contract v0.2.0) and scientific review. Nothing here is wired into the API, and nothing here is curated data. Ranking output is disabled until the criteria are approved and verified NASA measurements are imported.
 
 ## What is in this folder
 
 | File | What it is |
 |---|---|
-| `investigations.json` | Register of the 5 initial investigations, with verified NASA sources. `measured_records_imported` is 0 for each. |
-| `evidence_reported.json` | 11 qualitative statements quoted exactly from NASA sources (`evidence_category: "reported"`). No numeric values. |
-| `insight_cards.json` | 6 Moon/Mars insight cards: Finding → NASA source → Interpretation → Moon/Mars implication → Limitation. |
-| `RANKING_METHODOLOGY.md` | How the research-relevance score works, and what it is not. |
-| `COORDINATION.md` | Open decisions for Members 1–4. |
+| `investigations.json` | Register of the 5 initial investigations and 1 research synthesis, with verified NASA sources and dataset DOIs. `measured_records_imported` is 0 for each. |
+| `evidence_reported.json` | 14 qualitative statements quoted exactly from their sources (`evidence_category: "reported"`). No numeric values. |
+| `insight_cards.json` | 6 Moon/Mars insight cards (Finding → source → Interpretation → Moon/Mars implication → Limitation), each mapped to the kickoff with `kickoff_ref`. |
+| `GAP_REPORT.md` | Requirements against implementation, including what is blocked. |
+| `RANKING_METHODOLOGY.md` | How the research-relevance score works, its gates, and what it is not. |
+| `COORDINATION.md` | Ownership against the CP1 proposal, decision log D-01 to D-12, requests per member, CP1 rebase readiness. |
 
-Code lives in `backend/flameguard/research/`. The proposed criteria are in `config/research_relevance_criteria_v1.proposed.json`. Tests are in `tests/research/`, and their fixtures are in `tests/fixtures/research/` (marked `fixture: true`; not NASA data).
+Code: `backend/flameguard/research/`. Proposed criteria: `config/research_relevance_criteria_v1.proposed.json`. Tests: `tests/research/`, with fixtures in `tests/fixtures/research/` (`fixture: true`; not NASA data).
 
-## Research subjects and verification
+## Kickoff reconciliation
 
-All sources were retrieved on 2026-11-14. Every quote in `investigations.json` and `evidence_reported.json` (17 quotes) was checked word-for-word against the live source text with:
+The kickoff file (`FLAMEGUARD_MEMBER5_RESEARCH_KICKOFF_2026-11-14.md`) was read on 2026-11-14 and reconciled:
 
-```bash
-python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json
-```
+| Kickoff item | Result |
+|---|---|
+| M5-01 BASS-II PSI-25, DOI `10.60555/4qc4-de67` | Confirmed in DataCite and added |
+| M5-02 FLEX PSI-69, DOI `10.60555/mbq8-0451` | Confirmed in DataCite and added |
+| M5-03 SoFIE / SoFIE-GEL | NASA Science page added; the claim that GEL observations agree with model trends was verified and added as evidence |
+| M5-04 Saffire VI NTRS 20240002981 | Already present; verified |
+| M5-05 FM² | Already present. No lunar measurement asserted. |
+| Cards M5-I01 to I04, recommendations D1 to D5 | Mapped to the 6 cards (`kickoff_ref`). I01's NASA caution about ground extinguishing methods was verified and is cited in the I03 card. I04's white paper was verified and is cited in the lunar and Martian cards. |
+| Ranking design C.1 to C.6 | See `GAP_REPORT.md`. Open: the 0–3 rubric (D-02), the missing-value policy (D-03), and cohort fields not in the contract (D-07). |
 
-Result on 2026-11-14: 17/17 quotes found. For NTRS records the check uses the public NTRS API record (title and abstract), because the citation pages render with JavaScript.
+The kickoff's wording was kept where a source supports it. Where the kickoff paraphrased a source, the cards quote the source directly.
 
-| Investigation | Subject | Sources used | Verified | Test-level data imported |
-|---|---|---|---|---|
-| BASS-II | Solid-material burning and flame spread | NTRS 20160000593, NTRS 20210011385 | yes | no |
-| FLEX | Liquid-droplet combustion and extinction | GRC Combustion Science page, NTRS 20150023456 | yes | no |
-| SoFIE | Solid-fuel ignition and flammability | NTRS 20200000361, NASA SoFIE page | yes | no |
-| Saffire | Larger-scale spacecraft fire behaviour | NTRS 20240002981, NTRS 20180005168 | yes | no |
-| FM² | Lunar partial-gravity research objectives | NASA FM² page, NTRS 20210020516 | yes | no |
+## Verification
 
-Not verified, and so not used as evidence:
+All sources were retrieved on 2026-11-14.
 
-- Whether FM² has flown or returned data.
-- PSI dataset IDs found by web search (PSI-25, PSI-69, PSI-98). They are listed as candidate data locations only.
-- `issresearchproject.grc.nasa.gov/Investigations/FLEX/`, which did not resolve from the verification machine.
-- DOIs. None of the NTRS API records lists one, so `doi` is `null` everywhere.
+- **Quotes:** 21 quote citations (17 distinct quotes) in `investigations.json` and `evidence_reported.json`. Running `python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json` gave **19/21 found, 2 need manual check, 0 failed**. The 2 are the same quote from the partial-gravity white paper (PDF). It was checked by extracting the PDF text in a scratch environment and was found word for word. For NTRS records the check uses the public NTRS API record, because the citation pages render with JavaScript.
+- **DOIs:** checked against the DataCite registry (`api.datacite.org/dois/<doi>`): title, publisher (NASA PSI), type (Dataset), landing URL and rights.
 
-## Missing input
+| Investigation | Subject | PSI / dataset DOI | Test-level data imported |
+|---|---|---|---|
+| BASS-II | Solid-material burning and flame spread | PSI-25 / `10.60555/4qc4-de67` | no |
+| FLEX | Liquid-droplet combustion and extinction | PSI-69 / `10.60555/mbq8-0451` | no |
+| SoFIE | Solid-fuel ignition and flammability | none found | no |
+| Saffire | Larger-scale spacecraft fire behaviour | none found for flights IV–VI (PSI-98/99/100 are flights I–III and are not cited) | no |
+| FM² | Lunar partial-gravity research objectives | none found | no |
 
-The research kickoff file `FLAMEGUARD_MEMBER5_RESEARCH_KICKOFF_2026-11-14.md` and the folder `C:\Users\nhanb\FLAMEGUARD-MEMBER5-RESEARCH` were not available when this was built. The content above comes from the task brief's subject list and the NASA sources themselves. When the kickoff file is available, reconcile it with this folder and keep its original citations.
+Not verified, and not used as evidence: FM² flight status, any SoFIE, Saffire IV–VI or FM² dataset DOI, and `issresearchproject.grc.nasa.gov` (did not resolve).
+
+## Credits and licences
+
+- NASA PSI datasets: BASS-II (PSI-25, DOI 10.60555/4qc4-de67) and FLEX (PSI-69, DOI 10.60555/mbq8-0451), both **CC0-1.0** per their DataCite records. Cite them by DOI, as the PSI repository requests. No dataset files are committed.
+- NASA Technical Reports Server records 20150023456, 20160000593, 20180005168, 20200000361, 20210011385, 20210020516 and 20240002981: cited by title, URL and short quoted abstract text.
+- NASA web pages (nasa.gov, www1.grc.nasa.gov, science.nasa.gov): cited by title, URL and short quotes. NASA media guidelines apply: generated text is attributed to FlameGuard-SI, never to NASA.
+- Liao et al., "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires" (decadal-survey white paper hosted at smd-cms.nasa.gov): cited for one short quote. The rights of the full text were not reviewed.
 
 ## Integrity rules applied
 
 - No NASA measurement, test id, result or uncertainty is invented. Missing values are `null` and listed by `missing_fields()`.
-- `reported` statements are never upgraded to `measured`. Hypotheses (FM²) are labelled `hypothesis_under_test`.
-- Interpretations and implications are FlameGuard-SI text. Implications are labelled `engineering_hypothesis`. Every card says it is not a flight-qualified recommendation.
+- `reported` statements are never upgraded to `measured`. Hypotheses (FM²) are `hypothesis_under_test`. The white paper is a `source_statement`, not a NASA finding.
+- Interpretations and implications are FlameGuard-SI text. Implications are `engineering_hypothesis`. Every card says it is not a flight-qualified recommendation.
 - Every lunar or Martian claim carries an `extrapolation_warning`.
-- The ranking measures research relevance, not fire risk, and gives no probability.
+- The ranking measures research relevance, not fire risk. It is disabled until the criteria are frozen, and it uses only verified manifest entries.

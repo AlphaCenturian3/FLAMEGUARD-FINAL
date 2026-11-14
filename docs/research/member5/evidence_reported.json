@@ -1,6 +1,6 @@
 {
   "status": "draft_pending_scientific_review",
-  "note": "Quoted qualitative statements from NASA sources (evidence_category 'reported'). No numeric measurements are imported here. Each quote was checked word-for-word against the source text on the retrieval date; rerun with: python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json",
+  "note": "Quoted qualitative statements from NASA sources (evidence_category 'reported'). No numeric measurements are imported here. Each quote was checked word-for-word against the source text on the retrieval date; rerun with: python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json (PDF sources are reported as needing manual verification).",
   "records": [
     {
       "id": "m5-bass2-flow-flareup",
@@ -458,6 +458,130 @@
       ],
       "relevant_environments": ["spacecraft", "space_station"],
       "fire_safety_topics": ["extinction"]
+    },
+    {
+      "id": "m5-bass-ground-methods",
+      "investigation_id": "bass-ii",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "NASA's combustion overview says putting out fires in space must consider flame geometry, material characteristics and extinguishing method, because ground methods could be ineffective or make the flame worse.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Studying Combustion and Fire Safety",
+          "url": "https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/",
+          "page": null,
+          "quote": "Putting out fires in space must consider flame geometry, characteristics of the materials, and methods used to extinguish it, because methods used on the ground could be ineffective or even make the flame worse.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A general statement in a NASA overview, written in the context of BASS; it names no specific test or measurement."
+      ],
+      "relevant_environments": ["spacecraft", "space_station", "lunar_base", "martian_base"],
+      "extrapolation_warning": "The statement concerns microgravity. It gives no lunar- or Martian-gravity evidence.",
+      "fire_safety_topics": ["suppression", "extinction"]
+    },
+    {
+      "id": "m5-sofie-gel-model-trends",
+      "investigation_id": "sofie",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "experimental_result",
+      "statement": "NASA's combustion overview says SoFIE-GEL researchers report that experiment observations agree with trends predicted by the models.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Studying Combustion and Fire Safety",
+          "url": "https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/",
+          "page": null,
+          "quote": "Researchers report that experiment observations agree with trends predicted by the models.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "The page does not say which trends or models; no SoFIE-GEL data or publication has been reviewed.",
+        "SoFIE-GEL burned solid spherical samples; geometry limits transfer to other materials."
+      ],
+      "relevant_environments": ["spacecraft", "space_station", "lunar_base"],
+      "extrapolation_warning": "Microgravity tests. Model agreement in microgravity does not establish model accuracy at lunar gravity.",
+      "fire_safety_topics": ["material_flammability", "ignition"]
+    },
+    {
+      "id": "m5-partial-gravity-not-interpolated",
+      "investigation_id": "partial-gravity-synthesis",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "A research white paper hosted by NASA states that fire behaviour in partial gravity, such as on the Moon and Mars, cannot be expected to be interpolated between normal-gravity and microgravity data.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires (Liao et al., decadal-survey white paper hosted by NASA)",
+          "url": "https://smd-cms.nasa.gov/wp-content/uploads/2023/05/60_afb22b1e538432728848e83bb3ade8c2_LiaoYaTingT.pdf",
+          "page": null,
+          "quote": "Fire behavior in partial gravity (e.g., on Moon and Mars) cannot be expected to be interpolated between the data obtained in normal and microgravity conditions (which themselves are not yet fully understood).",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A community white paper (authors from universities and NASA), not a NASA finding or a measurement."
+      ],
+      "relevant_environments": ["lunar_base", "martian_base"],
+      "extrapolation_warning": "This statement is itself the extrapolation warning: lunar and Martian fire behaviour must not be estimated by interpolating ISS and 1-g results.",
+      "fire_safety_topics": ["material_flammability", "extinction"]
     }
   ]
 }

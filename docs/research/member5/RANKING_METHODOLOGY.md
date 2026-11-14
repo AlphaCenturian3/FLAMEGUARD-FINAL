@@ -46,7 +46,18 @@ Relevance is computed from structured fields, not guessed from free text:
 | Missing or incomparable evidence shown | `missing_evidence`, `excluded`, `excluded_records` |
 | No ranking from fabricated data | Fixtures are refused unless `allow_fixtures=True` (tests only). Fixture output is `fixture_demo_only`. Fixture and real records cannot be mixed. |
 | Simulations never feed the ranking | `RankingInputError` on any simulation record. The package does not import simulation code (tested). |
-| Review before release | `release_status` is `released` only when the criteria file is `approved` with named reviewers in `approved_by` |
+| Missing inputs visible, not hidden in a zero | Each criterion has a `status`: `complete`, `partially_missing` or `not_assessed` |
+
+## Gates (`release_status`)
+
+| Status | When | Items scored? |
+|---|---|---|
+| `disabled_criteria_not_frozen` | Real records, but the criteria file is not `approved` with named reviewers (CP1: no ranking output before R1) | No |
+| `evidence_insufficient` | Criteria approved, but no investigation has verified measured or interpreted evidence | No |
+| `fixture_demo_only` | Fixture records (tests only) | Yes, never released |
+| `released` | Approved criteria and at least one scored investigation | Yes |
+
+A real `measured` record counts only if its `manifest_id` is in `verified_manifest_ids`, the set of manifest entries that passed the provenance check and the loader (Member 3 data, Member 1's B1 loader). Interpretations built on unverified records lose their traceability score.
 
 ## Output
 
@@ -54,7 +65,14 @@ Relevance is computed from structured fields, not guessed from free text:
 
 ## Current result on real data
 
-No measured or interpreted NASA records have been imported yet, so a ranking over the real register returns **no items**. All 5 investigations are listed in `excluded` with the reason "no verified measured or interpreted evidence imported; N quoted source statement(s) available as context only". This is intended: the architecture is ready, and no ranking result is fabricated.
+No measured or interpreted NASA records have been imported, and the criteria are only proposed. A ranking over the real register therefore returns **no items** with `release_status: disabled_criteria_not_frozen`. With approved criteria it would still return no items, with status `evidence_insufficient`. All 5 investigations are listed in `excluded` with an "insufficient evidence" reason. This is intended: the method is ready, and no ranking result is fabricated.
+
+## Open methodology decisions (see COORDINATION.md)
+
+- **D-02:** the kickoff specifies a 0–3 rubric per criterion; this implementation uses continuous 0–1 fractions.
+- **D-03:** missing inputs currently count as 0, with a visible `partially_missing` status. The alternative is moving the item to "insufficient evidence".
+- **D-04:** the strict comparability rule.
+- **D-07:** fuel phase, thickness and ignition conditions are not in the contract's `conditions` yet.
 
 ## Known limitations of the method
 

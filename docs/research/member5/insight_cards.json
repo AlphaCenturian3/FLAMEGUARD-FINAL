@@ -4,15 +4,20 @@
   "cards": [
     {
       "id": "card-material-selection",
+      "kickoff_ref": "Kickoff D1 (material selection)",
       "theme": "material_selection",
       "title": "1-g material screening may not cover reduced gravity",
       "review_status": "draft_pending_scientific_review",
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
-        "statement": "NASA sources say the 1-g flame propagation test in NASA-STD-6001 is considered by some researchers not to be conservative in low gravity, and list validating 1-g material selection for low-gravity fires as a SoFIE application.",
+        "statement": "NASA sources say the 1-g flame propagation test in NASA-STD-6001 is considered by some researchers not to be conservative in low gravity, and list validating 1-g material selection for low-gravity fires as a SoFIE application. For SoFIE-GEL, NASA reports that observations agree with model-predicted trends.",
         "claim_type": "source_reported",
         "strength": "stated_objective",
-        "evidence_ids": ["m5-sofie-std6001-concern", "m5-sofie-material-selection"]
+        "evidence_ids": [
+          "m5-sofie-std6001-concern",
+          "m5-sofie-material-selection",
+          "m5-sofie-gel-model-trends"
+        ]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
@@ -31,6 +36,7 @@
     },
     {
       "id": "card-ventilation-flow",
+      "kickoff_ref": "M5-I01 (flow and flame spread); kickoff D2",
       "theme": "ventilation_flow",
       "title": "Weak low-flow flames can flare up when airflow increases",
       "review_status": "draft_pending_scientific_review",
@@ -58,6 +64,7 @@
     },
     {
       "id": "card-detection-monitoring",
+      "kickoff_ref": "M5-I02 (fire products and detection); kickoff D3",
       "theme": "detection_monitoring",
       "title": "Combustion products changed more than temperature or pressure",
       "review_status": "draft_pending_scientific_review",
@@ -86,15 +93,20 @@
     },
     {
       "id": "card-lunar-partial-gravity",
+      "kickoff_ref": "M5-I04 (partial gravity is not interpolation); kickoff D4",
       "theme": "lunar_partial_gravity",
       "title": "Lunar gravity may raise flammability for some materials (hypothesis)",
       "review_status": "draft_pending_scientific_review",
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
-        "statement": "NASA researchers hypothesise that some materials are more flammable in lunar gravity than on Earth, and NASA's FM2 page says modelling and reduced-gravity experiments suggest materials may burn at lower oxygen concentrations in lunar gravity.",
+        "statement": "NASA researchers hypothesise that some materials are more flammable in lunar gravity than on Earth, and NASA's FM2 page says modelling and reduced-gravity experiments suggest materials may burn at lower oxygen concentrations in lunar gravity. A research white paper hosted by NASA states that partial-gravity fire behaviour cannot be expected to be interpolated between normal-gravity and microgravity data.",
         "claim_type": "source_reported",
         "strength": "hypothesis_under_test",
-        "evidence_ids": ["m5-fm2-lower-oxygen-hypothesis", "m5-moon-hypothesis"]
+        "evidence_ids": [
+          "m5-fm2-lower-oxygen-hypothesis",
+          "m5-moon-hypothesis",
+          "m5-partial-gravity-not-interpolated"
+        ]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
@@ -113,15 +125,20 @@
     },
     {
       "id": "card-martian-extrapolation",
+      "kickoff_ref": "M5-I04 (partial gravity is not interpolation); kickoff D5",
       "theme": "martian_extrapolation",
       "title": "Martian fire behaviour is an extrapolation",
       "review_status": "draft_pending_scientific_review",
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
-        "statement": "The 'Fire on the Moon' concept plans to refine pressure-gravity scaling relations from 1-g and lunar-g data and apply them to other gravity levels. Saffire data showed enclosure size affected flame spread more than anticipated.",
+        "statement": "A research white paper hosted by NASA states that fire behaviour on the Moon and Mars cannot be expected to be interpolated between normal-gravity and microgravity data. The 'Fire on the Moon' concept plans to refine pressure-gravity scaling relations and apply them to other gravity levels. Saffire data showed enclosure size affected flame spread more than anticipated.",
         "claim_type": "source_reported",
         "strength": "stated_objective",
-        "evidence_ids": ["m5-moon-scaling-objective", "m5-saffire-enclosure-effect"]
+        "evidence_ids": [
+          "m5-partial-gravity-not-interpolated",
+          "m5-moon-scaling-objective",
+          "m5-saffire-enclosure-effect"
+        ]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
@@ -140,24 +157,25 @@
     },
     {
       "id": "card-fuel-extinction-suppression",
+      "kickoff_ref": "M5-I03 (suppression evidence requires fuel context)",
       "theme": "fuel_extinction_suppression",
-      "title": "Liquid-fuel extinction and inert-gas suppression data exist (FLEX)",
+      "title": "Suppression evidence requires fuel context",
       "review_status": "draft_pending_scientific_review",
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
-        "statement": "FLEX was designed to assess inert-gas suppressant effectiveness in microgravity and estimate the limiting oxygen index, and a NASA report presents results from its first 284 tests.",
+        "statement": "FLEX was designed to assess inert-gas suppressant effectiveness in microgravity for liquid droplets, and a NASA report presents results from its first 284 tests. NASA's combustion overview says putting out fires in space must consider flame geometry, material characteristics and extinguishing method, because ground methods could be ineffective or make the flame worse.",
         "claim_type": "source_reported",
         "strength": "stated_objective",
-        "evidence_ids": ["m5-flex-objective", "m5-flex-dataset"]
+        "evidence_ids": ["m5-flex-objective", "m5-flex-dataset", "m5-bass-ground-methods"]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
-        "text": "FLEX is the most direct source in this register for liquid-fuel extinction and diluent suppression. Its test-level results are published but have not been imported, so no extinction values are shown."
+        "text": "Suppression evidence is specific to fuel phase, geometry and conditions. FLEX covers liquid droplets and BASS covers solids; their test-level results have not been imported, so no extinction values or suppressant comparisons are shown."
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
         "environments": ["spacecraft", "space_station", "lunar_base"],
-        "text": "Research on inert-diluent suppression in habitats could draw on FLEX data, but only for liquid fuels similar to those tested.",
+        "text": "Suppressant effectiveness should not be transferred between liquid-droplet and solid-material fires without compatible evidence. Habitat suppression research could draw on FLEX data only for liquid fuels similar to those tested.",
         "extrapolation_warning": "Droplet tests in microgravity; suppression under lunar gravity with buoyant flow is not covered."
       },
       "limitations": [

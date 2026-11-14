@@ -7,8 +7,9 @@ Usage (needs network; not part of the offline test suite)::
 
 NTRS citation pages are rendered by JavaScript, so for ``ntrs.nasa.gov/citations/<id>``
 the public NTRS API record (title and abstract) is checked instead. The comparison
-normalises whitespace and HTML entities only. Exit code 0 means every quote was found.
-Nothing is downloaded to the repository.
+normalises whitespace and HTML entities only. PDF sources are not parsed (that would need
+a new dependency) and are reported as ``MANUAL``; check them by hand and log the result.
+Exit code 0 means no quote failed. Nothing is downloaded to the repository.
 """
 
 import html
@@ -27,14 +28,22 @@ def _normalise(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+class ManualCheckRequired(Exception):
+    """The source is a format this tool does not parse (PDF); a person must check it."""
+
+
 def fetch_text(url: str) -> str:
     match = _NTRS.match(url)
     fetch_url = f"https://ntrs.nasa.gov/api/citations/{match.group(1)}" if match else url
     if not fetch_url.startswith("https://"):
         raise ValueError(f"refusing non-https url: {url}")
+    if fetch_url.lower().endswith(".pdf"):
+        raise ManualCheckRequired("PDF source")
     # S310: the scheme is checked to be https on the line above.
     request = urllib.request.Request(fetch_url, headers={"User-Agent": _USER_AGENT})  # noqa: S310
     with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310
+        if "pdf" in (response.headers.get("Content-Type") or "").lower():
+            raise ManualCheckRequired("PDF source")
         raw = response.read().decode("utf-8", errors="replace")
     if match:
         record = json.loads(raw)
@@ -43,7 +52,8 @@ def fetch_text(url: str) -> str:
     return _normalise(re.sub(r"(?s)<[^>]+>", " ", raw))
 
 
-def verify(path: Path) -> list[tuple[str, str, bool, str]]:
+def verify(path: Path) -> list[tuple[str, str, bool | None, str]]:
+    """Return (record id, url, found, note). ``found`` is None when a manual check is needed."""
     document = json.loads(path.read_text(encoding="utf-8"))
     records = document.get("records") or document.get("investigations") or []
     cache: dict[str, str] = {}
@@ -59,6 +69,8 @@ def verify(path: Path) -> list[tuple[str, str, bool, str]]:
                     cache[url] = fetch_text(url)
                 found = _normalise(quote) in cache[url]
                 note = "found" if found else "NOT FOUND"
+            except ManualCheckRequired as exc:
+                found, note = None, f"MANUAL ({exc})"
             except Exception as exc:  # noqa: BLE001 - report any fetch failure
                 found, note = False, f"fetch failed: {exc}"
             results.append((record["id"], url, found, note))
@@ -72,8 +84,10 @@ def main(argv: list[str]) -> int:
     results = [r for arg in argv[1:] for r in verify(Path(arg))]
     for rid, url, _found, note in results:
         print(f"{note:>10}  {rid}  {url}")
-    failed = sum(1 for r in results if not r[2])
-    print(f"{len(results) - failed}/{len(results)} quotes verified")
+    found = sum(1 for r in results if r[2] is True)
+    manual = sum(1 for r in results if r[2] is None)
+    failed = sum(1 for r in results if r[2] is False)
+    print(f"{found}/{len(results)} quotes verified; {manual} need manual check; {failed} failed")
     return 1 if failed else 0
 
 
