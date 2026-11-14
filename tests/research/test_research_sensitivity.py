@@ -90,3 +90,39 @@ def test_document_tables_match_the_code(fx):
     for name, scenario in fx["scenarios"].items():
         assert markdown(name, scenario["criterion_scores"], fx["weights"]) in doc
     assert "No NASA data is used" in doc
+
+
+# --- Applicability-dominance invariant (Member 1, PR #3 comment 6883984161) ---
+
+
+def _dominates(w_c, w_t, w_d, delta_min):
+    return w_c * delta_min > w_t + w_d
+
+
+def test_original_weights_fail_the_invariant_for_any_delta_up_to_one(fx):
+    w = fx["weights"]
+    for delta_min in (1.0, 0.5, 1 / 3, 0.1):
+        assert not _dominates(
+            w["condition_match"], w["source_traceability"], w["data_completeness"], delta_min
+        )
+    # Removing purpose_relevance and rescaling keeps C : (T + D) = 0.25 : 0.35, so it fails too.
+    rest = w["condition_match"] + w["source_traceability"] + w["data_completeness"]
+    c, t, d = (w[k] / rest for k in ("condition_match", "source_traceability", "data_completeness"))
+    assert math.isclose(c, 0.25 / 0.60) and not _dominates(c, t, d, 1.0)
+
+
+@pytest.mark.parametrize(("delta_min", "bound"), [(1.0, 0.5), (1 / 3, 0.75)])
+def test_invariant_bound_on_w_c(delta_min, bound):
+    # With w_C + w_T + w_D = 1, the invariant is w_C > 1 / (1 + delta_min).
+    assert math.isclose(1 / (1 + delta_min), bound)
+    eps = 1e-6
+    assert _dominates(bound + eps, (1 - bound - eps) / 2, (1 - bound - eps) / 2, delta_min)
+    assert not _dominates(bound, (1 - bound) / 2, (1 - bound) / 2, delta_min)
+
+
+def test_document_records_the_invariant_without_proposing_weights():
+    doc = DOC.read_text(encoding="utf-8")
+    assert "w_C · Δ_min > w_T + w_D" in doc
+    assert "No replacement weight set is proposed here." in doc
+    assert "not validation on NASA measurements" in doc
+    assert "superseded four-criterion structure" in doc
