@@ -1,6 +1,6 @@
 {
   "fixture": true,
-  "contract_version": "0.2.1",
+  "contract_version": "0.2.2",
   "answer": "FIXTURE answer assembled from quotes.",
   "mode": "fallback_quotes",
   "citations": [

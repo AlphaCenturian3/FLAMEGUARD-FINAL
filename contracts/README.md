@@ -1,4 +1,4 @@
-# Integration contract v0.2.1 (v0.2.0 merged at CP1; v0.2.1 proposes the D5/C4 FLEX quantities)
+# Integration contract v0.2.2 (v0.2.0 merged at CP1; v0.2.1 proposes the D5/C4 FLEX quantities; v0.2.2 proposes structured test identity and outcome)
 
 This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TARS evidence) and 5 (research), so each can develop independently. The summary is in master spec §5. The change log from v0.1.0 is at the bottom.
 
@@ -65,7 +65,7 @@ These rules span several files or depend on computed values. Each one has a memb
 | S2 | `data/curated/findings/<id>.json` contains only findings with `investigation_id == <id>` | M3 (D4) / M1 (B1 loader) |
 | S3 | `derived_from` ids resolve to measured or interpretation findings, with no cycles. An interpretation that depends on an `excluded` finding at any depth is restricted by S9 | M5 (R2, R3) / M3 (D4) |
 | S4 | `Investigation.datasets` ids resolve to manifest entries | M3 (D4) / M1 (B1 loader) |
-| S5 | **Comparison.** `comparable` is `false` when any row is not `reported`, when a condition key is reported with different values across rows, or when a condition key is reported for some rows and `null` for others. Each such case gives one reason. Every row's `finding_id` resolves to a measured finding with the same `quantity` and `unit`. | M1 (B3) / M5 (Q2) |
+| S5 | **Comparison.** `comparable` is `false` when any row is not `reported`, when a condition key is reported with different values across rows, or when a condition key is reported for some rows and `null` for others. Each such case gives one reason. Every row's `finding_id` resolves to a measured finding with the same `quantity` and `unit`. **Test identity and outcome (v0.2.2):** a row's `test_id` and `test_outcome` equal those of its finding. `comparable` is `false` (with a reason) when rows report **different** `test_outcome` values, when outcomes are reported for **some rows and not others**, or when **any row has a `test_id` but no `test_outcome`**. Never inferred from `statement` or `locator` prose. The schema enforces the last two cases and, for every value in `outcomes.json`, the first; the cross-document equality with the finding is B3's, and `tests/test_comparability_outcome.py` is its oracle. | M1 (B3) / M5 (Q2) |
 | S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | M1 (B4) / M5 (Q2) |
 | S7 | List `total` equals `len(items)` | M1 (B2) / M1 (Q1 integration) and M2 (Q4) |
 | S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources, and was returned by `retrieve()` | M1 (B6) with M3 (T1) / M5 (Q2) |
@@ -75,6 +75,26 @@ These rules span several files or depend on computed values. Each one has a memb
 ## Changing the contract
 
 Follow spec §5.4. The PR touches only `contracts/`, the spec and the version constant. Members 1 and 2 approve it; Members 3 and 5 approve as well when a data, interpretation or ranking rule changes. Bump `CONTRACT_VERSION`, the spec version and `vocabulary_version` together, since a test checks that they match. When you change `vocabulary.json`, update `quantity_rules.schema.json` to match exactly; a test checks this too.
+
+## Changes from v0.2.1 (proposed, v0.2.2: structured test identity and outcome)
+
+| Change | Why |
+|---|---|
+| Optional `test_id` and `test_outcome` on **measured** `Finding` and on **comparison rows**, both **outside** `conditions` (every `conditions` key is required, so adding there would break every document) | FLEX values only compare within the same test outcome, and nothing machine-readable carried it. B3 cannot enforce a rule by parsing `statement` or `locator` prose |
+| `test_id`: a bare identifier (`^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$`, as the source prints it), or `null`. `test_outcome`: a **closed enum generated from `contracts/outcomes.json`**, or `null` | An outcome is a result, not a condition. A closed vocabulary lets the schema, not prose, decide |
+| **`contracts/outcomes.json` ships EMPTY and UNCONFIRMED** | No outcome value is approved until Member 5 confirms the scientific vocabulary. With an empty list the only valid `test_outcome` is `null`, so a row that carries a `test_id` can never be `comparable: true`: the "no FLEX comparison yet" gate is enforced by the contract itself, not only by a sentence |
+| S5 extended (see the S5 row) | Different, partial or missing outcomes are not comparable |
+| An outcome needs a `test_id`; interpretations may carry neither field | An outcome belongs to an identified test, and an interpretation is not a measurement |
+| `contracts/build_outcome_rules.py` generates the enum and the per-value comparison rules from `outcomes.json`; a test fails if the committed schemas drift from it | One source of truth: adding a confirmed value is one edit plus one command |
+| `CONTRACT_VERSION`, spec version, `vocabulary_version` and `outcomes_version` 0.2.1 -> 0.2.2 | Additive patch: both fields are optional, so every v0.2.0 and v0.2.1 document stays valid |
+
+**How v0.2.2 relates to PR #12 (v0.2.1) and the merge order.** v0.2.2 is **stacked on v0.2.1**: its branch contains PR #12's head, and it touches the same version carriers (so it cannot merge before #12). The two change different things: #12 adds FLEX **quantities**, v0.2.2 adds test **identity and outcome**. Order: (1) PR #12 merges; (2) this PR is retargeted to `main` and merges; (3) only then, after Member 5 confirms the outcome values and the generator is re-run, may derived FLEX Findings carry outcomes and FLEX comparisons become possible. If #12 changes again, this branch merges it (no rebase, no force-push).
+
+**Open decisions for this version:**
+
+- **P1 Outcome values:** none are proposed here. Member 5 decides them. The terms that Table IX prints are documented in `data/docs/flex_table_ix.md`, and nothing is added without independent confirmation.
+- **P2 Where `test_outcome` is emitted for non-FLEX sources:** optional, and absent or `null` means not reported.
+- **P3 Version level:** 0.2.2 (patch, additive). Members 1 and 2 to confirm.
 
 ## Changes from v0.2.0 (proposed, D5/C4)
 

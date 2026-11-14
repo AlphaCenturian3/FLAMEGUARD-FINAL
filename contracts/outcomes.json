@@ -1,0 +1,6 @@
+{
+  "outcomes_version": "0.2.2",
+  "status": "UNCONFIRMED",
+  "note": "No test outcome values are approved. The list is empty ON PURPOSE: until Member 5 confirms the scientific vocabulary, the only valid test_outcome is null, so no comparison of rows that carry a test_id can be comparable. To add values: Member 5 confirms them, then edit `outcomes` below and run `python contracts/build_outcome_rules.py`. Never add a value that a source does not print as that outcome.",
+  "outcomes": []
+}
