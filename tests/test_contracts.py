@@ -17,7 +17,8 @@ VOCAB = json.loads((ROOT / "contracts" / "vocabulary.json").read_text(encoding="
 EXAMPLE_SCHEMA = {
     "finding.measured.example.json": "finding.schema.json",
     "finding.measured_missing.example.json": "finding.schema.json",
-    "finding.measured_excluded.example.json": "finding.schema.json",
+    "finding.measured_caution.example.json": "finding.schema.json",
+    "finding.measured_withheld.example.json": "finding.schema.json",
     "finding.interpretation.example.json": "finding.schema.json",
     "investigation.example.json": "investigation.schema.json",
     "investigation_list.example.json": "investigation_list.schema.json",
@@ -149,7 +150,8 @@ def test_interpretation_must_be_attributed_to_flameguard(finding):
     [
         "finding.measured.example.json",
         "finding.measured_missing.example.json",
-        "finding.measured_excluded.example.json",
+        "finding.measured_caution.example.json",
+        "finding.measured_withheld.example.json",
     ],
 )
 def test_example_quantities_and_units_match_vocabulary(example):

@@ -58,15 +58,7 @@
     },
     "uncertainty": {
       "$ref": "common.schema.json#/$defs/text_or_null",
-      "description": "As reported by the source; never invented. FlameGuard-SI curation judgments go in curation_notes, never here."
-    },
-    "curation_notes": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "$ref": "common.schema.json#/$defs/curation_note"
-      },
-      "description": "Measured findings only: FlameGuard-SI caution or exclusion notes from data-quality flags, each attributed and linked to its flag and NASA quote."
+      "description": "Uncertainty exactly as reported by the source; never invented, and never a FlameGuard-SI assessment (those go in curation_notes)."
     },
     "conditions": {
       "$ref": "conditions.schema.json"
@@ -106,6 +98,14 @@
         "minLength": 1
       },
       "description": "Interpretation findings only, and required there: assumptions, extrapolation limits and uncertainty of the interpretation. A measured finding uses the source-reported `uncertainty`."
+    },
+    "curation_notes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "common.schema.json#/$defs/curation_note"
+      },
+      "description": "Measured findings only. FlameGuard-SI cautions and exclusions, each attributed and, for exclusions, traced to a quality flag."
     }
   },
   "allOf": [
@@ -225,16 +225,16 @@
       }
     },
     {
-      "description": "An excluded value is a measured finding with a null value and at least one exclusion note.",
+      "description": "withheld: measured only, value null (via value_matches_status), and at least one exclusion note.",
       "if": {
-        "properties": {
-          "value_status": {
-            "const": "excluded"
-          }
-        },
         "required": [
           "value_status"
-        ]
+        ],
+        "properties": {
+          "value_status": {
+            "const": "withheld"
+          }
+        }
       },
       "then": {
         "required": [
@@ -246,6 +246,7 @@
           },
           "curation_notes": {
             "contains": {
+              "type": "object",
               "required": [
                 "kind"
               ],
@@ -260,7 +261,7 @@
       }
     },
     {
-      "description": "An exclusion note is only valid on a finding whose value_status is excluded.",
+      "description": "An exclusion note means the value is withheld, so an excluded value can never stay numerically available.",
       "if": {
         "required": [
           "curation_notes"
@@ -268,6 +269,7 @@
         "properties": {
           "curation_notes": {
             "contains": {
+              "type": "object",
               "required": [
                 "kind"
               ],
@@ -283,7 +285,7 @@
       "then": {
         "properties": {
           "value_status": {
-            "const": "excluded"
+            "const": "withheld"
           }
         }
       }

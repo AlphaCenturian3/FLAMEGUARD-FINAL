@@ -6,7 +6,7 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 
 | Schema | Used by |
 |---|---|
-| `schemas/common.schema.json` | Shared definitions: ids, environments, value status, dates, URLs |
+| `schemas/common.schema.json` | Shared definitions: ids, environments, value status, curation notes, dates, URLs |
 | `schemas/quantity_rules.schema.json` | Quantity → unit and physical bounds, kept identical to `vocabulary.json` by a test |
 | `schemas/source.schema.json` | Citation embedded in every scientific object |
 | `schemas/conditions.schema.json` | Experimental conditions on findings and comparison rows |
@@ -37,23 +37,22 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 6. **IDs** use one pattern (`^[a-z0-9][a-z0-9_.-]*$`, at most 128 characters) in three separate spaces: manifest ids, investigation ids and finding ids. Each id is unique within its own space. `Finding.provenance.derived_from` uses finding ids. `manifest.derived_from` uses manifest ids.
 7. **Simulations** exist only as `SimulationResult`. The `Finding`, `Comparison`, `Ranking` and `AssistantAnswer` schemas reject `illustrative_simulation`, and no extra keys are allowed that could carry simulated values.
 8. **Planned endpoints** return `501` with an `Error` body until they are implemented.
-9. **Data-quality flags** (decision C3, amended): flags are FlameGuard-SI curation judgments, so they never go into `uncertainty`, which holds only what the source reports.
-   - A `caution` flag becomes a `curation_notes` entry with `kind: "caution"`, `generated_by: "FlameGuard-SI"`, a `flag_ref` (flags manifest id and flag id) and the exact NASA `source` quote it relies on.
-   - A value flagged `exclude` is emitted with `value_status: "excluded"`, `value: null`, and a `curation_notes` entry with `kind: "exclusion"` that gives the reason. The printed number stays only in the registered source file at `locator`, so it cannot reach ranking, compare or TARS (rule S9), and the dashboard can still say what was excluded and why.
-   - A `not_available` cell is `not_reported`.
+9. **Data-quality flags** (decision C3, corrected at CP1). Four cases stay distinct, and the schema enforces it:
+
+   | Case | `value_status` | `value` | Explanation goes in |
+   |---|---|---|---|
+   | Source-reported uncertainty | `reported` | the number | `uncertainty`: **only** text the source itself reports |
+   | Curator caution (flag `caution`) | `reported` | the number | `curation_notes[]` with `kind: "caution"`, `generated_by: "FlameGuard-SI"` |
+   | Excluded measurement (flag `exclude`) | `withheld` | `null` | `curation_notes[]` with `kind: "exclusion"`, a reason, and a `flag_ref` (`manifest_id` + `flag_id`) to the reviewed quality-flag record. The printed value stays in the registered source file that the `locator` points to |
+   | Missing in the source (dash, `not_available`) | `not_reported` | `null` | nothing; an exclusion note is not allowed |
+
+   - `withheld` is allowed only on measured findings, and keeps every measured provenance requirement (`manifest_id`, `locator`, `sources`).
+   - An exclusion note forces `withheld`, so an excluded value can never stay numerically available.
+   - `curation_notes` is not allowed on interpretation findings, which use `limitations`.
    - Source files are never edited to remove a value.
-
-   The mapping from the flags file's `ranking_use` is exact and has no other cases. It is also machine-readable as `x-flag-ranking-use` on `curation_note.kind` in `common.schema.json`:
-
-   | Flags file `ranking_use` | Finding |
-   |---|---|
-   | `caution` | `curation_notes[]` entry with `kind: "caution"`; `value_status` unchanged |
-   | `exclude` | `value_status: "excluded"`, `value: null`, plus a `curation_notes[]` entry with `kind: "exclusion"` |
-   | `not_available` | `value_status: "not_reported"`, `value: null`. **No note is created for this flag.** A not-available cell is not a caution or an exclusion |
-
-   Other flags on the same row (for example a whole-row `*` caution) still produce their own notes. A `not_reported` finding may therefore carry caution notes, but never one that points to a `not_available` flag.
-
-   **Quotes are verified, not just present.** The schema requires a non-empty `source.quote` on every note. That is a shape check, not scientific verification. The quote must equal the flag row's `source_quote` and must be checked against the text of the registered source document (rule S10, and spec §2.4 for all quotes).
+   - **Exact flag mapping** (machine-readable as `x-flag-ranking-use` on `curation_note.kind`; rule S10): flag `caution` → note `kind: "caution"`; flag `exclude` → note `kind: "exclusion"` plus `withheld`; flag `not_available` → `not_reported`, and **no note is created for that flag**. There are no other cases. Every note carries a `flag_ref`, so FlameGuard-SI text on a measured value always traces back to a reviewed flag. A whole-row caution can still add a caution note to a `not_reported` finding; what is forbidden is a note that comes from a `not_available` flag.
+   - **Quotes are verified, not just present.** The schema checks only shapes. Each referenced flag row's NASA quote and page must be verified against the registered source document's text (S10). A non-empty string in JSON does not count as verification.
+10. **`uncertainty` is source text only.** FlameGuard-SI judgments never go in it. The Q3 spot check verifies `uncertainty` against the source, along with values and quotes.
 
 ## Rules schemas cannot express
 
@@ -70,8 +69,8 @@ These rules span several files or depend on computed values. Each one has a memb
 | S6 | **Ranking.** Weights sum to 1. Each item has exactly one score per criterion, using ids from `criteria`. `score` = Σ weight × criterion score within 1e-9. Ranks are 1 to n, unique and ordered by descending score. No investigation appears in both `items` and `excluded`. Every input resolves. | M1 (B4) / M5 (Q2) |
 | S7 | List `total` equals `len(items)` | M1 (B2) / M1 (Q1 integration) and M2 (Q4) |
 | S8 | Each assistant citation's `finding_id` resolves, and its `source` is one of that finding's sources, and was returned by `retrieve()` | M1 (B6) with M3 (T1) / M5 (Q2) |
-| S9 | **Exclusions at runtime.** No finding with `value_status: "excluded"` is a ranking input, a comparison row counted as comparable (also schema-enforced), a `retrieve()` result or an assistant citation | M1 (B1, B3, B4, B6) with M3 (T1) / M5 (Q2) |
-| S10 | **Flags to findings (convention 9 mapping).** (a) Each `curation_notes[].flag_ref` resolves to a row of a manifest-registered, interpretation-class flags file. That row's `ranking_use` equals `x-flag-ranking-use[kind]`, its test or row matches the finding's `locator`, and its field is the finding's field or `*`. (b) Every `exclude` row that applies to an emitted finding makes that finding `excluded` with an exclusion note for that row. Every `caution` row produces a caution note on each finding it applies to. (c) Every `not_available` cell is a `not_reported` finding, and no note references a `not_available` row. (d) Each note's `source.quote` equals the flag row's `source_quote` and is verified against the registered source document's text; a non-empty string alone does not count. | M3: derivation tool (D4) plus `tests/data/` / M5: independent check in `tests/research/` and the Q3 source spot check |
+| S9 | **Withheld findings** are never ranking inputs, never count as reported evidence in a score, and appear in `/api/compare` only as non-comparable rows (the schema already forbids `comparable: true` with them). TARS may cite one only to explain an exclusion, and never states the withheld number. It never cites one as support for a scientific claim. Testable form: for every cited `withheld` finding, the answer text does not contain the value printed at its `locator`, and the citation sits only in a sentence about the exclusion. | M1 (B3, B4, B6) / M5 (Q2) |
+| S10 | **Flags to findings** (convention 9 mapping). (a) Each `curation_notes[].flag_ref` resolves to a row of a manifest-registered, interpretation-class quality-flags file whose `ranking_use` equals `x-flag-ranking-use[kind]`, whose test or row matches the finding's `locator`, and whose field is the finding's field or `*`. (b) Coverage: every `exclude` row that applies to an emitted finding makes it `withheld` with an exclusion note for that row, and every `caution` row gives a caution note on each finding it applies to. (c) Every `not_available` cell is `not_reported`, and no note references a `not_available` row. (d) Each referenced flag row's verbatim quote and page are verified against the registered source document's text. | M3 (derivation tool D4, `tests/data/`) / M5 (`tests/research/`, Q3) |
 
 ## Changing the contract
 
@@ -91,7 +90,7 @@ Follow spec §5.4. The PR touches only `contracts/`, the spec and the version co
 | Date pattern, `http(s)` URL pattern, non-empty strings or `null` | `"retrieved": "yesterday"`, `"url": "x"` and empty quotes were accepted |
 | Manifest schema mirrors the provenance checker (a test checks they agree); interpretations live under `data/curated/interpretations/` | The schema accepted measured entries with no sources or rights status, which the tool rejected |
 | Strict JSON parsing (S0) | `NaN` passed every numeric bound |
+| **Attribution correction (CP1):** `curation_notes` (FlameGuard-SI cautions and exclusions, each with a required `flag_ref`); `value_status: "withheld"`; `uncertainty` reserved for source text; exact flag mapping (`x-flag-ranking-use`) and rule S10 (reconciled with PR #7) | C3 had put FlameGuard-SI caution text into `uncertainty` ("as reported by the source"), and excluded values simply vanished. Readers could not tell source uncertainty from curator judgment, or an excluded value from a missing one. The change is additive: every document that was valid before is still valid |
 | `/api/compare` (501 stub); `error.code` enum; shared `common.schema.json` | Comparison had no endpoint, and environment and id rules were duplicated |
 | Removed `validated_against_measured` from simulations | No reference format exists for it yet |
-| **CP1 amendment:** `Finding.curation_notes` (measured only; attributed to FlameGuard-SI; `flag_ref` + exact NASA quote) and `value_status: "excluded"` (value `null`, exclusion note required); `uncertainty` is source-reported only; rules S9 (runtime exclusion) and S10 (exact `ranking_use` mapping, `not_available` without a note, quotes verified against the source) | C3 put FlameGuard-SI caution text into the source-reported `uncertainty` field, and excluded values vanished without an explanation the dashboard could show |
 | **P0 additions (PR #5):** `Finding.relevant_environments` and `Finding.limitations` (interpretation only; limitations required there); `AssistantAnswer.limitations` (required; at least 1 in `ai`/`fallback_quotes`) | Moon/Mars recommendations (R3) need an environment tag, and TARS must identify uncertainty. Both schemas forbid extra keys, so adding the fields after CP1 would be a breaking change |

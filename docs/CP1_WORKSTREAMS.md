@@ -2,7 +2,7 @@
 
 **Status:** proposal. Nobody starts feature work until CP1 passes: Members 1, 2, 3 and 5 declare their GitHub usernames in spec §4 and approve the contract v0.2.0 PR, and it is merged. Until then, only the "Start now" items below are allowed.
 
-**Team:** Members 1, 2, 3 and 5 (proposed). Whether a Member 4 (QA) exists is **unresolved** and needs explicit team confirmation before CP1 (spec §4, §8 item 10); no account is assigned to it. Ownership, TARS, the interface matrix, the one-implementation rule and the independent-review matrix are in spec §4.1 to §4.4.
+**Team:** Members 1, 2, 3 and 5. There is no Member 4 (Command Center roster decision, option (b), 2026-11-14, recorded on PR #1; same wording as spec §4). Ownership, TARS, the interface matrix, the one-implementation rule and the independent-review matrix are in spec §4.1 to §4.4.
 
 **Product priority, in order:**
 1. NASA evidence explorer
@@ -49,6 +49,7 @@ Every item must keep the rules in spec §2.
 | Compare never fills gaps | test: a `not_reported` row gives `value: null`, `comparable: false` |
 | Ranking scores are weighted sums | test: `score == Σ weight × criterion score` within 1e-9 for every item |
 | Ranking inputs resolve | test: every input `finding_id` exists and is measured or interpretation |
+| Withheld values never used (S9) | test: no ranking input, no comparable row, and no TARS numeric statement uses a `withheld` finding |
 | Assistant works without a key | test runs with the key blank: `mode` is `fallback_quotes` or `no_evidence` |
 | Assistant cites only retrieved evidence | test: every citation's `finding_id` was returned by `retrieve()` for that request |
 | Simulation isolation | test: the ranking, compare and assistant modules do not import simulation code |
@@ -60,7 +61,7 @@ Every item must keep the rules in spec §2.
 
 **Start now:** layout and components against `contracts/examples/`, in fixture mode (`?fixtures=1`) with the permanent "FIXTURE DATA. NOT NASA DATA." banner.
 
-- **F1. Explorer.** Investigation list and detail with findings. Every value shows an evidence-class badge, and every missing value shows "Not reported" or "Not applicable", never 0 or a blank.
+- **F1. Explorer.** Investigation list and detail with findings. Every value shows an evidence-class badge, and every missing value shows "Not reported" or "Not applicable", never 0 or a blank. A `withheld` value shows "Withheld by FlameGuard-SI" with the exclusion note and a link to its source location. `curation_notes` are labelled as FlameGuard-SI assessments, and `uncertainty` as "reported by the source".
 - **F2. Traceability.** Every finding shows its source title, link, locator and quote. Interpretations link to their `derived_from` findings.
 - **F3. Compare.** A table or chart from `/api/compare`.
   - The page shows the backend's `comparable` decision and `non_comparable_reasons` exactly as returned. It never computes its own comparability (spec §4.2, §4.3).
@@ -96,6 +97,11 @@ Every item must keep the rules in spec §2.
 **PR #4 alignment** (FLEX Table IX, FLEX-001 to FLEX-010). Member 3 makes these changes on their own branch:
 - Keep the as-printed CSV as the registered `measured` source. It is the transcription of record.
 - Move the flags CSV to `data/curated/interpretations/quality/`. This is the one v0.2.0 manifest rule PR #4 fails today: interpretation paths must start with `data/curated/interpretations/`. Member 5 reviews the flags.
+- When deriving findings, map each flag onto the contract (convention 9):
+  - `exclude` (e.g. the FLEX-010 burning rate) → `value_status: "withheld"`, `value: null`, an exclusion note with `flag_ref` pointing to the flag id;
+  - `caution` → a caution note in `curation_notes`, **never** in `uncertainty`;
+  - `not_available` → `not_reported`, with no note for that flag;
+  - every note carries `flag_ref`. The derivation tool and `tests/data/` enforce rule S10: references resolve, every `exclude` and `caution` row is covered, and each referenced flag quote is verified against the registered source text.
 - Add a tool in `tools/` that derives contract `Finding` JSON (`data/curated/findings/flex.json`) from the CSV, because the B1 loader reads `Finding` JSON, not CSV. It needs the decisions below on units, flags and vocabulary.
 - After PR #1 merges, rebase. `data/manifest.json` and `tools/check_data_provenance.py` conflict textually with PR #1. For the tool, take PR #1's version (it already reads UTF-8, through `load_strict_json`). Set `manifest_version` to `0.2.0`.
 - Change the "Member 4 / QA" review requests to the members in the item map.
@@ -144,7 +150,7 @@ Every item must keep the rules in spec §2.
 | `docs/research/member5/insight_cards.json` (6 cards) | Interpretation findings in `data/curated/interpretations/` (R2/R3), with `derived_from` pointing to curated measured ids | Cards become traceable through S3 |
 | `docs/research/member5/investigations.json` | Member 3 merges it into `data/curated/investigations.json` (D1), keeping the candidate PSI ids until they are confirmed | Single investigations file |
 | `tests/research/` (98 tests passing on the branch) | stays | Member 5's test folder (replaces the earlier `tests/integrity/` proposal) |
-| References to "Member 4 / QA" | the assigned member in the item map, unless the team confirms a Member 4 | Roster unresolved (spec §8 item 10) |
+| References to "Member 4 / QA" | the assigned member in the item map | There is no Member 4 |
 
 Member 1 answers for each record in `evidence_reported.json` how it maps. This applies the existing contract and changes nothing:
 - `stated_objective` → `Investigation.objectives`;
@@ -172,6 +178,8 @@ Member 1 answers for each record in `evidence_reported.json` how it maps. This a
   - The ranking, compare and assistant modules do not import simulation code.
   - "according to NASA" appears in no output and in no file under `frontend/`.
   - Nothing marked `fixture: true` appears in `data/curated/`.
+  - S9, independently: `withheld` findings never reach ranking inputs or comparable comparisons, and TARS never states a withheld number.
+  - S10, independently: every `flag_ref` resolves with the matching `ranking_use`, every flag row is covered, no note comes from a `not_available` row, and the flag quotes match the source.
   - Independent checks of S5, S6 and S8 against live responses.
 - **Q3. Source spot check.** Draw a sample of max(5, 10%) of measured findings with a fixed recorded seed. Check each one against the source page and log it in `docs/verification/source_spotcheck.md`. The bar is 0 mismatches. A mismatch blocks CP3 until Member 3 fixes it and the finding is checked again. Member 2 is the second checker for any disputed entry.
 - **Q5 (narrative).** `docs/DEMO.md`, the judge-demo walkthrough, written with Member 2 for the UI path. Member 3 performs the clean-clone run.
@@ -241,7 +249,7 @@ They were added before CP1 because `Finding` and `AssistantAnswer` reject unknow
 |---|---|---|---|
 | C1 | TARS = **Traceable Analysis and Research Support** | decided | spec §4.1, §8 |
 | C2 | Condition values may be converted by **exact defined factors only**, in Member 3's curation tool. The as-printed value stays in the registered source file. Quantity values are never converted | accepted | `contracts/README.md` convention 4 |
-| C3 | **Amended (pending Members 1 and 3):** a value flagged `exclude` is emitted with `value_status: "excluded"`, `value: null` and an attributed `curation_notes` exclusion note, so it never reaches ranking, compare or TARS (S9) and the reason can still be shown. A `caution` reason goes into `curation_notes`, never into the source-reported `uncertainty`. A `not_available` cell is `not_reported` with no note. Nothing is deleted from the source files. Member 3 enforces the flag mapping and quote verification (S10), and Member 5 tests them independently | amendment proposed | `contracts/README.md` convention 9, rules S9 and S10 |
+| C3 | **Corrected at CP1 (Command Center Option A).** A value flagged `exclude` becomes a measured finding with `value_status: "withheld"`, `value: null` and an attributed exclusion note with `flag_ref`. A `caution` goes into `curation_notes`, never `uncertainty`. A `not_available` cell is `not_reported` with no note. Every note has a `flag_ref`. Nothing is deleted from source files | accepted (flag mapping and S10 reconciled from PR #7, pending approval) | `contracts/README.md` conventions 9 and 10, rules S9 and S10 |
 | C4 | FLEX quantities (`burning_rate_constant`, `visible_flame_extinction_diameter`, `burn_time`, `initial_droplet_diameter`) | accepted. Implemented **after CP1** in a separate reviewed contract PR (Member 3, D5). Not in this PR | this table |
 | C5 | `test/qa-demo` | open: keep it untouched (recommendation: delete at CP4) | this table |
 | — | PRs #2, #3 and #4 | not merged before CP1 | spec §6 |
