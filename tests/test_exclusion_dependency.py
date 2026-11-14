@@ -26,8 +26,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "contracts" / "examples"
 
-# A number as written in prose: 0.37, .37, 37, -1.5e3. Not part of a longer token like 1.37.
-NUMBER = re.compile(r"(?<![\w.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?![\w])")
+# A number as written in prose: 0.37, .37, 37, -1.5e3, including a unit attached directly after
+# it (0.37mm2/s). Not part of a longer number (1.37, 0.371, 0.37.5) and not preceded by a
+# letter or a point (v0.37a). Documented limits: a decimal comma (0,37) and a letter directly
+# before the number (K0.37) are not detected; the project writes decimal points.
+NUMBER = re.compile(r"(?<![\w.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?!\d|\.\d)")
 
 
 def _load(name):
@@ -281,6 +284,35 @@ def test_answer_stating_excluded_number_is_caught(text):
     assert any("states printed value '.37'" in v for v in _violations(fs, answer=ans))
 
 
+@pytest.mark.parametrize(
+    "text",
+    ["The excluded rate was 0.37mm2/s.", "K = .37mm2/s", "0.370mm2/s as printed", "3.7e-1mm2/s"],
+)
+def test_attached_unit_excluded_number_is_caught(text):
+    """Member 5's finding at e44ec26: a unit written directly after the number hid it."""
+    fs = [EXCLUDED, _interp("i1", [E])]
+    ans = _answer(f"{text} {REASON}", [], ["i1"])
+    assert any("states printed value '.37'" in v for v in _violations(fs, answer=ans))
+
+
+@pytest.mark.parametrize(
+    "text",
+    ["1.37mm2/s", "0.371mm2/s", "37mm", "v0.37a", "0.37.5", "rate 2.37mm2/s at 1.37 bar"],
+)
+def test_attached_unit_other_numbers_do_not_trigger(text):
+    fs = [EXCLUDED, _interp("i1", [E])]
+    ans = _answer(f"{REASON} {text}", [], ["i1"])
+    assert _violations(fs, answer=ans) == []
+
+
+@pytest.mark.parametrize(
+    ("text", "found"), [("0,37", False), ("K0.37", False), ("rate: .37.", True)]
+)
+def test_documented_number_limits(text, found):
+    """Pinned so the documented limits (decimal comma, letter prefix) cannot change unseen."""
+    assert (Decimal(".37") in numbers_in(text)) is found
+
+
 def test_excluded_number_in_limitations_is_caught():
     fs = [EXCLUDED, _interp("i1", [E])]
     ans = _answer(REASON, ["Note: the table printed 0.37."], ["i1"])
@@ -338,6 +370,21 @@ def test_reason_is_required_per_citation():
     ans = _answer(f"The value was excluded: {REASON}", [], ["i1", "i2", M])
     v = _violations(fs, answer=ans, printed_values={**PRINTED, other["id"]: "2.5"})
     assert v == ["citation i2: answer does not give its exclusion reason"]
+
+
+def test_two_step_citation_needs_reason_and_is_number_checked():
+    fs = [EXCLUDED, _interp("i1", [E]), _interp("i2", ["i1"])]
+    assert _violations(fs, answer=_answer(f"Explained: {REASON}", [], ["i2"])) == []
+    no_reason = _violations(fs, answer=_answer("FIXTURE conclusion.", [], ["i2"]))
+    assert "citation i2: answer does not give its exclusion reason" in no_reason
+    leak = _violations(fs, answer=_answer(f"{REASON} It was 0.37mm2/s.", [], ["i2"]))
+    assert any("answer citation i2: states printed value '.37'" in v for v in leak)
+
+
+def test_clean_two_step_chain_with_numbers_passes():
+    fs = [MEASURED, _interp("c1", [M]), _interp("c2", ["c1"])]
+    ans = _answer("The measured rate was 0.52mm2/s and 0.37mm2/s elsewhere.", [], ["c2"])
+    assert _violations(fs, answer=ans) == []
 
 
 @pytest.mark.parametrize(
