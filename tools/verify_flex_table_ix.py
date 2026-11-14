@@ -35,7 +35,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATASET_ID = "nasa-tp-2015-216046.table-ix.flex-001-010"
 CSV_PATH = ROOT / "data/curated/flex_tp2015216046_table_ix_001_010.csv"
-FLAGS_PATH = ROOT / "data/curated/flex_tp2015216046_table_ix_001_010.flags.csv"
+FLAGS_PATH = (
+    ROOT / "data/curated/interpretations/quality/flex_tp2015216046_table_ix_001_010.flags.csv"
+)
 FLAGS_ID = "nasa-tp-2015-216046.table-ix.flex-001-010.flags"
 DEFAULT_PDF = ROOT / "data/raw/NASA-TP-2015-216046_FLEX.pdf"
 FLAG_TYPES = {
