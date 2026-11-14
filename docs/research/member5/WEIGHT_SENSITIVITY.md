@@ -112,6 +112,7 @@ With the weights summing to 1, `w_C · Δ_min > 1 − w_C` gives **`w_C > 1 / (1
   - Every investigation in Member 5's register (BASS-II, FLEX, SoFIE, Saffire) ran in microgravity, and FM² has no verified data. For `lunar_base` or `martian_base`, every eligible investigation would therefore have C = 0. The invariant would hold only **vacuously**, and the order would come from T and D alone. The UI must say so, or the ranking for that context should not be shown (open point 1 in `CRITERIA_ENVIRONMENT_CONTEXT.md`).
   - For `space_station` and `spacecraft`, eligible microgravity investigations would all have C = 1. C would then not separate them, and the order would again come from T and D.
   - So with gravity-only C, the invariant separates investigations only for a context where **some** eligible investigations match the gravity reference and others do not. Whether that happens is known only once real data exists, at CP2.
+  - **Member 5 records the gravity-only model as insufficiently discriminating** for the current evidence, and has asked Member 1 for a methodological decision (options M-1 to M-4 in `CRITERIA_ENVIRONMENT_CONTEXT.md`) before any production ranking implementation.
 
 ### Why the original 40 / 25 / 20 / 15 weights fail
 

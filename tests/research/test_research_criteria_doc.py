@@ -41,3 +41,12 @@ def test_nothing_is_presented_as_approved():
     t = _text()
     assert "not approved" in t
     assert "No weights are proposed or approved here." in t
+
+
+def test_discrimination_flag_and_pending_method_decision_are_recorded():
+    t = _text()
+    assert "insufficiently discriminating" in t
+    for option in ("M-1", "M-2", "M-3", "M-4"):
+        assert option in t
+    assert t.count("AWAITING OWNER RESPONSE") >= 4
+    assert "Transitive exclusion (S9)" in t

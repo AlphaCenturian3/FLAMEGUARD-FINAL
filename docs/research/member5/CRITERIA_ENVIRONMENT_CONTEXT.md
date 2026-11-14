@@ -105,12 +105,26 @@ Unchanged and independent of the context. Per eligible finding, the share report
 | Weights | w_C, w_T, w_D | **Not proposed, not approved**; must satisfy the invariant; real data at CP2 | M1, M3 |
 | Q-1 | Criterion inputs for a tag signal | Resolved by the gate (Member 1), pending Member 3 | M1, M3 |
 
+## Scientific flag: the model does not discriminate on current evidence (2026-11-14)
+
+Every investigation documented so far (BASS-II, FLEX, SoFIE, Saffire) ran in **microgravity**, and FM² has no verified data. With binary gravity-only C, **all eligible investigations within one selected context get the same C**: 1 for `space_station` and `spacecraft`, 0 for `lunar_base`, `martian_base`, `pressurized_rover` and `earth`. The applicability-dominance invariant then holds only vacuously, and the order comes from T and D alone. If T barely varies once provenance is enforced, the order is set by **data completeness alone**: documentation, not applicability.
+
+**Member 5 therefore records this scoring model as insufficiently discriminating** for the current evidence. A methodological decision from Member 1 is requested **before any production ranking implementation** ([PR #3 comment 6884182608](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6884182608)):
+
+| Option | Content | Status |
+|---|---|---|
+| M-1 (Member 5 recommendation for P0) | No weighted order: an unordered eligible-evidence list of gate-passing investigations, with C, O₂ and pressure shown descriptively and the excluded investigations with their reasons. A weighted score only after real CP2 data shows a criterion that separates eligible investigations, with M1 and M3 approval | **AWAITING OWNER RESPONSE** |
+| M-2 | Rank by C, T and D, labelled "documentation completeness only" whenever C is constant across the eligible set | **AWAITING OWNER RESPONSE** |
+| M-3 | Add another scorable applicability criterion (for example flow configuration or fuel/material category), with a cited reference per environment and a sensitivity rerun | **AWAITING OWNER RESPONSE** |
+| M-4 | Defer ranking to v0.3 (numeric gravity level, or O₂ and pressure with a sourced equivalence tolerance) | **AWAITING OWNER RESPONSE** |
+
 ## Open points (not decided; for Member 1 and Member 3)
 
 1. **A context whose gravity reference is unknown.** If C has nothing to score, it would be 0 for every eligible investigation, and the order would fall to T and D alone, which is what the invariant is meant to prevent. Options: (a) report no ranking for that context ("reference unknown"); (b) rank by T and D with a visible warning. Member 5 recommends **(a)**.
 2. **A Martian pressurized rover cannot be expressed.** `pressurized_rover` is a single context value. Member 1's labels assume a lunar rover; a Martian rover's reference is unknown. Separate contexts would be a v0.3 contract change.
 3. **E1 versus D.** E1 can pass on a measured qualitative finding with no quantity, and D gives such a finding fewer checks (no value or uncertainty). Member 1 should confirm this is intended.
 4. **Gate order.** The first failing gate is reported in the order E1, E2, E3. If integrity (E3) should be reported first, Member 1 should say so.
+5. **Transitive exclusion (S9).** An interpretation derived, at any depth, from an `excluded` finding must never satisfy E1 or count toward any criterion. Member 5 adopted this rule **after CP1** ([PR #1 comment 6884177976](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884177976)). Member 1's decision is pending.
 
 ## Superseded (revision 1, kept for traceability)
 
