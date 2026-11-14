@@ -91,7 +91,14 @@ Every item must keep the rules in spec §2.
 
 ## Member 3: `feat/nasa-data-tars` (NASA datasets, provenance, TARS evidence)
 
-**Owns:** `data/` (except `data/curated/interpretations/`), `tools/`, `backend/flameguard/evidence/`, `tests/data/`, `docs/verification/data_candidates.md`.
+**Owns:** `data/` (except Member 5's interpretations), `data/curated/interpretations/quality/`, `tools/`, `backend/flameguard/evidence/`, `tests/data/`, `docs/verification/data_candidates.md`.
+
+**PR #4 alignment** (FLEX Table IX, FLEX-001 to FLEX-010). Member 3 makes these changes on their own branch:
+- Keep the as-printed CSV as the registered `measured` source. It is the transcription of record.
+- Move the flags CSV to `data/curated/interpretations/quality/`. This is the one v0.2.0 manifest rule PR #4 fails today: interpretation paths must start with `data/curated/interpretations/`. Member 5 reviews the flags.
+- Add a tool in `tools/` that derives contract `Finding` JSON (`data/curated/findings/flex.json`) from the CSV, because the B1 loader reads `Finding` JSON, not CSV. It needs the decisions below on units, flags and vocabulary.
+- After PR #1 merges, rebase. `data/manifest.json` and `tools/check_data_provenance.py` conflict textually with PR #1. For the tool, take PR #1's version (it already reads UTF-8, through `load_strict_json`). Set `manifest_version` to `0.2.0`.
+- Change the "Member 4 / QA" review requests to the members in the item map.
 
 **Start now (before CP1):**
 - List candidate investigations and their public NASA sources (PSI, NTRS) in `docs/verification/data_candidates.md`, giving the URL, the access route and the rights notes for each.
@@ -221,7 +228,7 @@ Every PR merges only with CI green, a review from the owner of each area it touc
 
 ## P0 contract additions (decision required before approval)
 
-**On branch `contract/cp1-p0-additions` (draft PR #4) these are applied. On PR #1 alone they are not.**
+**On branch `contract/cp1-p0-additions` (draft PR #5) these are applied. On PR #1 alone they are not.**
 
 **Assessment.** Neither field is needed for P0 items 1 to 3: the explorer, comparison and ranking. Ranking by environment already works through `Investigation.relevant_environments`. Both fields are needed for P0 item 4 (traceable interpretation and TARS):
 - R3 cannot tag a recommendation as lunar or Martian.
@@ -230,9 +237,19 @@ Every PR merges only with CI green, a review from the owner of each area it touc
 
 **Why decide now.** `Finding` and `AssistantAnswer` use `additionalProperties: false`. Adding a field after CP1 is therefore a breaking change for any validator pinned to v0.2.0. Today there are no approvals and no consumers of v0.2.0, so adding the fields costs nothing.
 
-**Recommended minimal addition.** It is published separately as draft PR #4 against this branch, and is applied only if the team accepts it:
+**Recommended minimal addition.** It is published separately as draft PR #5 against this branch, and is applied only if the team accepts it:
 1. `Finding.relevant_environments`: an optional array of `environment`, allowed **only on interpretation findings**. A measured value records where the experiment ran (`conditions`, `platform`). Saying it is relevant to a lunar base is an interpretation.
 2. `Finding.limitations`: an array of non-empty strings, **required on interpretation findings** (at least 1) and not allowed on measured findings. A measured finding keeps the source-reported `uncertainty`.
 3. `AssistantAnswer.limitations`: a required array of non-empty strings, with at least 1 entry in `ai` and `fallback_quotes` modes.
 
 **If deferred:** R3 puts the environment and limitations in `statement`, and B6 puts uncertainty in `answer`. Both become v0.3 work, with a breaking-change bump.
+
+## Other CP1 decisions (not applied; recommendation first)
+
+| # | Decision | Recommendation | Why |
+|---|---|---|---|
+| C1 | **TARS expansion.** The coordinator proposes "Traceable Analysis and Research Support"; PR #4 proposes "Traceable Aerospace Research System" | Pick one name. The requirements agree either way: PR #4's 9 TARS requirements fit spec §4.1 and B6 | The spec can hold only one definition |
+| C2 | **Condition units.** FLEX prints pressure in mmHg, but the contract key is `pressure_kpa`, and convention 4 says "never convert units" | Allow **exact defined conversions of condition values only**, done in Member 3's tool (1 mmHg = 0.133322387415 kPa). The printed value stays in the registered CSV and the finding's `locator` points to it. Quantity values are never converted | Without this, no FLEX test can carry a pressure condition, and comparisons become non-comparable for a bookkeeping reason |
+| C3 | **Exclude and caution flags.** The contract has no usage-flag field | For P0, a value flagged `exclude` (e.g. the FLEX-010 burning rate) is **not emitted** as a numeric `Finding`, and stays visible in the CSV and the flags file. A `caution` reason goes into the finding's `uncertainty`. A `usage` field is a v0.3 candidate | Ranking and compare can never use an excluded value, and nothing is deleted |
+| C4 | **FLEX quantities.** `burning_rate_constant`, `visible_flame_extinction_diameter`, `burn_time` and `initial_droplet_diameter` are not in the provisional vocabulary | Member 3 opens the vocabulary contract PR right after CP1 (D5), using the units as printed (mm²/s, mm, s, mm) | Numeric FLEX findings cannot be loaded until then. This blocks CP2, not CP1 |
+| C5 | **`test/qa-demo`** | Keep it untouched until CP4, then delete it | It holds no work, and every QA item has an owner |

@@ -181,7 +181,7 @@ def test_already_closed_names_are_real_cases():
     assert ALREADY_CLOSED <= {c[0] for c in CASES}
 
 
-# --- P0 additions (draft PR #4): environment tags and limitations -------------
+# --- P0 additions (draft PR #5): environment tags and limitations -------------
 
 P0_CASES = [
     (
