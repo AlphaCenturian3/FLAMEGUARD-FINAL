@@ -28,7 +28,7 @@ Each note's `source` would be built from the flag row (`source_printed_page`, `s
 
 ## Gaps found while mapping (for the PR #1 owners)
 
-- **G1. Row-level flags.** Convention 9 maps a flag to *a* finding. Our `*` flags (contamination, calibration) apply to every quantity in the row. Proposal: a `*` flag produces the same caution note on every finding derived from that row. S10 coverage is then met when each such flag is referenced at least once.
+- **G1. Row-level flags. Resolved by PR #1, no proposal needed.** S10(a) accepts a flag whose field is the finding's field or `*`, and convention 9 allows a whole-row caution note on a `not_reported` finding. Our `*` flags (contamination, calibration) give a caution note on every finding from that row.
 - **G2. `test_end` has no home.** The C4 quantities are `burning_rate_constant`, `visible_flame_extinction_diameter`, `burn_time` and `initial_droplet_diameter`. Test outcome is none of these, and it is not among the condition keys I could find. Five caution flags sit on it (FLEX-001 outcome ambiguity, and contaminant-related disruption for 001, 007, 008, 009). S10 requires every caution row to be covered, so the outcome needs a finding. Options:
   - (a) a measured qualitative finding: `quantity: null`, `value_status: "not_applicable"`, a statement quoting the printed outcome;
   - (b) a new vocabulary quantity or condition key through D5.

@@ -31,9 +31,32 @@ Each was checked on 2026-11-14 against the record itself (NTRS page or the DataC
 ## What is NOT verified yet
 
 1. **Contents of PSI-25 and PSI-26.** The PSI pages render client-side, and the FLEX report states PSI downloads need registration. File names, formats, per-test tables and units are unknown. Search snippets and third-party projects mention test counts and file types; those are **not** used here.
-2. **Per-test measured values.** No table of BASS flame-spread rates or extinction limits has been located in a source whose rights are confirmed.
+2. **Per-test measured values.** Not yet in a NASA record with confirmed rights. One open-licence table has been found; see "Candidate table" below.
 3. **ICES-2015-196.** I downloaded it locally (git-ignored; SHA-256 `e9c1286f0903700c0ae180a574debb6826f3676a072df2eeb926c22955a09831`). It has **no tables**; all results are figures. Reading values off its plots would be digitizing, which is `interpretation`, not `measured`. Do not ingest it as measured data.
 4. **The summary report TM.** Its rights statement is restrictive. Check whether it has a test-matrix table, and get the rights reviewed, before using it.
+
+## Candidate table: Link et al. 2018, Supplementary Table S1 (found 2026-11-14, not ingested)
+
+| | |
+|---|---|
+| Article | Link, S., Huang, X., Fernandez-Pello, C., Olson, S., Ferkul, P., "The Effect of Gravity on Flame Spread over PMMA Cylinders", *Scientific Reports* (2018), DOI [10.1038/s41598-017-18398-4](https://doi.org/10.1038/s41598-017-18398-4), PMC5760683 |
+| Licence | **CC BY 4.0** (Crossref licence record, and the article's own statement on PMC). Whether the supplementary file is covered "unless indicated otherwise" still needs a check; no other terms appear on the SI pages |
+| BASS-II link | Article text on PMC (checked against the page text 2026-11-14; reference markers 21–23 omitted): "The microgravity experiments were conducted in ISS as a part of the Burning and Suppression of Solids-II (BASS-II) project". Flow direction: "The scientific objective of the BASS-II opposed flow flame spread tests was to understand further the mechanisms controlling the spread of flames over the surface of solid combustible materials, particularly in a microgravity environment." |
+| Test method (from the article) | "each PMMA sample was ignited at a relatively high opposed flow velocity by a hot coil, and the steady-state flame spread was achieved within 1 min." and "Then, the opposed flow velocity was subsequently reduced until extinction was observed, pausing (about 30 s) along the way to allow for steady state flame spread at each new flow velocity." So **rows sharing a Sample No. are successive flow steps within one burn, not independent tests.** |
+| File | Supplementary PDF `41598_2017_18398_MOESM1_ESM.pdf` (filename as listed on PMC). PMC served a browser challenge page instead of the file, so I did not work around it. I downloaded it from the publisher's static host (`static-content.springer.com/esm/…`): 645,055 bytes, matching PMC's listed 629.9 KB. SHA-256 `e17c9511c4b4b253cd0795b3984ffb9347ad5db6354c4ce792adcaf805f21b23`. Local `data/raw/` only, git-ignored |
+| Table S1 | "The raw and processed microgravity data in International Space Station, where B and C means black and clear PMMA samples, respectively." Columns: d (cm), X_O2 (%), Sample No., V_g (cm/s), Δt (s), V_f×10³. About 50 rows over rod diameters 1.27, 0.95 and 0.64 cm |
+| Table S2 | Normal-gravity (Earth) data. **Not BASS-II**; only a 1 g comparison |
+
+**Problems that must be decided before any transcription:**
+
+1. **Unit conflict in the printed header.** The left half of Table S1 labels V_f×10³ as **(cm/s)**, and the right half as **(mm/s)**. Both halves have similar magnitudes. The table cannot tell which is right (a factor of 10). This needs checking against the article's own figures or text, or a question to the authors. Until then, V_f would be flagged `exclude` or carried as-printed with an explicit unit-conflict flag.
+2. **Merged cells.** d, X_O2 and Sample No. span several rows. Expanding them to every row is a layout reading that a second person must confirm.
+3. **Whether it counts as a NASA record (spec §2.1).** This is a peer-reviewed journal supplement with NASA co-authors (Olson, Ferkul), not a NASA archive record. Registering it as `measured` is a team decision.
+4. **Mapping.** V_f fits PR #1's existing `flame_spread_rate` (mm/s) only after the unit conflict is resolved. V_g fits `flow_velocity_mm_s` after an exact ×10 conversion. `flow_configuration` = `opposed`, per the article text quoted above. Rows within one sample are not independent, so statistics must not treat them as separate tests.
+
+## Related verification (2026-11-14)
+
+- **FLEX PSI dataset:** DataCite lists DOI `10.60555/mbq8-0451` as *Flame Extinguishment Experiment*, NASA PSI 2016, CC0 1.0, URL `.../investigations/PSI-69`. Member 5 recorded this first (PR #3). PSI-69 is the route to resolving the FLEX-010 burning-rate conflict. PR #4's `permitted_with_citation` applies to the NASA/TP report we transcribed, not to the PSI dataset.
 
 ## Major limitations to carry if ingested
 
