@@ -49,7 +49,29 @@ Each was checked on 2026-11-14 against the record itself (NTRS page or the DataC
 
 **Problems that must be decided before any transcription:**
 
-1. **Unit conflict in the printed header.** The left half of Table S1 labels V_f×10³ as **(cm/s)**, and the right half as **(mm/s)**. Both halves have similar magnitudes. The table cannot tell which is right (a factor of 10). This needs checking against the article's own figures or text, or a question to the authors. Until then, V_f would be flagged `exclude` or carried as-printed with an explicit unit-conflict flag.
+1. **Unit conflict in the printed header (investigated 2026-11-14, NOT resolved).** The left half of Table S1 (d = 1.27 and 0.95 cm) labels V_f×10³ as **(cm/s)**; the right half (d = 0.64 cm) as **(mm/s)**.
+
+   Evidence gathered from the article itself, PMC5760683. The figure images are from the PMC page and were read by eye:
+
+   | Source element | Unit printed for V_f×10³ | Which rows it shows |
+   |---|---|---|
+   | Table S1 left half | cm/s | d = 1.27, 0.95 cm |
+   | Table S1 right half | **mm/s** | d = 0.64 cm |
+   | Table S2 (1 g, both halves) | cm/s | 1 g only |
+   | Fig. 5 y-axis, "Flame spread rate, V_f × 10³ (cm/s)" | cm/s | All three diameters on **one** axis, including d = 0.64 cm. Its 0.64 cm points reach ≈10 at X_O2 ≈ 18.9%, alongside Table S1 right-half values 10.00 / 9.74 / 8.32 at 18.9% |
+   | Fig. 6a y-axis, same label | cm/s | X_O2 = 18.2% and 17.5% (μg). The plotted points sit at about the values in Table S1 rows B16 (18.2%) and B19 (17.5%), which are **d = 0.64 cm, right half** |
+   | Fig. 7 y-axis, same label | cm/s | μg points per diameter, including 0.64 cm |
+   | Article text | No numeric V_f with units found (flow speeds only, in cm/s) | — |
+   | Crossref | No correction or erratum registered (`updates:` filter, 0 results) | — |
+
+   **What the evidence shows:** every other place in the article that presents these same 0.64 cm values labels them cm/s. The right-half "(mm/s)" header is the only place that differs.
+
+   **What it does not settle:** this rests on reading plotted points against table values by eye, and it is the authors' table. Per the assignment, **no corrected value is inferred or published**. Options for the team:
+   - (a) ask the corresponding author to confirm;
+   - (b) accept "header typo, cm/s" as a documented FlameGuard-SI judgment, with an interpretation-class flag and the evidence above;
+   - (c) use only the left half.
+
+   Until decided, the right-half V_f values are not usable as measured data.
 2. **Merged cells.** d, X_O2 and Sample No. span several rows. Expanding them to every row is a layout reading that a second person must confirm.
 3. **Whether it counts as a NASA record (spec §2.1).** This is a peer-reviewed journal supplement with NASA co-authors (Olson, Ferkul), not a NASA archive record. Registering it as `measured` is a team decision.
 4. **Mapping.** V_f fits PR #1's existing `flame_spread_rate` (mm/s) only after the unit conflict is resolved. V_g fits `flow_velocity_mm_s` after an exact ×10 conversion. `flow_configuration` = `opposed`, per the article text quoted above. Rows within one sample are not independent, so statistics must not treat them as separate tests.

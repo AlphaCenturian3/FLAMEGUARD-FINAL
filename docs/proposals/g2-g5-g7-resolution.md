@@ -1,6 +1,8 @@
 # Resolution note: G2, G5, G7 (FLEX findings under contract v0.2.0)
 
-**Status:** recommendations from `feat/nasa-data-tars` (Member 3), 2026-11-14. **Not decisions, and not implemented.** They assume the contract v0.2.0 proposal in PR #1 (head `a6876d1`) merges as written. Each item names who must approve it. The gaps are defined in [`flex-flags-to-curation-notes.md`](flex-flags-to-curation-notes.md).
+**Status:** recommendations from `feat/nasa-data-tars` (Member 3), 2026-11-14. **Not decisions, and not implemented.**
+
+**Agreement status (updated 2026-11-14):** the coordinator's review comments on PR #6 are on GitHub, and this session cannot read them (no API access). They are not recorded in any commit. So this note does **not** claim any agreed direction. When the owners' agreement is available, record it here as: decision, who approved, comment link, and date. Until then G2, G5 and G7 are open. Nothing in PR #1's unmerged v0.2.0 contract is changed by this note. They assume the contract v0.2.0 proposal in PR #1 (head `a6876d1`) merges as written. Each item names who must approve it. The gaps are defined in [`flex-flags-to-curation-notes.md`](flex-flags-to-curation-notes.md).
 
 All rule references are to PR #1's `contracts/README.md` and schemas at `a6876d1`, which I re-read for this note.
 
