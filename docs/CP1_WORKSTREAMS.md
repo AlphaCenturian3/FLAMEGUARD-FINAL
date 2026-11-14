@@ -49,7 +49,7 @@ Every item must keep the rules in spec §2.
 | Compare never fills gaps | test: a `not_reported` row gives `value: null`, `comparable: false` |
 | Ranking scores are weighted sums | test: `score == Σ weight × criterion score` within 1e-9 for every item |
 | Ranking inputs resolve | test: every input `finding_id` exists and is measured or interpretation |
-| Excluded values never used (S9) | test: no ranking input, no comparable row, and no TARS numeric statement uses a `excluded` finding |
+| Excluded values never used, transitively (S9) | test: no ranking input, no comparable row, and no TARS numeric statement uses a `excluded` finding |
 | Assistant works without a key | test runs with the key blank: `mode` is `fallback_quotes` or `no_evidence` |
 | Assistant cites only retrieved evidence | test: every citation's `finding_id` was returned by `retrieve()` for that request |
 | Simulation isolation | test: the ranking, compare and assistant modules do not import simulation code |
@@ -164,6 +164,7 @@ Member 1 answers for each record in `evidence_reported.json` how it maps. This a
   - Commit it **in its own commit before any ranking output exists**, with Members 1 and 3 approving it.
   - After that it is never edited. Changes go in a new `_v2` file.
 - **R2. Interpretations** (formerly B5). Fire-safety interpretation findings in `data/curated/interpretations/`. Each one has `derived_from` pointing to existing measured or interpretation ids, a `method` and a `method_version`, and states its uncertainty in the `statement`.
+  - An interpretation that depends on an `excluded` finding at any depth may only explain the exclusion (S9, transitive): `value` and `quantity` are `null`, no `relevant_environments`, and limitations that say so.
 - **R3. Moon/Mars fire-safety recommendations.**
   - Interpretation findings in `data/curated/interpretations/`, plus a readable summary in `docs/research/`.
   - Each recommendation:
@@ -178,7 +179,7 @@ Member 1 answers for each record in `evidence_reported.json` how it maps. This a
   - The ranking, compare and assistant modules do not import simulation code.
   - "according to NASA" appears in no output and in no file under `frontend/`.
   - Nothing marked `fixture: true` appears in `data/curated/`.
-  - S9, independently: `excluded` findings never reach ranking inputs or comparable comparisons, and TARS never states an excluded value.
+  - S9, independently and **transitively** (any `derived_from` depth; cycles rejected): `excluded` findings never reach ranking inputs or comparable comparisons, and TARS never states an excluded value.
   - S10, independently: every `flag_ref` resolves with the matching `ranking_use`, every flag row is covered, no note comes from a `not_available` row, and the flag quotes match the source.
   - Independent checks of S5, S6 and S8 against live responses.
 - **Q3. Source spot check.** Draw a sample of max(5, 10%) of measured findings with a fixed recorded seed. Check each one against the source page and log it in `docs/verification/source_spotcheck.md`. The bar is 0 mismatches. A mismatch blocks CP3 until Member 3 fixes it and the finding is checked again. Member 2 is the second checker for any disputed entry.
