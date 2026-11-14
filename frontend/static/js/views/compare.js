@@ -1,4 +1,4 @@
-import { availableQuantities, reviewComparison } from "../model/compare.js";
+import { availableQuantities, reviewComparison, rowDisplay } from "../model/compare.js";
 import { CONDITIONS, isFixture, isMissing, valueStatusInfo } from "../model/evidence.js";
 import { resourceFromError } from "../store.js";
 import { barChart } from "../ui/chart.js";
@@ -80,7 +80,17 @@ export function render(ctx) {
   return root;
 }
 
-function comparisonView(resp, ev, investigations) {
+/**
+ * Table cell for one row. Fails closed: a number appears only when the row is
+ * consistent with a usable loaded measured finding (model/compare.js rowDisplay).
+ */
+function valueCell(d, unit) {
+  if (d.show) return h("td", { "data-row-display": "value" }, `${d.value} ${unit}`);
+  const badge = d.status === "withheld" ? h("span", { class: "badge err" }, "Withheld by dashboard check") : valueStatusBadge(d.status);
+  return h("td", { "data-row-display": d.status }, badge, h("div", { class: "small muted" }, d.status === "withheld" ? d.reason : `${valueStatusInfo(d.status).description} ${d.reason}`));
+}
+
+export function comparisonView(resp, ev, investigations) {
   const { chartable, problems } = reviewComparison(resp, ev.findingsById);
   const invName = (id) => investigations.find((i) => i.id === id)?.name || id;
   const rows = resp.rows || [];
@@ -127,7 +137,7 @@ function comparisonView(resp, ev, investigations) {
               "tr",
               null,
               h("th", { scope: "row" }, invName(r.investigation_id), h("div", { class: "mono small muted" }, r.finding_id)),
-              h("td", null, r.value_status === "reported" && r.value !== null ? `${r.value} ${resp.unit}` : valueStatusBadge(r.value_status), r.value_status !== "reported" ? h("div", { class: "small muted" }, valueStatusInfo(r.value_status).description) : null),
+              valueCell(rowDisplay(r, resp, ev.findingsById), resp.unit),
               CONDITIONS.map(([key]) => h("td", null, isMissing(r.conditions?.[key]) ? h("span", { class: "missing-value" }, "Not reported") : String(r.conditions[key]).replaceAll("_", " "))),
             ),
           ),

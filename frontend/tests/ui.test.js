@@ -165,3 +165,45 @@ test("demo: five steps in order, fit 90 s, restart returns to step 1", async () 
   assert.equal(visited[0], "#/explorer");
 });
 
+
+// ---------- Final QA: the Compare table must never show a number from an excluded or inconsistent finding ----------
+import { comparisonView } from "../static/js/views/compare.js";
+
+function cmpResponse(rows, comparable = false) {
+  return {
+    contract_version: "0.2.0",
+    quantity: "flame_spread_rate",
+    unit: "mm/s",
+    rows,
+    comparable,
+    non_comparable_reasons: comparable ? [] : ["TEST reason"],
+  };
+}
+const row = (fid, inv, value) => ({ investigation_id: inv, finding_id: fid, evidence_class: "measured", value, value_status: "reported", conditions: measured("x", inv).conditions });
+const evFor = (fs) => ({ findingsById: byId(fs) });
+const tableText = (nodes) => nodes.filter(Boolean).map((n) => (n.querySelector && n.querySelector("table") ? n.querySelector("table").textContent : "")).join(" ");
+
+test("compare table: a row claiming a reported number for an excluded finding never shows that number", () => {
+  for (const comparable of [false, true]) {
+    const nodes = comparisonView(cmpResponse([row("fx", "a", 0.37), row("fm", "b", 1.2)], comparable), evFor([excluded("fx", "a"), measured("fm", "b", { value: 1.2 })]), []);
+    const text = tableText(nodes);
+    assert.ok(!text.includes("0.37"), `comparable=${comparable}: excluded number leaked into the table`);
+    assert.includes(text, "Excluded by FlameGuard-SI");
+    assert.includes(text, "1.2 mm/s", "a consistent row still shows its value");
+    assert.ok(!nodes.filter(Boolean).some((n) => n.querySelector && n.querySelector("svg")), "no chart");
+  }
+});
+
+test("compare table: unresolved, mismatched or exclusion-dependent rows show no number", () => {
+  const cases = [
+    [[measured("fm", "b", { value: 1.2 })], row("ghost", "a", 0.37), "not loaded"],
+    [[measured("fv", "a", { value: 9.9 }), measured("fm", "b", { value: 1.2 })], row("fv", "a", 0.37), "differs"],
+    [[measured("fq", "a", { value: 0.37, quantity: "flame_length", unit: "mm" }), measured("fm", "b", { value: 1.2 })], row("fq", "a", 0.37), "quantity"],
+    [[notReported("fn", "a"), measured("fm", "b", { value: 1.2 })], row("fn", "a", 0.37), "Not reported"],
+  ];
+  for (const [fs, r, fragment] of cases) {
+    const text = tableText(comparisonView(cmpResponse([r, row("fm", "b", 1.2)]), evFor(fs), []));
+    assert.ok(!text.includes("0.37"), `${fragment}: number shown`);
+    assert.includes(text, fragment);
+  }
+});
