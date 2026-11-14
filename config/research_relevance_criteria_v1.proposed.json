@@ -1,0 +1,42 @@
+{
+  "criteria_version": "research_relevance_v1",
+  "status": "proposed",
+  "approved_by": [],
+  "proposed_by": "Member 5 (research interpretation)",
+  "review_required_from": [
+    "Member 1: scientific schema and ranking methodology",
+    "Member 4 / QA: criteria freeze (CP1 plan B4)"
+  ],
+  "purpose": "Ranks how well an investigation's evidence answers a stated research question. It is not a fire-danger, fire-risk or hazard score, and no score is a probability.",
+  "notes": [
+    "These weights are an editorial proposal. They are not NASA-certified and not approved by the team.",
+    "Under CP1 plan B4 the approved file is committed alone as config/ranking_criteria_v1.json before any ranking output, and is never edited afterwards. This file is the proposal for that step.",
+    "Only measured and interpreted evidence is scored. Quoted source statements are context only."
+  ],
+  "criteria": [
+    {
+      "id": "purpose_relevance",
+      "weight": 0.40,
+      "description": "How directly the evidence addresses the question's fire-safety topics, quantities and target environment.",
+      "scoring_rule": "Mean of the parts the question specifies: (topics covered / topics asked), (quantities with a reported value / quantities asked), and 1 if any record is tagged for the target environment else 0."
+    },
+    {
+      "id": "condition_match",
+      "weight": 0.25,
+      "description": "How well the experimental conditions match those the question specifies.",
+      "scoring_rule": "Conditions matched by at least one record / conditions specified. Exact match for categories, inclusive range for numbers. An unreported condition counts as unmatched and is listed as missing. 0 for everyone, marked 'not assessed', if no conditions are given."
+    },
+    {
+      "id": "source_traceability",
+      "weight": 0.20,
+      "description": "How completely each value can be traced back to its NASA source.",
+      "scoring_rule": "Mean over records of the best source's share of 4 checks: http(s) URL, retrieval date, exact quote, locator/archive id/DOI. An interpretation takes the mean of the records it is derived from; unresolved inputs count as 0."
+    },
+    {
+      "id": "data_completeness",
+      "weight": 0.15,
+      "description": "How much of the record the source actually reports.",
+      "scoring_rule": "Mean over records of the share reported among: the 8 condition keys, test id, and for quantities the value and the uncertainty."
+    }
+  ]
+}
