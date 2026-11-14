@@ -15,6 +15,7 @@ PLANNED_ENDPOINTS: list[tuple[str, str]] = [
     ("GET", "/api/investigations"),
     ("GET", "/api/investigations/{investigation_id}"),
     ("GET", "/api/findings"),
+    ("GET", "/api/compare"),
     ("GET", "/api/rankings"),
     ("POST", "/api/assistant/ask"),
     ("GET", "/api/simulations/{simulation_id}"),

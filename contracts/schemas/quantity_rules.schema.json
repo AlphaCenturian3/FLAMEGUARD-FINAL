@@ -1,0 +1,233 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "quantity_rules.schema.json",
+  "title": "Quantity rules",
+  "description": "Derived from contracts/vocabulary.json; a test requires exact agreement. Applies to any object with quantity/unit/value fields.",
+  "type": "object",
+  "properties": {
+    "quantity": {
+      "enum": [
+        "flame_spread_rate",
+        "extinction_oxygen_mole_fraction",
+        "ignition_delay",
+        "flame_length",
+        "flame_temperature",
+        null
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "flame_spread_rate"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "mm/s"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "extinction_oxygen_mole_fraction"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "1"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "ignition_delay"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "s"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "flame_length"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "mm"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "flame_temperature"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "K"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "type": "null"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "unit": {
+            "type": "null"
+          },
+          "value": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "description": "No quantity: qualitative only, so no unit and no numeric value."
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      },
+      "description": "A quantity's value is a number (or null when missing), never a string."
+    }
+  ]
+}

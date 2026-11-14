@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "assistant_answer.schema.json",
+  "title": "AssistantAnswer",
+  "description": "POST /api/assistant/ask. Evidence is measured or interpretation findings only. With no AI key, mode is fallback_quotes and the answer is assembled from exact source quotes.",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "answer",
+    "mode",
+    "citations",
+    "generated_by",
+    "limitations"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {
+      "type": "boolean"
+    },
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "answer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "ai",
+        "fallback_quotes",
+        "no_evidence"
+      ]
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "evidence_class",
+          "source"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "evidence_class": {
+            "$ref": "common.schema.json#/$defs/non_simulation_class"
+          },
+          "source": {
+            "$ref": "source.schema.json"
+          }
+        }
+      }
+    },
+    "generated_by": {
+      "const": "FlameGuard-SI"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Uncertainty and limits of the answer (TARS identifies uncertainty). At least one entry in ai and fallback_quotes modes."
+    }
+  },
+  "if": {
+    "properties": {
+      "mode": {
+        "enum": [
+          "ai",
+          "fallback_quotes"
+        ]
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "citations": {
+        "minItems": 1
+      },
+      "limitations": {
+        "minItems": 1
+      }
+    }
+  }
+}

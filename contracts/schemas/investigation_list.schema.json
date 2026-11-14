@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "investigation_list.schema.json",
+  "title": "investigation_list",
+  "description": "Response of the investigation list endpoint. No pagination in v0.2; total equals len(items).",
+  "type": "object",
+  "required": [
+    "contract_version",
+    "items",
+    "total"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "investigation.schema.json"
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}
