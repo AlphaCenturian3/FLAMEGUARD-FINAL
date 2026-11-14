@@ -121,7 +121,7 @@ test("compare: the frontend has no comparability decision code", () => {
 });
 
 test("compare: a consistent comparable response is chartable", () => {
-  const r = reviewComparison(CMP(), byId([measured("fa", "a"), measured("fb2", "b")]));
+  const r = reviewComparison(CMP(), byId([measured("fa", "a", { value: 1.5 }), measured("fb2", "b", { value: 0.8 })]));
   assert.equal(r.chartable, true);
   assert.deepEqual(r.problems, []);
 });
@@ -140,7 +140,7 @@ test("compare: 'comparable' with a missing or excluded value fails closed (no ch
   const r1 = reviewComparison(missing);
   assert.equal(r1.chartable, false);
   assert.includes(r1.problems.join(" "), "no reported numeric value");
-  const r2 = reviewComparison(CMP(), byId([excluded("fa", "a"), measured("fb2", "b")]));
+  const r2 = reviewComparison(CMP(), byId([excluded("fa", "a"), measured("fb2", "b", { value: 0.8 })]));
   assert.equal(r2.chartable, false);
   assert.includes(r2.problems.join(" "), "excluded");
 });
@@ -276,4 +276,28 @@ test("ranking: unresolved, mis-declared, unknown-criterion, excluded and exclusi
     assert.includes(res.rejected[0].problems.join(" "), fragment);
   }
   assert.deepEqual(reviewRankings({}, byId(RANK_FINDINGS)).accepted, []);
+});
+
+// ---------- Pre-merge review follow-up (S5): a comparable response must resolve to loaded measured findings ----------
+test("compare S5: 'comparable' with a row whose finding_id is not loaded is not charted", () => {
+  const r = reviewComparison(CMP(), byId([measured("fa", "a")])); // fb2 is absent
+  assert.equal(r.chartable, false);
+  assert.includes(r.problems.join(" "), "fb2");
+  assert.equal(reviewComparison(CMP(), new Map()).chartable, false, "nothing loaded: fail closed");
+});
+
+test("compare S5: a row must match its loaded finding's class, quantity, unit and reported value", () => {
+  const ok = byId([measured("fa", "a", { value: 1.5 }), measured("fb2", "b", { value: 0.8 })]);
+  assert.equal(reviewComparison(CMP(), ok).chartable, true);
+  const cases = [
+    [byId([measured("fa", "a", { value: 1.5 }), measured("fb2", "b", { value: 0.8, quantity: "flame_length", unit: "mm" })]), "quantity"],
+    [byId([measured("fa", "a", { value: 1.5 }), measured("fb2", "b", { value: 0.8, unit: "cm/s" })]), "unit"],
+    [byId([measured("fa", "a", { value: 1.5 }), measured("fb2", "b", { value: 9.9 })]), "value"],
+    [byId([measured("fa", "a", { value: 1.5 }), interpretation("fb2", "b", ["fa"])]), "measured"],
+  ];
+  for (const [map, fragment] of cases) {
+    const r = reviewComparison(CMP(), map);
+    assert.equal(r.chartable, false, fragment);
+    assert.includes(r.problems.join(" "), fragment);
+  }
 });

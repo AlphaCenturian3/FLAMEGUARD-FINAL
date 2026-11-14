@@ -24,8 +24,18 @@ export function reviewComparison(resp, findingsById = new Map()) {
         problems.push(`Marked comparable, but row ${row.finding_id} has no reported numeric value.`);
       }
       if (row.evidence_class !== "measured") problems.push(`Row ${row.finding_id} is not measured evidence.`);
+      // S5: every row's finding_id resolves to a measured finding with the same quantity and unit.
+      // Consistency check only: comparability itself stays the backend's decision.
       const loaded = findingsById.get(row.finding_id);
-      if (loaded && !traceSupport(loaded, findingsById).supported) problems.push(`Row ${row.finding_id} does not trace to usable measured evidence (e.g. it is excluded).`);
+      if (!loaded) {
+        problems.push(`Row ${row.finding_id} does not resolve to a loaded finding (S5).`);
+        continue;
+      }
+      if (loaded.evidence_class !== "measured") problems.push(`Row ${row.finding_id} resolves to a ${loaded.evidence_class} finding, not measured (S5).`);
+      if (loaded.quantity !== resp.quantity) problems.push(`Row ${row.finding_id}: loaded finding quantity ${loaded.quantity} differs from ${resp.quantity} (S5).`);
+      if (loaded.unit !== resp.unit) problems.push(`Row ${row.finding_id}: loaded finding unit ${loaded.unit} differs from ${resp.unit} (S5).`);
+      if (loaded.value_status !== "reported" || loaded.value !== row.value) problems.push(`Row ${row.finding_id}: row value ${row.value} differs from the loaded finding's reported value.`);
+      if (!traceSupport(loaded, findingsById).supported) problems.push(`Row ${row.finding_id} does not trace to usable measured evidence (e.g. it is excluded).`);
     }
   }
   return { chartable: resp && resp.comparable === true && problems.length === 0, problems };

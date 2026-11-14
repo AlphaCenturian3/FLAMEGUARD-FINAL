@@ -44,8 +44,14 @@ export function reviewAnswer(res, findingsById = new Map()) {
     if (!c.source || !c.source.title) problems.push(`Citation ${c.finding_id} has no source.`);
     const exclusion = exclusionContext(f, findingsById);
     if (exclusion.length) {
-      const reasons = exclusion.flatMap((x) => x.notes.map((n) => n.note));
-      if (!reasons.some((r) => res.answer.includes(r))) problems.push(`Citation ${c.finding_id} depends on an excluded value, but the answer does not give the exclusion reason (S9).`);
+      // S9: "TARS may cite it only in an answer whose limitations explain the exclusion."
+      // Fail closed: every excluded ancestor must have one of its exclusion notes quoted
+      // exactly in `limitations`. The answer text alone does not count. (Display check only;
+      // the excluded-number leak check belongs to the B6/T1 runtime gate.)
+      const unexplained = exclusion.filter((x) => !x.notes.some((n) => lims.some((l) => typeof l === "string" && l.includes(n.note))));
+      if (unexplained.length) {
+        problems.push(`Citation ${c.finding_id} depends on excluded ${unexplained.map((x) => x.finding.id).join(", ")}, but the answer's limitations do not give that exclusion reason (S9).`);
+      }
       citations.push({ citation: c, finding: f, role: "exclusion_explanation", exclusion });
     } else {
       const trace = traceSupport(f, findingsById);
