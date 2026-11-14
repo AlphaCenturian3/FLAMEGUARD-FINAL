@@ -2,6 +2,8 @@
 
 **Integration update:** CP1 merged as `f7cef55674885c68f5edd56e3650da7668464ce4`. PR #3 remains a draft and is not merged. The integration branch includes CP1 via a non-rewriting merge to preserve its already-published history; no shared contract is changed here. Ranking criteria remain proposed and ranking output remains disabled.
 
+**Current status (checked on GitHub, 2026-11-14 23:55 UTC; supersedes older rows below where they differ):** PR #1 (CP1 v0.2.0) merged as `f7cef55`; PR #4 (FLEX Table IX data and flags) merged as `ef71422` and is merged into this branch (`214ee62`). PR #3 is an open draft with **no reviews**; review requests to Members 1 and 3 are pending. Sections 1 to 4 are kept as a dated history; §9 is the current record.
+
 Member 5-owned content in this branch:
 
 - `research/` (non-runtime reference implementation)
@@ -41,7 +43,7 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 | Current head | **`297b9a0506f9cc53ae1e363dfade2961b72580f3`** (draft), "CP1: S9 oracle catches excluded numbers with an attached unit". CI run 43643836527 passed |
 | What changed since `e44ec26` | The `NUMBER` lookahead is now `(?!\d|\.\d)`. Adds tests for attached units, non-excluded numbers, the documented limits (decimal comma, letter prefix), a depth-2 citation and a clean two-step chain. The S9 row in the README states the limits. Schemas unchanged |
 | **Member 5 independent review of `297b9a0`** ([6884613143](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884613143)) | **Verified, no new defects.** S9 suite 44 passed; full suite 238 passed; plus 4 independent Member 5 cases: 48 passed. Mutations caught: old lookahead 9 fail; `(?![\d.])` 3; no lookbehind 3; defect 1 14; string comparison 7; defect 2 2; defect 3 2; cycle short-circuit 1; non-transitive ancestors 26; a missing printed value passing silently 2. Observation: a clean citation sharing the excluded number is also flagged (fails closed). Still a lower bound; B6 and T1 runtime gates remain |
-| **Formal approvals at `297b9a0`** | **0 of 4.** Member 1's approval request: [6884605003](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884605003) (21:39 UTC; Member 1 reports a smoke preview of 25 passed from a fresh clone). Member 1 notes his own re-approval needs Command Center authorization. Member 5's CP1 approval is a separate act by the account holder and has not been given |
+| **Formal approvals at `297b9a0`** | **Superseded, see §9: Members 3, 2 and 5 approved at `297b9a0`; merged as `f7cef55`.** State at 21:45 UTC was 0 of 4. Member 1's approval request: [6884605003](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884605003) (21:39 UTC; Member 1 reports a smoke preview of 25 passed from a fresh clone). Member 1 notes his own re-approval needs Command Center authorization. Member 5's CP1 approval is a separate act by the account holder and has not been given |
 | Member 3 S9 provenance response | **AWAITING OWNER RESPONSE** (requested in [6884242484](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884242484) and [6884538969](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884538969)) |
 | Earlier heads (superseded) | `ca128d0`, `2ce0d53`, `a6876d1`, `eaae6d6`, `e44ec26` |
 | C5 (`test/qa-demo`) | Non-blocking; **QA owner unresolved** |
@@ -149,7 +151,7 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 
 ## 5. Ranking status
 
-**Disabled.** `rank_investigations` returns `disabled_criteria_not_frozen` until D-01 is fully approved (Member 1's revisions applied and accepted, Member 3's co-approval, real criterion scores and a sensitivity rerun after CP2) and `config/ranking_criteria_v1.json` is committed alone. After that it returns `evidence_insufficient` until provenance-checked measured findings exist (and S9: never `withheld` ones).
+**Disabled.** `rank_investigations` returns `disabled_criteria_not_frozen` until D-01 is fully approved (Member 1's revisions applied and accepted, Member 3's co-approval, real criterion scores and a sensitivity rerun after CP2) and `config/ranking_criteria_v1.json` is committed alone. After that it returns `evidence_insufficient` until provenance-checked measured findings exist (and S9: never `excluded` ones, nor their `derived_from` descendants).
 
 ## 6. Source verification
 
@@ -173,7 +175,7 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 | Weight freeze (`config/ranking_criteria_v1.json`) | — | **Not authorized** (needs M1 and M3) |
 | Ranking activation | — | **Not authorized** (needs the freeze plus measured data) |
 
-## 8. CP1 integration record
+## 8. CP1 integration record (state at `c1b82cf`; current numbers in §9)
 
 Approved post-CP1 scope from `docs/CP1_WORKSTREAMS.md` and the Member 1 requests above:
 
@@ -184,3 +186,23 @@ Approved post-CP1 scope from `docs/CP1_WORKSTREAMS.md` and the Member 1 requests
 5. Validation on the integrated branch: `ruff check .` passed; `ruff format --check .` reported 48 files already formatted; `pytest` passed 362 tests; `python tools/check_data_provenance.py` passed with 0 datasets registered; the source verifier reported 29/43 quotes found, 14 classified for manual checking, and 0 failed. The existing manual PDF checks remain documented in `SOURCE_AUDIT.md`.
 
 CP1 rebase readiness (trial merges only, nothing pushed): `29c7078` 191 passed; `b89604a` 209 passed; `ca128d0` 220 passed; `2ce0d53` 279 passed; **`a6876d1` (current) no conflicts, 299 passed**.
+
+## 9. Post-merge record (verified on GitHub and locally, 2026-11-14 23:55 UTC)
+
+| Item | State | Evidence |
+|---|---|---|
+| CP1 contract v0.2.0 (PR #1) | **Merged** as `f7cef55674885c68f5edd56e3650da7668464ce4` (22:35 UTC). Approve reviews at `297b9a0`: Member 3 ([5907371672](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#pullrequestreview-5907371672)), Member 2 ([5907381357](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#pullrequestreview-5907381357)), **Member 5** ([5907491643](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#pullrequestreview-5907491643), 22:32 UTC). Member 1 is the author | GitHub reviews API |
+| FLEX dataset (PR #4) | **Merged** as `ef71422964ed04b5e83c84c64dadc82afa711202` (23:18 UTC). Member 5 scientific Approve reviews: `2092cdd` ([5907291897](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#pullrequestreview-5907291897)) and, after the CP1 merge, final head `cddf527` ([5907747752](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#pullrequestreview-5907747752), 23:08 UTC). Member 1 backend approval at `cddf527` ([5907704648](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#pullrequestreview-5907704648)). Member 5's scope: transcription, interpretation and flag consistency only | GitHub reviews API |
+| §7 tasks "Authorized; integrated after CP1" (move to `research/`, S9/S10 independent tests, `excluded` handling, D-03/D-04 alignment) | **Done** in `c1b82cf`; FLEX-010 / F042 regression tests in `be39619` | git log |
+| PR #3 reviews | **None.** Requests to `AlphaCenturian3` and `huyenthoai272008` pending; head notice [posted 23:38 UTC](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3). Every Member 3 item in §4 is still AWAITING OWNER RESPONSE | GitHub |
+| Validation at `be39619` (independent rerun, Python 3.12.10) | `pytest tests/research` 126 passed; `pytest` 387 passed; `ruff check .` passed; `ruff format --check .` 52 files formatted; provenance check passed, 2 datasets. `tools/verify_flex_table_ix.py` not rerun: the source PDF is not in `data/raw/` (by design) | local run |
+| Independent S9 probes (not committed; fixtures only) | Fail closed: excluded parent (verified or not), mixed clean and excluded parents, malformed excluded parent, absent parent and cycle are all refused or raise `S3`. An `excluded` record carrying a number is invalid | local run |
+| Measured FLEX Findings | **None on `main`.** Only the transcribed CSV and flags are registered; the derivation design is a draft (PR #15). Ranking stays disabled; no NASA CSV value is presented as a validated Finding | `data/manifest.json` |
+
+**Open scientific observations for owner decision (nothing changed in code):**
+
+- **O-1 (Member 1).** With approved criteria, an interpretation whose measured parents are all *unverified* (`manifest_id` not in `verified_manifest_ids`) is still scored and the output is `released`; only its traceability criterion drops to 0. This is the documented behaviour (`RANKING_METHODOLOGY.md`, "lose their traceability score") and it is tested, but it is weaker than the fail-closed handling S9 gives exclusion-dependent interpretations. Member 5 recommends that production B4 refuse such interpretations outright. Unreachable today: criteria are not approved.
+- **O-2 (information).** `validate_evidence` does not reject `derived_from` on a `measured` record, and the S9 graph follows `derived_from` only from interpretations. The contract schema allows `derived_from` only on interpretations, so contract-valid data cannot reach this path.
+- **O-3 (S10 scope).** The independent S10 test runs on fixtures and the contract examples only. A check against the real FLEX flags is possible only once derived Findings exist (PR #15 design, D4).
+
+**Review requests to Member 5 that are open:** PRs #2, #9, #11, #12, #13, #14 and #15. A review by Member 5 is given only from the account holder's own account, at a named SHA.

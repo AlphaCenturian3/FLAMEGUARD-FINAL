@@ -10,7 +10,7 @@ S5 (always):
 - a condition key reported with different values across records breaks comparability;
 - a condition key reported for some records and ``null`` for others breaks it too.
 
-Strict mode (default, Member 5 proposal for Member 1 review):
+Strict mode (opt-in with ``strict=True``; Member 5 proposal for Member 1 review):
 - a *core* condition (gravity, oxygen, pressure, flow configuration, fuel) that no
   record reports also breaks comparability, because equality cannot be established.
 
