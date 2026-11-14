@@ -35,6 +35,19 @@ jobs:
       - name: Data provenance
         run: python tools/check_data_provenance.py
 
+  frontend:
+    # Runs the frontend's in-browser test harness (frontend/tests/index.html) in headless
+    # Chrome, which GitHub's ubuntu runners include. No extra dependency. Until the
+    # frontend lands on main the script reports "SKIPPED (not verified)", never a pass.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Frontend browser tests (headless Chrome)
+        run: python .github/scripts/run_frontend_tests.py
+
   secrets-and-raw-data:
     runs-on: ubuntu-latest
     steps:
