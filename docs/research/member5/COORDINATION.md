@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 21:05 UTC (documentation revision 2 after Member 1's answers; CP1 head `a6876d1`). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 21:10 UTC (updated coordinator authorization: provisional four-member roster; Member 5 roster confirmation and S9 position posted with the account holder's authorization; CP1 head `a6876d1`). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -24,6 +24,8 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 | Ref | Coordinator position | Kind | Effect |
 |---|---|---|---|
 | A | Do not submit Member 5's CP1 approval until the roster (Member 4), C5 and Member 2's identity are resolved; each member approves personally | Instruction to Member 5 | No Member 5 approval has been submitted |
+| A′ (update, 2026-11-14) | Treat Members 1, 2, 3 and 5 as the **provisional** four-active-member roster (Command Center clarification). Member 5 may confirm role and identity personally, with the account holder's authorization. Members 2 and 3 confirm individually. C5 is non-blocking, and its QA owner is unresolved until assigned. Member 5's CP1 approval is **still withheld**. Reviews must name the final SHA if CP1 changes | Instruction to Member 5 | Member 5's confirmation posted with the account holder's explicit authorization ([PR #1 comment 6884177976](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884177976)). CP1 approval not submitted |
+| A″ | Flag gravity-only scoring as insufficiently discriminating; request Member 1's methodological decision before any production ranking | Instruction | Requested ([PR #3 comment 6884182608](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6884182608)) |
 | A.1 | Coordinator guidance is not a Member 5 approval; nobody may impersonate a reviewer | Instruction | Followed |
 | A.2 | The established roster includes Member 4 (QA, Testing and Judge Demo); keep unresolved until the team confirms | Coordinator position | Recorded in §2 as unresolved |
 | B | Apply Member 1's six-card review now on the Member 5 branch | Instruction | Applied in `2754d91` and `a6b85f9` |
@@ -39,12 +41,24 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 | Superseded heads | `ca128d0` (Member 1's approval there, [6883450234](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883450234), is superseded) and `2ce0d53`. PR #7 was incorporated into `a6876d1` and closed without merge. |
 | What changed since `ca128d0` | `curation_notes` with `source` and `flag_ref`; value status **`excluded`** (named `withheld` at `2ce0d53`); rules **S9** (excluded findings are never ranking inputs or numeric TARS evidence) and **S10** (flag resolution, coverage, quotes verified against the registered source). Option B, the TARS name and C2–C4 stay as before. |
 | Formal approvals at `a6876d1` | **1 of 4: Member 1** ([6884018748](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884018748), 20:51 UTC): "APPROVE Member 1 (AlphaCenturian3) at a6876d174606bea1e2dce05c9dd12e97f30d6cca." Member 1 adds: "This is contract approval, not independent certification of NASA source authenticity or approval of ranking weights." Members 2, 3 and 5: none. |
-| C5 (`test/qa-demo`) | Open; Member 1 states it does not block CP1 |
+| C5 (`test/qa-demo`) | Open; non-blocking for CP1 (Member 1; coordinator A′). **QA owner unresolved** until explicitly assigned |
+| S9 transitive exclusion (raised by Member 2's side, [6884079396](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884079396), [6884135442](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884135442)) | Members 1 and 5 decide; Member 3 consulted. **Member 5: "Member 5 adopts the transitive exclusion rule after CP1"** ([6884177976](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884177976)). **Member 1: AWAITING OWNER RESPONSE.** Member 3: not yet consulted on record. Until decided, the frontend display guard treats such chains as non-supporting (display only). Adopting the rule after CP1 keeps the CP1 SHA unchanged |
 | Member 5 trial merges into PR #3 | `2ce0d53`: no conflicts, 279 passed. `a6876d1`: see §8. Temporary worktrees; nothing pushed. |
 
 ## 2. Roster and identities
 
-**Roster: not yet confirmed by all members.** Command Center's "final roster clarification" ([comment 6884060166](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884060166), 20:54 UTC) states: "The active FlameGuard-SI engineering team consists of Members 1, 2, 3 and 5. There is no currently assigned Member 4." It asks each member to post `Member <N> (<username>) confirms the four-active-member roster.` or a dispute with evidence, and adds: "Silence is not taken as consent." Member 1's CP1 approval covers "the four-active-member ownership model". Member 3 wrote on PR #4 ([6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095)): "My earlier review request mentioning Member 4 is superseded." Members 2, 3 and 5 have **not** posted the requested confirmation on PR #1. Member 5's confirmation or dispute is Member 5's own decision; the executor does not post it. Earlier statements:
+**Roster: provisional four-active-member roster (coordinator instruction A′). Individual confirmations:**
+
+| Member | Account | Roster confirmation on PR #1 | Evidence |
+|---|---|---|---|
+| 1 | `AlphaCenturian3` | Covered by the CP1 approval ("the four-active-member ownership model") | [6884018748](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884018748) |
+| 2 | not confirmed | **AWAITING**: neither identity nor roster stated | — |
+| 3 | `huyenthoai272008` | **AWAITING** explicit confirmation on PR #1. On PR #4 Member 3 wrote "My earlier review request mentioning Member 4 is superseded" | [PR #4 6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095) |
+| 5 | `16trtuoiloz-ducdo` | **Confirmed**: "Member 5 (16trtuoiloz-ducdo) confirms the four-active-member roster." Posted with the account holder's authorization | [6884177976](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884177976) |
+
+C5 (`test/qa-demo`): non-blocking for CP1; **QA owner unresolved** until explicitly assigned.
+
+Earlier context: Command Center's "final roster clarification" ([comment 6884060166](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884060166), 20:54 UTC) states: "The active FlameGuard-SI engineering team consists of Members 1, 2, 3 and 5. There is no currently assigned Member 4." It asks each member to post `Member <N> (<username>) confirms the four-active-member roster.` or a dispute with evidence, and adds: "Silence is not taken as consent." Member 1's CP1 approval covers "the four-active-member ownership model". Member 3 wrote on PR #4 ([6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095)): "My earlier review request mentioning Member 4 is superseded." Members 2, 3 and 5 have **not** posted the requested confirmation on PR #1. Member 5's confirmation or dispute is Member 5's own decision; the executor does not post it. Earlier statements:
 
 | Source | Statement | Kind |
 |---|---|---|
@@ -78,6 +92,7 @@ Requests: [PR #3 comment 6883945480](https://github.com/AlphaCenturian3/FLAMEGUA
 | D-13 O₂ / pressure tolerances | M1 (Command Center) | #3 / `22bbd3f` | 6883984161 | "INACTIVE (Command Center)." … "For P0, C is scored on gravity only" | **REJECTED for P0 (inactive)** | O₂ and pressure shown, not scored; C ∈ (0, 1) | A cited equivalence tolerance; M1 and M3 approval; sensitivity rerun |
 | D-13 unknown conditions | M1 | #3 / `22bbd3f` | 6883984161 | "Accept your rule: not in the denominator, and listed as \"reference unknown\"." | **ACCEPTED** | as drafted | none |
 | G-1 applicability gate | M1 | #3 / `22bbd3f` | 6883984161 | "An investigation is scored for ?context=<env> only if it passes every gate." Gates: G1 evidence, G2 source-stated relevance, G3 integrity | **Owner proposal (recommended); not approved**. Note: Member 1's G1–G3 differ from the G0–G2 options in Member 5's form | Gate replaces the P criterion; an empty ranking is reported as empty | M3 view; CP1; then redraft and approval |
+| M-1 … M-4 scoring discrimination | M1 | #3 / `a0fa130` | [6884182608](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6884182608) | — | **AWAITING OWNER RESPONSE** | Member 5 records gravity-only scoring as **insufficiently discriminating** on current evidence (all documented investigations are microgravity, so C is constant within each context). No production ranking until Member 1 decides | M1 decision |
 | Q-1 contract fit | M1 with M3 | #3 / `22bbd3f` | 6883984161 | "Q-1 goes away under the gate" … tags hold "only environments the investigation's own sources state" | **Resolved by proposal, pending M3** | Wider applicability goes in Member 5's interpretation findings, never in tags | M3 tag-provenance rule |
 | D-02 scale | M1 | #3 / `9b6348c` | 6883406826 | "Use the continuous 0–1 formulas you implemented." | Owner response | Keep 0–1 | none |
 | D-03 missing inputs | M1 | #3 / `9b6348c` | 6883406826 | "Use both mechanisms, matching the contract" | Owner response | Align the reference implementation after CP1 | CP1 merge |
@@ -105,7 +120,12 @@ Request posted: [PR #3 comment 6883945480](https://github.com/AlphaCenturian3/FL
 | M3-S2 test-level measurements available | M3 | #4 / `f62330f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | **Ranking cannot be activated**; descriptive quotes are not measurements | Provenance-validated measured findings on `main` |
 | D-12 register → curated | M3 | #3 | — | — | **AWAITING OWNER RESPONSE** | Register stays a research note | M3 decision |
 
-**Member 3 activity since the decision form (none on PR #3):**
+**Member 3 comment on PR #3** ([6884145867](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6884145867), 21:01 UTC). Member 3 labels it: "These are coordinator recommendations only, not Member 3's formal signature, ranking-weight co-approval or an independent quotation audit." It asks: "Please keep these items awaiting named owner responses rather than recording this comment as approval." Recorded accordingly: **no Member 3 item changes status.** Status information it gives:
+- M3-S2: "contract-v0.2 provenance-validated, row-level Finding JSON is not yet available on main" (only a transcribed CSV on the PR #4 branch). This confirms that rankings cannot be activated.
+- M3-A1: "A '0 failed' report from the author is not a reviewer sign-off." Consistent with `SOURCE_AUDIT.md`.
+- M3-T1/Q-1, D-01-M3 and D-12 restate the recommendations, pending Member 3's own explicit confirmation.
+
+**Member 3 activity on other PRs (earlier):**
 
 - PR #4 ([6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095), head `e9c89aa`): "Member 5 is requested for independent scientific source spot-check and quality-flag review"; "Do not merge before reviewers approve and CP1 alignment is reconciled."
 - PR #6 ([6884037456](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/6#issuecomment-6884037456), head `2b18563`): "Do not create a redundant Finding.flags field"; tracks gaps G1–G7, including "G5 source-quote authentication"; "Member 5: independent source audit".
