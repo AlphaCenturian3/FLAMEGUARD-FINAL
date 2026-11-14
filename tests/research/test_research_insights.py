@@ -24,8 +24,9 @@ def test_every_card_has_the_full_chain(real_cards, real_evidence):
         assert card["implication"]["claim_type"] == "engineering_hypothesis"
         assert card["limitations"]
         assert card["disclaimer"] == NOT_FLIGHT_QUALIFIED
-        # Member 1's review was applied by Member 5; Member 1 has not confirmed it yet.
-        assert card["review_status"] == "member1_changes_applied"
+        # Member 1 confirmed the wording only (PR #3 comment 6883984161), not the evidence.
+        assert card["review_status"] == "wording_confirmed_by_member1"
+        assert "Not an approval" in card["member1_review"]["wording_confirmation"]
 
 
 def test_lunar_and_martian_cards_carry_extrapolation_warnings(real_cards):

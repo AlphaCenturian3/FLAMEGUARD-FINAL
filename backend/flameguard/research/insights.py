@@ -57,10 +57,13 @@ FINDING_STRENGTHS = (
     "source_statement",
 )
 #: ``member1_changes_applied``: Member 1's review was applied by Member 5; Member 1 has
-#: not yet confirmed the new wording. ``reviewed_by_member1`` needs that confirmation.
+#: not yet confirmed the new wording. ``wording_confirmed_by_member1``: Member 1 confirmed
+#: the wording matches the review; this is NOT approval of the evidence (Member 1, PR #3
+#: comment 6883984161). ``reviewed_by_member1`` is kept for a future evidence approval.
 REVIEW_STATUSES = (
     "draft_pending_scientific_review",
     "member1_changes_applied",
+    "wording_confirmed_by_member1",
     "reviewed_by_member1",
     "withdrawn",
 )

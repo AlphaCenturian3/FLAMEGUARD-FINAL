@@ -1,6 +1,6 @@
 {
-  "status": "member1_review_applied_pending_confirmation",
-  "note": "Qualitative Moon/Mars fire-safety insight cards. Chain per card: Finding -> source (evidence_ids, resolved in evidence_reported.json) -> Interpretation -> Moon/Mars implication -> Limitation. Interpretations and implications are FlameGuard-SI text, not NASA statements. 'presentation' says how each card may be shown, following Member 1's scientific review on PR #3 (comment 6883406826, reviewing head 9b6348c): two cards are accepted pending Member 3's curation, one waits for verified FLEX data, and three are research context only, never FlameGuard-SI findings. Member 1 has not yet confirmed the revised wording.",
+  "status": "wording_confirmed_by_member1_not_evidence_approval",
+  "note": "Qualitative Moon/Mars fire-safety insight cards. Chain per card: Finding -> source (evidence_ids, resolved in evidence_reported.json) -> Interpretation -> Moon/Mars implication -> Limitation. Interpretations and implications are FlameGuard-SI text, not NASA statements. 'presentation' says how each card may be shown, following Member 1's scientific review on PR #3 (comment 6883406826, reviewing head 9b6348c): two cards are accepted pending Member 3's curation, one waits for verified FLEX data, and three are research context only, never FlameGuard-SI findings. Member 1 confirmed on PR #3 (comment 6883984161, at head 22bbd3f) that the wording matches the review on all six cards, stating this is not scientific approval of any card or its evidence.",
   "cards": [
     {
       "id": "card-material-selection",
@@ -9,11 +9,12 @@
       "presentation": "research_context",
       "open_question": "Does passing NASA's 1-g flame propagation screening test show that a cabin material is acceptable in reduced gravity? SoFIE is designed to study this; FlameGuard-SI holds no SoFIE test-level results to answer it.",
       "title": "Open question: does 1-g material screening cover reduced gravity?",
-      "review_status": "member1_changes_applied",
+      "review_status": "wording_confirmed_by_member1",
       "member1_review": {
         "verdict": "research context, not R3",
         "requested_change": "Present as an open research question with the quotes, not as a FlameGuard-SI finding.",
-        "applied": "Retitled as an open question; presentation set to research_context; open_question added; interpretation reworded so it draws no conclusion."
+        "applied": "Retitled as an open question; presentation set to research_context; open_question added; interpretation reworded so it draws no conclusion.",
+        "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
@@ -52,11 +53,12 @@
       "presentation": "accepted_pending_curation",
       "pending_on": "Member 3 curating m5-bass2-flow-flareup as a measured qualitative finding (quantity, value and unit null; exact quote and locator), so this card can become an R3 interpretation with derived_from.",
       "title": "Low-flow flames can flare up when airflow increases",
-      "review_status": "member1_changes_applied",
+      "review_status": "wording_confirmed_by_member1",
       "member1_review": {
         "verdict": "accept as R3, once Member 3 curates m5-bass2-flow-flareup as a measured qualitative finding",
         "requested_change": "Keep the observational clause only (D-05).",
-        "applied": "Evidence quote trimmed to the observational clause; the authors' evaluation of danger and the unquoted 'dim and stable' detail removed from the finding and interpretation."
+        "applied": "Evidence quote trimmed to the observational clause; the authors' evaluation of danger and the unquoted 'dim and stable' detail removed from the finding and interpretation.",
+        "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
@@ -94,11 +96,12 @@
       "presentation": "accepted_pending_curation",
       "pending_on": "Member 3 curating m5-saffire6-co-co2 and m5-bass2-co-co2-trend as measured qualitative findings, so this card can become an R3 interpretation with derived_from.",
       "title": "CO2 and CO rose more significantly than temperature and pressure in Saffire tests",
-      "review_status": "member1_changes_applied",
+      "review_status": "wording_confirmed_by_member1",
       "member1_review": {
         "verdict": "accept with change",
         "requested_change": "Do not compare quantities with different units ('larger signal'); keep the source's own framing. Add that Saffire burned in a large uncrewed vehicle, not a habitat atmosphere.",
-        "applied": "Title and interpretation now use the source's wording; the cross-unit comparison was removed; a limitation about the uncrewed vehicle and atmosphere was added."
+        "applied": "Title and interpretation now use the source's wording; the cross-unit comparison was removed; a limitation about the uncrewed vehicle and atmosphere was added.",
+        "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
@@ -139,11 +142,12 @@
       "presentation": "research_context",
       "open_question": "Are some habitat materials more flammable, or able to burn at lower oxygen concentrations, in lunar gravity than on Earth? This is the hypothesis FM2 is designed to test; no lunar measurement is in FlameGuard-SI.",
       "title": "Hypothesis under test: lunar gravity may raise flammability for some materials",
-      "review_status": "member1_changes_applied",
+      "review_status": "wording_confirmed_by_member1",
       "member1_review": {
         "verdict": "research context, not R3",
         "requested_change": "Keep it labelled as a hypothesis (FM2).",
-        "applied": "Title starts with 'Hypothesis under test'; presentation set to research_context; open_question added; white-paper authors named."
+        "applied": "Title starts with 'Hypothesis under test'; presentation set to research_context; open_question added; white-paper authors named.",
+        "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
@@ -180,11 +184,12 @@
       "presentation": "research_context",
       "open_question": "How would fire behave at Martian gravity and in a Martian habitat atmosphere? No investigation in this register tested it, and the scaling relations needed to extrapolate are still planned.",
       "title": "Open question: Martian fire behaviour can only be extrapolated today",
-      "review_status": "member1_changes_applied",
+      "review_status": "wording_confirmed_by_member1",
       "member1_review": {
         "verdict": "research context, not R3",
         "requested_change": "Name the white paper's authors as the source; generated text must not suggest NASA is the author (spec §2.4).",
-        "applied": "Finding names Liao, Carmignani, Niehaus and Gollner as the authors; presentation set to research_context; open_question added."
+        "applied": "Finding names Liao, Carmignani, Niehaus and Gollner as the authors; presentation set to research_context; open_question added.",
+        "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
@@ -221,11 +226,12 @@
       "presentation": "pending_measured_data",
       "pending_on": "Verified FLEX measured findings (PR #4, Member 3) loaded after CP1 and the C4 FLEX vocabulary contract PR. Not shown as a finding until then.",
       "title": "Suppression evidence requires fuel context (pending FLEX data)",
-      "review_status": "member1_changes_applied",
+      "review_status": "wording_confirmed_by_member1",
       "member1_review": {
         "verdict": "accept with change, later",
         "requested_change": "Say that FLEX tested extinction in pre-diluted atmospheres (inert gas in the chamber; see the PR #4 composition columns), not a suppressant discharged onto a burning fire. It can become R3 once the FLEX measured findings from PR #4 exist, after the vocabulary PR (C4).",
-        "applied": "Interpretation and limitations state the pre-diluted-atmosphere distinction. Initially attributed to Member 1's review; now verified against the FLEX report (PDF pp. 8 and 19) and cited as m5-flex-prediluted-ambient. Presentation stays pending_measured_data until verified FLEX measured findings exist."
+        "applied": "Interpretation and limitations state the pre-diluted-atmosphere distinction. Initially attributed to Member 1's review; now verified against the FLEX report (PDF pp. 8 and 19) and cited as m5-flex-prediluted-ambient. Presentation stays pending_measured_data until verified FLEX measured findings exist.",
+        "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
