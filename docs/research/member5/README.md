@@ -7,10 +7,13 @@
 | File | What it is |
 |---|---|
 | `investigations.json` | Register of the 5 initial investigations and 1 research synthesis, with verified NASA sources and dataset DOIs. `measured_records_imported` is 0 for each. |
-| `evidence_reported.json` | 14 qualitative statements quoted exactly from their sources (`evidence_category: "reported"`). No numeric values. |
+| `evidence_reported.json` | 15 qualitative statements quoted exactly from their sources (`evidence_category: "reported"`). No numeric values. |
 | `insight_cards.json` | 6 Moon/Mars insight cards (Finding → source → Interpretation → Moon/Mars implication → Limitation), each mapped to the kickoff with `kickoff_ref`. |
 | `GAP_REPORT.md` | Requirements against implementation, including what is blocked. |
-| `SOURCE_AUDIT.md` | Per-citation verification audit: 21 quote citations, automated vs manual method, PDF hash and page. |
+| `SOURCE_AUDIT.md` | Per-citation verification audit: 43 quote citations across three files, automated vs manual method, PDF hashes and pages. |
+| `CRITERIA_ENVIRONMENT_CONTEXT.md` | The four criteria defined for the environment-only interface (D-01 condition 1). Proposal. |
+| `ENVIRONMENT_REFERENCE.md`, `environment_reference.json` | Cited gravity, oxygen and pressure reference per environment; physical conditions separate from design assumptions; unknowns marked (D-01 condition 2). |
+| `WEIGHT_SENSITIVITY.md` | ±0.05 weight-sensitivity method with synthetic worked examples (D-01 condition 3). No NASA data. |
 | `RANKING_METHODOLOGY.md` | How the research-relevance score works, its gates, and what it is not. |
 | `COORDINATION.md` | Roster conflict, GitHub identities and approvals, ownership boundary, decision log D-01 to D-12 (provisional vs approved), CP1 rebase readiness. |
 
@@ -36,7 +39,7 @@ The kickoff's wording was kept where a source supports it. Where the kickoff par
 
 All sources were retrieved on 2026-11-14.
 
-- **Quotes:** 21 quote citations (17 distinct quotes) in `investigations.json` and `evidence_reported.json`. Running `python -m flameguard.research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json` gave **19/21 found, 2 need manual check, 0 failed**. The 2 are the same quote from the partial-gravity white paper (PDF). It was checked by extracting the PDF text in a scratch environment and was found word for word. For NTRS records the check uses the public NTRS API record, because the citation pages render with JavaScript.
+- **Quotes:** 43 quote citations in `evidence_reported.json` (17), `investigations.json` (7) and `environment_reference.json` (19). Running `python -m flameguard.research.verify_sources` on the three files gave **29 found, 14 need manual check, 0 failed**. The 14 are PDF quotes (white paper, FLEX report, NASA habitation and atmosphere documents). Each was checked by extracting the PDF text in a scratch environment and was found word for word on the cited page; hashes are in `SOURCE_AUDIT.md`. For NTRS records the check uses the public NTRS API record, because the citation pages render with JavaScript.
 - **DOIs:** checked against the DataCite registry (`api.datacite.org/dois/<doi>`): title, publisher (NASA PSI), type (Dataset), landing URL and rights.
 
 | Investigation | Subject | PSI / dataset DOI | Test-level data imported |

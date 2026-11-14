@@ -16,7 +16,7 @@ Status key: **Done** (implemented and tested in this PR), **Partial**, **Gap** (
 | Missing data marked missing | Done | `missing_fields()`; every condition key required, with `null` meaning missing |
 | Measured values and units, when verified | **Blocked** | No test-level NASA data imported (kickoff R2). Needs Member 3. |
 | Fuel phase, thickness and ignition/source conditions logged (kickoff C.2) | **Gap** | Not in contract v0.2.0 `conditions`. Needs a contract PR (decision D-07). |
-| Every quote checked against the source | Done | 21 quote citations (17 distinct quotes): 19 matched automatically against live sources; the PDF quote was checked by hand |
+| Every quote checked against the source | Done | 43 quote citations across three files: 29 matched automatically against live sources; 14 PDF quotes checked by hand (pages and SHA-256 in `SOURCE_AUDIT.md`); 0 failed |
 | Dataset licences and credits | Done | README "Credits and licences" |
 
 ## Comparability and ranking
@@ -34,6 +34,7 @@ Status key: **Done** (implemented and tested in this PR), **Partial**, **Gap** (
 | Never a risk, probability or safety score | Done | Disclaimer on every output; banned-phrase checks |
 | Explanations: query, criterion scores, origin, limitations | Done | `explanations`. Cohort labelling is partial (the gap above). |
 | Criteria frozen before any ranking output (CP1 R1) | **Blocked** | Needs Members 1 and 3 to approve, then `config/ranking_criteria_v1.json` in its own commit |
+| Member 1's D-01 conditions: environment-only criteria, cited reference table, ±0.05 sensitivity | Partial | Prepared for review: `CRITERIA_ENVIRONMENT_CONTEXT.md`, `ENVIRONMENT_REFERENCE.md`, `WEIGHT_SENSITIVITY.md` (synthetic only). Reference implementation not yet updated; real sensitivity run needs curated data |
 
 ## Interpretation and Moon/Mars insights
 

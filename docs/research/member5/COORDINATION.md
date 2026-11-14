@@ -65,7 +65,7 @@ Member 1's answers were posted on PR #3 by `AlphaCenturian3` at 20:01 UTC, revie
 
 | ID | Decision | Authorized owner(s) | Owner answer on GitHub | Still needed |
 |---|---|---|---|---|
-| D-01 | Weights 40 / 25 / 20 / 15 | M1 **and** M3 | **M1: conditionally approved.** Conditions: (1) define each criterion for `?context=<environment>`, with the environment signal from the investigation's `relevant_environments` (curated by M3); (2) a cited target-condition table per environment (gravity, O₂ fraction, pressure); (3) a ±0.05 weight-sensitivity check recorded in `docs/research/`, with a UI warning if the top 3 changes; state that traceability and completeness (35%) measure documentation, not fire-safety relevance | M5 meets conditions 1–3; **M3's approval**; then `config/ranking_criteria_v1.json` committed alone |
+| D-01 | Weights 40 / 25 / 20 / 15 | M1 **and** M3 | **M1: conditionally approved.** Conditions: (1) define each criterion for `?context=<environment>`, with the environment signal from the investigation's `relevant_environments` (curated by M3); (2) a cited target-condition table per environment (gravity, O₂ fraction, pressure); (3) a ±0.05 weight-sensitivity check recorded in `docs/research/`, with a UI warning if the top 3 changes; state that traceability and completeness (35%) measure documentation, not fire-safety relevance Conditions 1–3 **prepared, not approved**: `CRITERIA_ENVIRONMENT_CONTEXT.md`, `ENVIRONMENT_REFERENCE.md` / `environment_reference.json`, `WEIGHT_SENSITIVITY.md` (synthetic demonstration; real run after CP2). Still needed: **M1 review of the three documents, M3 co-approval**, then `config/ranking_criteria_v1.json` committed alone |
 | D-02 | Criterion scale | M1 | **Continuous 0–1** (as implemented). A 0–3 rubric only as interpretation findings mapped to {0, 1/3, 2/3, 1} | Record in the methodology |
 | D-03 | Missing inputs | M1 | **Both:** a criterion with no evidence scores 0 with empty `inputs` and a rationale; an investigation with no measured evidence goes in `excluded` as "insufficient evidence". Document that 0 penalizes less-documented investigations. | Align `ranking.py` (the inputs-empty-at-0 rule) and the methodology |
 | D-04 | Strict comparability | M1 | **Not for v0.2.0.** S5 as written; strict mode is a v0.3 candidate (needs `caveats`) | Make strict mode non-default in the reference implementation, or label it v0.3 |
@@ -77,6 +77,8 @@ Member 1's answers were posted on PR #3 by `AlphaCenturian3` at 20:01 UTC, revie
 | D-10 | Branch name | Team | Keep `feat/research-safety-intelligence` | Covered by the CP1 approvals |
 | D-11 | QA reviewer | Team | M1: no Member 4. The 80 tests are reviewed by M1 (runtime overlap) and M3 (quotes and sources) | **Depends on the roster** (§2) |
 | D-12 | Register → `data/curated/investigations.json` | M3 | no answer yet | M3 |
+| D-13 | Condition-match tolerances (O₂ ±0.02, pressure ±10 % proposed); gravity class for `spacecraft` and `pressurized_rover` | M1 | not yet asked before this change | M1 |
+| Q-1 | Ranking inputs for purpose relevance when the signal is on the Investigation, not a finding | M1 | not yet asked before this change | M1 |
 
 ### Member 1's scientific review of the 6 cards (owner answer), applied in `2754d91`
 
@@ -84,7 +86,7 @@ Member 1's answers were posted on PR #3 by `AlphaCenturian3` at 20:01 UTC, revie
 |---|---|---|---|
 | `card-ventilation-flow` | accept as R3 once Member 3 curates `m5-bass2-flow-flareup` | `accepted_pending_curation` | Evidence quote trimmed to "they can flare up quickly with a sudden increase in air flow speed." The authors' evaluation ("not particularly dangerous…") and the unquoted "dim and stable" detail were removed |
 | `card-detection-monitoring` | accept with change | `accepted_pending_curation` | "Larger signal" (a cross-unit comparison) replaced by the Saffire authors' framing; title reworded; limitation added: large uncrewed Cygnus vehicle, not a crewed habitat atmosphere |
-| `card-fuel-extinction-suppression` | accept with change, later | `pending_measured_data` | States that FLEX tested extinction in inert-gas pre-diluted atmospheres, not discharged suppressants (attributed to Member 1, **not yet checked by Member 5 against the FLEX report**); `pending_on` = PR #4 data plus the C4 vocabulary PR |
+| `card-fuel-extinction-suppression` | accept with change, later | `pending_measured_data` | States that FLEX tested extinction in inert-gas pre-diluted atmospheres, not discharged suppressants (raised by Member 1; **since verified by Member 5 against NASA/TP-2015-216046, PDF pp. 8 and 19**, cited as `m5-flex-prediluted-ambient`; the card stays pending, not an accepted finding); `pending_on` = PR #4 data plus the C4 vocabulary PR |
 | `card-material-selection` | research context, not R3 | `research_context` | Retitled as an open question; `open_question` added; interpretation draws no conclusion |
 | `card-lunar-partial-gravity` | research context, not R3 | `research_context` | Title begins "Hypothesis under test"; `open_question` added; white-paper authors named |
 | `card-martian-extrapolation` | research context, not R3 | `research_context` | White paper attributed to Liao, Carmignani, Niehaus and Gollner (hosted on a NASA website, not NASA-authored); `open_question` added |
@@ -97,7 +99,7 @@ All six cards keep their verified sources, limitations and extrapolation warning
 
 ## 5. Source verification
 
-`SOURCE_AUDIT.md`: 21 quote citations, **19 automated, 2 manual** (one PDF quote, page 4, SHA-256 recorded), 0 failed. Executor check only. **Independent review pending:** Member 1 assigned quote and source checks to **Member 3** (or Member 4, if the roster confirms that role).
+`SOURCE_AUDIT.md`: 43 quote citations across `evidence_reported.json` (17), `investigations.json` (7) and `environment_reference.json` (19); **29 automated, 14 manual** (PDFs, pages and SHA-256 recorded), 0 failed. The original 21 entries are unchanged in it. Executor check only. **Independent review pending:** Member 1 assigned quote and source checks to **Member 3** (or Member 4, if the roster confirms that role).
 
 ## 6. After CP1 merges (not before)
 
