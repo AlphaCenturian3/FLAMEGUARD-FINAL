@@ -71,7 +71,7 @@ For each emitted Finding, collect **all** flags whose `flex_test` equals its sou
 **Known mandatory cases:**
 - FLEX-010 `burning_rate_constant_mm2_per_s` has flag F042: original CSV preserves `0.37` (Table IX prints `.37`); its Finding is **excluded with null value and a source-grounded exclusion note**. Neither number nor a surrogate may be emitted as quantitative evidence.
 - FLEX-010 F044 initial-droplet imaging caution and F045 burn-time derivation caution remain attached to their respective numeric Findings, keeping values as reported; F045 does **not** declare 13.6 s incorrect.
-- FLEX-009's nine missing cells (including four numeric columns and metadata time) remain missing; only fields for emitted Findings appear as `not_reported`. Never create a numeric Finding for the missing `test_time_gmt` metadata column.
+- FLEX-009 has five printed dashes (four mapped numeric columns plus metadata time); these are part of the nine printed dashes across all ten FLEX rows. Only the four numeric Finding fields become `not_reported`. Never create a numeric Finding for the missing `test_time_gmt` metadata column.
 - Row-wide contamination cautions apply to all emitted numeric Findings for the affected test.
 
 Each flag cited by a generated note must have its recorded quote verifiable against the **registered source document text**, not merely pass a CSV-internal consistency test. Run Member 3's local PDF text verifier and Member 5's independent source audit; CI that cannot access the PDF must not be described as physical-source authentication.
