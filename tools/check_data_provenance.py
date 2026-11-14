@@ -104,7 +104,7 @@ def tracked_raw_files(root: Path = ROOT) -> list[str]:
 
 
 def main() -> int:
-    manifest = json.loads((ROOT / "data" / "manifest.json").read_text())
+    manifest = json.loads((ROOT / "data" / "manifest.json").read_text(encoding="utf-8"))
     errors = check_manifest(manifest)
     errors += [f"raw NASA file tracked by git: {f}" for f in tracked_raw_files()]
     if errors:

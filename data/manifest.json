@@ -1,4 +1,82 @@
 {
   "manifest_version": "0.1.0",
-  "datasets": []
+  "datasets": [
+    {
+      "id": "nasa-tp-2015-216046.table-ix.flex-001-010",
+      "path": "data/curated/flex_tp2015216046_table_ix_001_010.csv",
+      "evidence_class": "measured",
+      "sha256": "67f2d86d4d1b7c5de6d57ad3c870967f1628b14323ac61d8028f332091a0dea1",
+      "description": "FLEX (Flame Extinguishment Experiment, ISS Combustion Integrated Rack / MDCA) Table IX rows FLEX-001 to FLEX-010, transcribed as printed from NASA/TP-2015-216046 Appendix A, printed page 20 (PDF page 26). Transcribed from PDF sha256 b4f6ca983e2792c33a0b92220a791a818f426bb635b94f7fd33dc8c9c471e79d; every cell checked by eye against a 250-dpi render and by tools/verify_flex_table_ix.py against the PDF text layer. Empty cell = printed en dash (listed per row in source_dash_fields); a printed 0 is kept as 0. Limitations: (1) ISS microgravity, free-floating droplets, near-ambient temperature; rows 1-9 near 1 atm air, row 10 about 3 atm O2/N2/CO2. (2) Report section 5.2: all tests in this report used conformally coated fuel needles; droplets contained an unknown amount of coating; methanol disruptive extinction is probably contaminant-driven and heptane disruption may be. (3) FLEX-001 to FLEX-009 used a 1/30 s shutter; droplet size near ignition is ambiguous. FLEX-002 to FLEX-006 are described as calibration runs in their Appendix B captions (identifiers of FLEX-001 to FLEX-009 contain CAL). (4) Per Appendix A.1 a dash in the extinction-diameter column means no extinction (disruption or completion) or not listed because the droplet left the HiBMs field of view; extinction diameters were extrapolated for droplets that left the HiBMs FOV before extinction; the printed table does not mark which. Captions for FLEX-001, -002, -003 and -005 say the droplet stayed in view; FLEX-006 drifted out and back, so its value may be extrapolated. (5) FLEX-010: Table IX prints a burning rate of .37 but the Figure 14 caption says no burning rate constant is reported; the table value is kept as printed and flagged, not resolved. (6) Mole fractions are printed to two decimals and are initial ambient values. Per-cell exclusion and caution flags with verbatim source quotes: manifest entry nasa-tp-2015-216046.table-ix.flex-001-010.flags. Details: data/docs/flex_table_ix.md.",
+      "rights_status": "permitted_with_citation",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.\u2014RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix A.1 Summary Data (definition of visible flame extinction diameter)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "19",
+          "quote": "where \u201c-\u201d indicates flame extinction did not occur either because the droplet burned to completion or because a droplet disruption ended the test. For cases where the droplet left the HiBMs field of view (FOV) before extinction, we did estimate (extrapolate the burning history) to determine the extinction droplet diameter if there was sufficient burning history and the length of time to extrapolate was not that long. If the droplet was not in the HiBMS FOV for enough time, the extinction droplet diameter is not listed.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "When this occurred, the deployed fuel droplet was clearly not pure but contained an unknown amount of the conformal coating.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination (assertions)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of methanol is probably due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Section 5.1 General Observations (igniter glow, shutter speed)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "For these tests, the shutter speed (integration time of the array) was 1/30 s (inverse of the framing rate).",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "32",
+          "quote": "leaving the HiBMs FOV one-third of the way through the burn.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "38",
+          "quote": "Because the droplet was in the HiBMs FOV for only a short time, no burning rate constant or extinction droplet diameter is reported.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    {
+      "id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+      "path": "data/curated/flex_tp2015216046_table_ix_001_010.flags.csv",
+      "evidence_class": "interpretation",
+      "sha256": "fe9bb683576877f87bb0b30b1cb9023ac47dfd7d7a60c7dca473bdbd4a8ade31",
+      "description": "FlameGuard-SI usage flags for the FLEX Table IX extract (generated by FlameGuard-SI, not NASA). One row per flag: test, field ('*' = whole row), flag type, ranking_use (exclude | caution | not_available), reason, and the printed page plus verbatim quote from NASA/TP-2015-216046 that supports it. Key rules: FLEX-010 burning rate is disputed and excluded from rankings until resolved (value kept as printed in the measured file); every printed dash is flagged not_available and must never be read as zero or as a confirmed no-extinction event; imaging, possible-extrapolation, contamination and calibration caveats are cautions. Flags do not modify any measured value.",
+      "derived_from": [
+        "nasa-tp-2015-216046.table-ix.flex-001-010"
+      ],
+      "method": "Manual review of NASA/TP-2015-216046 (Sections 5.1-5.2, Appendix A.1, Appendix B captions for Figures 5-14) by the feat/nasa-data-tars workstream on 2026-11-14. Each flag cites a printed page and verbatim quote; tools/verify_flex_table_ix.py checks the quotes against the PDF and that every printed dash is flagged."
+    }
+  ]
 }

@@ -1,0 +1,5 @@
+# Curated and simulated files are registered by SHA-256 in data/manifest.json.
+# Store and check them out byte-for-byte (no CRLF conversion) so checksums
+# match on every platform.
+curated/** -text
+simulated/** -text
