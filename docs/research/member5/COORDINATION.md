@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 20:55 UTC (scientific review gate; CP1 head moved to `a6876d1` at 20:47). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 21:00 UTC (scientific review gate; CP1 head `a6876d1`; Member 1 answers of 20:48 recorded). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -65,32 +65,29 @@ No member has confirmed the roster from their own account, and no account has cl
 
 ## 3. Member 1 decision records
 
-Request posted: [PR #3 comment 6883945480](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883945480) at head `22bbd3f`. Earlier owner responses come from [comment 6883406826](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883406826) (reviewing head `9b6348c`). Quotes below are exact, with markdown emphasis removed.
+Requests: [PR #3 comment 6883945480](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883945480) (decision form, head `22bbd3f`). **Member 1 answered at 20:48 UTC: [comment 6883984161](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883984161)**, reviewing `22bbd3f`, with contract references to CP1 at `a6876d1`. Member 1 states: "These are Member 1's owner answers and proposals, not approvals. Nothing here freezes weights, activates rankings or approves a card." Earlier answers: [comment 6883406826](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883406826) (head `9b6348c`). Quotes are exact, with markdown emphasis removed.
 
-| ID | Owner | PR / SHA | Evidence | Exact owner response | Approval status | Implementation consequence | Remaining blocker |
+| ID | Owner | PR / SHA | Evidence | Exact owner response | Decision status | Implementation consequence | Remaining blocker |
 |---|---|---|---|---|---|---|---|
-| M1-C1 ventilation-flow | M1 | #3 / `2754d91` | 6883406826 | "accept as R3, once Member 3 curates m5-bass2-flow-flareup as a measured qualitative finding" (on the earlier wording) | Revised wording: **AWAITING OWNER RESPONSE** | `review_status: member1_changes_applied` | M1 confirmation; M3 curation |
-| M1-C2 detection-monitoring | M1 | #3 / `2754d91` | 6883406826 | "accept with change" | Revised wording: **AWAITING OWNER RESPONSE** | as above | M1 confirmation; M3 curation |
-| M1-C3 fuel-extinction-suppression | M1 | #3 / `a6b85f9` | 6883406826 | "accept with change, later" | Revised wording: **AWAITING OWNER RESPONSE** | Pre-dilution now verified against NASA/TP-2015-216046; card stays `pending_measured_data` | M1 confirmation; FLEX data plus the C4 vocabulary PR |
-| M1-C4 material-selection | M1 | #3 / `2754d91` | 6883406826 | "research context, not R3" | Revised wording: **AWAITING OWNER RESPONSE** | Shown as an open question only | M1 confirmation |
-| M1-C5 lunar-partial-gravity | M1 | #3 / `2754d91` | 6883406826 | "research context, not R3" | Revised wording: **AWAITING OWNER RESPONSE** | Labelled a hypothesis under test | M1 confirmation |
-| M1-C6 martian-extrapolation | M1 | #3 / `2754d91` | 6883406826 | "research context, not R3" | Revised wording: **AWAITING OWNER RESPONSE** | White-paper authors named | M1 confirmation |
-| D-01 (weights) | M1 and M3 | #3 / `22bbd3f` | 6883406826 | "Conditionally approved, on three conditions before the R1 freeze" | **Conditional (M1 only); not approved** | No freeze; ranking disabled | D-01.1–3 decisions; M3 co-approval |
-| D-01.1 criteria | M1 | #3 / `24f710e` | 6883945480 | — | **AWAITING OWNER RESPONSE** | `CRITERIA_ENVIRONMENT_CONTEXT.md` remains a proposal | M1 decision |
-| D-01.2 reference table | M1 | #3 / `24f710e` | 6883945480 | — | **AWAITING OWNER RESPONSE** | `environment_reference.json` remains a draft | M1 decision |
-| D-01.3 sensitivity method | M1 | #3 / `24f710e` | 6883945480 | — | **AWAITING OWNER RESPONSE** | Real run only after curated data | M1 decision |
-| D-02 scale | M1 | #3 / `9b6348c` | 6883406826 | "Use the continuous 0–1 formulas you implemented." | Owner response (not a CP1 approval) | Keep 0–1 | none |
+| M1-C1 … C6 (six cards) | M1 | #3 / `22bbd3f` | 6883984161 | "The wording matches my review on all six" … "This is not scientific approval of any card" | **Wording ACCEPTED; evidence not approved** | `review_status: wording_confirmed_by_member1` (status name requested by M1) | M3 independent quote check; M3 curation (C1, C2); FLEX data (C3); C4–C6 stay context only |
+| D-01 weights | M1 and M3 | #3 / `22bbd3f` | 6883984161 | "Yes, as proposed." (documentation can outweigh applicability) … "No weights are frozen until then" | **REVISIONS REQUESTED** (M1). M3: AWAITING OWNER RESPONSE | No freeze. Proposed: after gating, weight only C, T and D under the invariant `w_C · Δ_min > w_T + w_D`, tested in the reference implementation and in B4 | Real criterion scores after CP2; sensitivity rerun; M1 and M3 approval |
+| D-01.1 criteria | M1 | #3 / `24f710e` | 6883984161 | "With G2 as a gate, purpose_relevance stops being a 0.40 weighted criterion." | **REVISIONS REQUESTED** | Criteria to be redrafted: gate plus C, T, D | M5 redraft; M1 and M3 review |
+| D-01.2 reference table | M1 | #3 / `24f710e` | 6883984161 | Gravity rows accepted with labels; unknown rule: "Accept your rule"; quotes "are recorded, not authenticated" until Member 3 checks them | **ACCEPTED in part; REVISIONS REQUESTED** (label `spacecraft` gravity "assumed: coast phase"; Martian rover "reference unknown") | Table stays a draft; labels to update | M3 authentication of the 19 quotes |
+| D-01.3 sensitivity method | M1 | #3 / `24f710e` | 6883984161 | "Run the sensitivity method again on real criterion scores after CP2, as you already planned." | **Method used; real run DEFERRED to CP2** | Synthetic demonstration stands | Real data (CP2) |
+| D-13 gravity | M1 | #3 / `22bbd3f` | 6883984161 | `space_station`: "Accept"; `spacecraft`: "Accept as a labelled editorial assumption"; `pressurized_rover`: "Accept as a labelled assumption"; lunar = Martian category: "Accept as a stated limit" | **ACCEPTED (labelled)** | UI labels: "assumed: coast phase"; lunar rover assumption | none for P0 |
+| D-13 O₂ / pressure tolerances | M1 (Command Center) | #3 / `22bbd3f` | 6883984161 | "INACTIVE (Command Center)." … "For P0, C is scored on gravity only" | **REJECTED for P0 (inactive)** | O₂ and pressure shown, not scored; C ∈ (0, 1) | A cited equivalence tolerance; M1 and M3 approval; sensitivity rerun |
+| D-13 unknown conditions | M1 | #3 / `22bbd3f` | 6883984161 | "Accept your rule: not in the denominator, and listed as \"reference unknown\"." | **ACCEPTED** | as drafted | none |
+| G-1 applicability gate | M1 | #3 / `22bbd3f` | 6883984161 | "An investigation is scored for ?context=<env> only if it passes every gate." Gates: G1 evidence, G2 source-stated relevance, G3 integrity | **Owner proposal (recommended); not approved**. Note: Member 1's G1–G3 differ from the G0–G2 options in Member 5's form | Gate replaces the P criterion; an empty ranking is reported as empty | M3 view; CP1; then redraft and approval |
+| Q-1 contract fit | M1 with M3 | #3 / `22bbd3f` | 6883984161 | "Q-1 goes away under the gate" … tags hold "only environments the investigation's own sources state" | **Resolved by proposal, pending M3** | Wider applicability goes in Member 5's interpretation findings, never in tags | M3 tag-provenance rule |
+| D-02 scale | M1 | #3 / `9b6348c` | 6883406826 | "Use the continuous 0–1 formulas you implemented." | Owner response | Keep 0–1 | none |
 | D-03 missing inputs | M1 | #3 / `9b6348c` | 6883406826 | "Use both mechanisms, matching the contract" | Owner response | Align the reference implementation after CP1 | CP1 merge |
-| D-04 strict comparability | M1 | #3 / `9b6348c` | 6883406826 | "Not for v0.2.0. Command Center kept S5 as written." | Owner response | Strict mode becomes non-default (v0.3 candidate) | CP1 merge |
-| D-05 quoted statements | M1 | #3 / `9b6348c` | 6883406826 | "No new class for P0" | Owner response | Applied to the BASS-II quote (`2754d91`); M3 curates | M3 curation |
-| D-06 question input | M1 | #3 / `9b6348c` | 6883406826 | "v0.3 (spec §8). P0 ranks by environment only." | Owner response | Environment-only criteria drafted | none for P0 |
+| D-04 strict comparability | M1 | #3 / `9b6348c` | 6883406826 | "Not for v0.2.0. Command Center kept S5 as written." | Owner response | Strict mode non-default (v0.3) | CP1 merge |
+| D-05 quoted statements | M1 | #3 / `9b6348c` | 6883406826 | "No new class for P0" | Owner response | Applied to the BASS-II quote | M3 curation |
+| D-06 question input | M1 | #3 / `9b6348c` | 6883406826 | "v0.3 (spec §8). P0 ranks by environment only." | Owner response | Environment-only | none for P0 |
 | D-08 reference code location | M1, M5 | #3 / `9b6348c` | 6883406826 | "Agreed, and now decided by Command Center" | Owner response plus coordinator decision | Move to `research/` after CP1 | CP1 merge; M1's `pythonpath` PR |
 | D-09 test folder | M5 (M1 review) | #3 / `9b6348c` | 6883406826 | "The folder is tests/research/, not tests/integrity/." | Owner response | Keep `tests/research/` | none |
 | D-10 branch name | Team | #3 / `9b6348c` | 6883406826 | "The branch keeps its name, feat/research-safety-intelligence." | Owner response | none | CP1 approvals |
 | D-11 QA reviewer | Team | #3 / `9b6348c` | 6883406826 | "There is no Member 4." | Owner response; **conflicts with the roster record (§2)** | Tests reviewed by M1 and M3 per M1 | Roster confirmation |
-| D-13 matching rules | M1 | #3 / `22bbd3f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | Tolerances stay proposals | M1 decision |
-| G-1 applicability gate | M1 | #3 / `22bbd3f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | If G1 is chosen, the weights and sensitivity check are redone | M1 decision |
-| Q-1 contract fit | M1 with M3 | #3 / `22bbd3f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | none until decided | M1 and M3 decision |
 
 **Owner requests to Member 5** (Member 1 on PR #1, [6883818321](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883818321) and [6883970652](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883970652)): "Your reference ranking must treat withheld as unusable evidence" (the value status is now `excluded`); "you independently check S9 and S10 in tests/research/, and the quotes in Q3"; review quality flags in `data/curated/interpretations/quality/`. **Status:** accepted by Member 5 as tasks, to be implemented after the CP1 contract is merged, because the branch is still on contract v0.1.0.
 
@@ -112,7 +109,7 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 
 ## 5. Ranking status
 
-**Disabled.** `rank_investigations` returns `disabled_criteria_not_frozen` until D-01 is fully approved (Member 1's conditions accepted, Member 3's co-approval, G-1 and D-13 decided) and `config/ranking_criteria_v1.json` is committed alone. After that it returns `evidence_insufficient` until provenance-checked measured findings exist (and S9: never `withheld` ones).
+**Disabled.** `rank_investigations` returns `disabled_criteria_not_frozen` until D-01 is fully approved (Member 1's revisions applied and accepted, Member 3's co-approval, real criterion scores and a sensitivity rerun after CP2) and `config/ranking_criteria_v1.json` is committed alone. After that it returns `evidence_insufficient` until provenance-checked measured findings exist (and S9: never `withheld` ones).
 
 ## 6. Source verification
 
@@ -127,7 +124,9 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 | S9 and S10 independent tests, `excluded` handling in the reference ranking, Q3 quote checks of curation notes | Member 1 requests | **Authorized, deferred until the CP1 contract is merged** |
 | Move the reference code to `research/` (D-08) | Member 1 plus Command Center | **Authorized, after CP1** |
 | D-03 and D-04 reference-implementation alignment | Member 1 owner responses | **Authorized, after CP1** |
-| Environment-only reference ranking | — | **Not authorized** until D-01.1, D-13, G-1 and Q-1 are decided |
+| Card status `wording_confirmed_by_member1` | Member 1 request (6883984161) | Done |
+| Redraft criteria to gate (G1–G3) plus C, T, D with gravity-only C and the dominance invariant; update reference-table labels | Member 1 revision request | **Authorized as a proposal** (documents only); not yet done; needs M3 input |
+| Environment-only reference ranking with gate and invariant test | Member 1 revision request | **Deferred until after CP1** (move to `research/` first) and the redraft is reviewed |
 | Weight freeze (`config/ranking_criteria_v1.json`) | — | **Not authorized** (needs M1 and M3) |
 | Ranking activation | — | **Not authorized** (needs the freeze plus measured data) |
 
