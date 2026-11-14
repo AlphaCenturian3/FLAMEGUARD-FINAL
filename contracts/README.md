@@ -37,7 +37,7 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 
 ## Rules schemas cannot express
 
-These rules span several files or depend on computed values. Each one has a member who enforces it in code and a different member who tests it independently (spec §4.2).
+These rules span several files or depend on computed values. Each one has a member who enforces it in code and a different member who tests it independently (spec §4.4).
 
 | Rule | Statement | Enforced by / independently tested by |
 |---|---|---|

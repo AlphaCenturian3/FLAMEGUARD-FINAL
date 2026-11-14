@@ -17,7 +17,7 @@ EXAMPLES = ROOT / "contracts" / "examples"
 
 
 def _load(name):
-    return json.loads((EXAMPLES / name).read_text())
+    return json.loads((EXAMPLES / name).read_text(encoding="utf-8"))
 
 
 def _set(path, value):
@@ -162,11 +162,14 @@ def test_unformatted_validators_still_reject_bad_dates():
 
     schemas = ROOT / "contracts" / "schemas"
     registry = Registry().with_resources(
-        (json.loads(p.read_text())["$id"], Resource.from_contents(json.loads(p.read_text())))
+        (
+            json.loads(p.read_text(encoding="utf-8"))["$id"],
+            Resource.from_contents(json.loads(p.read_text(encoding="utf-8"))),
+        )
         for p in schemas.glob("*.schema.json")
     )
     v = Draft202012Validator(
-        json.loads((schemas / "finding.schema.json").read_text()), registry=registry
+        json.loads((schemas / "finding.schema.json").read_text(encoding="utf-8")), registry=registry
     )  # no format_checker
     doc = copy.deepcopy(_load(MEASURED))
     doc["provenance"]["sources"][0]["retrieved"] = "yesterday"

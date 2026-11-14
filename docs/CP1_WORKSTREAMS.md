@@ -2,7 +2,7 @@
 
 **Status:** proposal. Nobody starts feature work until CP1 passes: Members 1, 2, 3 and 5 declare their GitHub usernames in spec §4 and approve the contract v0.2.0 PR, and it is merged. Until then, only the "Start now" items below are allowed.
 
-**Team:** Members 1, 2, 3 and 5. There is no Member 4. Ownership, the TARS split and the independent-review matrix are in spec §4.
+**Team:** Members 1, 2, 3 and 5. There is no Member 4. Ownership, TARS, the interface matrix, the one-implementation rule and the independent-review matrix are in spec §4.1 to §4.4.
 
 **Product priority, in order:**
 1. NASA evidence explorer
@@ -13,7 +13,7 @@
 
 Every item must keep the rules in spec §2.
 
-**Acceptance rule for every item:** an item is done only when its check is merged on `main` with CI green, or recorded in `docs/verification/` with the date, the person and the result. A claim that cannot be checked is not done. Scientific artifacts also need the independent reviewer from spec §4.2.
+**Acceptance rule for every item:** an item is done only when its check is merged on `main` with CI green, or recorded in `docs/verification/` with the date, the person and the result. A claim that cannot be checked is not done. Scientific artifacts also need the independent reviewer from spec §4.4.
 
 **Item map.** Item IDs are unchanged from the earlier plan, so references stay valid. B4's criteria freeze is now R1, and B5 is now R2. The former `test/qa-demo` items Q1 to Q6 are assigned below.
 
@@ -35,7 +35,7 @@ Every item must keep the rules in spec §2.
 - **B2. Explorer API.** `GET /api/investigations`, `/api/investigations/{id}` (404 returns `not_found`) and `/api/findings` with filters. An unknown filter value returns 400 `invalid_request`.
 - **B3. Compare.** `GET /api/compare` uses measured findings only. It follows rule S5 in `contracts/README.md` and never converts units, interpolates or fills gaps.
 - **B4. Ranking.** Implement `GET /api/rankings` **only after** R1's frozen criteria file is merged. Read it, never edit it.
-- **B6. TARS backend.** `POST /api/assistant/ask`, citing only findings returned by Member 3's `retrieve()` (spec §4.1).
+- **B6. TARS backend.** `POST /api/assistant/ask`, citing only findings returned by Member 3's `retrieve()` (spec §4.2).
   - With a blank `FLAMEGUARD_AI_API_KEY`, it returns `fallback_quotes` or `no_evidence` from exact source quotes.
   - Generated text never says "according to NASA", and never presents an interpretation as a NASA conclusion.
   - Test AI mode with a mocked client only. Run a live test only when a person approves it, and record the result.
@@ -52,7 +52,7 @@ Every item must keep the rules in spec §2.
 | Assistant works without a key | test runs with the key blank: `mode` is `fallback_quotes` or `no_evidence` |
 | Assistant cites only retrieved evidence | test: every citation's `finding_id` was returned by `retrieve()` for that request |
 | Simulation isolation | test: the ranking, compare and assistant modules do not import simulation code |
-| Independent review | Member 5's `tests/integrity/` checks of S5, S6 and S8 pass (spec §4.2) |
+| Independent review | Member 5's `tests/research/` checks of S5, S6 and S8 pass (spec §4.4) |
 
 ## Member 2: `feat/frontend-dashboard` (frontend, dashboard, visualizations, UX, TARS UI)
 
@@ -63,6 +63,7 @@ Every item must keep the rules in spec §2.
 - **F1. Explorer.** Investigation list and detail with findings. Every value shows an evidence-class badge, and every missing value shows "Not reported" or "Not applicable", never 0 or a blank.
 - **F2. Traceability.** Every finding shows its source title, link, locator and quote. Interpretations link to their `derived_from` findings.
 - **F3. Compare.** A table or chart from `/api/compare`.
+  - The page shows the backend's `comparable` decision and `non_comparable_reasons` exactly as returned. It never computes its own comparability (spec §4.2, §4.3).
   - Non-comparable reasons are shown in full.
   - Missing points are not drawn, and lines never join across a gap.
   - Conditions are shown next to each value.
@@ -79,6 +80,14 @@ Every item must keep the rules in spec §2.
 | No fixture leak | test: without `?fixtures=1`, the page makes no request for `contracts/examples/` |
 | No NASA misattribution | test: the string "according to NASA" appears nowhere in `frontend/` |
 | Independent review | Member 1 approves the API use, Member 5 approves the scientific wording and labels |
+
+**PR #2 alignment (held until CP1; then verified against v0.2.0):**
+- Set `CONTRACT_VERSION` to `0.2.0` and update the JSDoc mirrors in `api/types.js` to the v0.2.0 schemas.
+- Read list responses as `finding_list` / `investigation_list` (`items`, `total`).
+- Use `quantity`, `unit`, `value_status` and the fixed `conditions` keys. Show `not_reported` and `not_applicable` with their exact wording.
+- Replace the browser-side comparability decision in `model/compare.js` with the `/api/compare` response (F3). The page may still hide a chart, but its reasons come from the backend.
+- Leave `tests/fixtures/frontend/records.json` where it is. Under spec §4 that folder now belongs to Member 2.
+- Every contract example renders in fixture mode, and Member 1 confirms that no field from v0.1.0 alone is still read.
 
 ## Member 3: `feat/nasa-data-tars` (NASA datasets, provenance, TARS evidence)
 
@@ -99,7 +108,7 @@ Every item must keep the rules in spec §2.
   - each measured finding's `manifest_id` points to a `measured` manifest entry whose file contains that finding;
   - **S3, independently:** every `derived_from` in Member 5's interpretations resolves, with no cycles.
 - **D5.** Any new quantity or condition key goes through a contract PR first, never straight into the data. The five vocabulary quantities stay provisional until D2 confirms them against NASA sources.
-- **T1. TARS evidence retrieval.** `retrieve()` in `backend/flameguard/evidence/`, following the interface in spec §4.1: deterministic, no network or AI calls, measured and interpretation findings only, never simulations.
+- **T1. TARS evidence retrieval.** `retrieve()` in `backend/flameguard/evidence/`, following the interface in spec §4.2: deterministic, no network or AI calls, measured and interpretation findings only, never simulations.
 - **Q5 (clean-clone run).** Follow `docs/DEMO.md` from a fresh clone without its authors' help, and record the date and result.
 
 | Check | How it is verified |
@@ -110,11 +119,30 @@ Every item must keep the rules in spec §2.
 | `retrieve()` returns no simulation and is deterministic | test in `tests/data/`: the same input gives the same output, and every returned `evidence_class` is measured or interpretation |
 | Independent review | Member 1 reviews T1; Member 5 performs Q3 |
 
-## Member 5: `feat/research-fire-safety` (proposed; research, ranking guidance, Moon/Mars recommendations)
+## Member 5: `feat/research-safety-intelligence` (PR #3; research, ranking criteria, Moon/Mars recommendations)
 
-**Branch status:** proposed, not created. The branch is created only once the team approves it. `test/qa-demo` is left unchanged until the team decides what happens to it.
+**Branch status:** exists (PR #3, draft). It is kept under its current name. `test/qa-demo` is left unchanged until the team decides what happens to it.
 
-**Owns:** `data/curated/interpretations/`, `config/ranking_criteria_v*.json`, `docs/research/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/source_spotcheck.md`, `tests/integrity/`.
+**Owns:** `research/` (non-runtime), `data/curated/interpretations/`, `config/ranking_criteria_v*.json`, `docs/research/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/source_spotcheck.md`, `tests/research/`, `tests/fixtures/research/`.
+
+**PR #3 alignment.** Member 5 makes these changes on their own branch; nobody else edits it. All research content is kept.
+
+| PR #3 path | Aligned destination | Why |
+|---|---|---|
+| `backend/flameguard/research/ranking.py`, `comparability.py` | `research/` as the **independent reference implementation** used by `tests/research/` | One runtime implementation per rule (spec §4.3). Member 1's B3/B4 is the runtime, and Member 5's code checks it independently. |
+| `backend/flameguard/research/evidence.py`, `common.py`, `insights.py` | `research/` (test and reference use only) | Runtime validation is the contract schemas plus the B1 loader. |
+| `backend/flameguard/research/verify_sources.py` | `research/verify_sources.py` | Member 5's tool for Q3 |
+| `config/research_relevance_criteria_v1.proposed.json` | stays as the proposal. On approval it is committed alone as `config/ranking_criteria_v1.json` (R1) | Already planned in PR #3 itself |
+| `docs/research/member5/evidence_reported.json` (11 records) | Member 3 curates them into `data/curated/findings/` with manifest entries. Until then they stay as research notes the app never loads | 0 of 11 validate as contract v0.2.0 `Finding` (no `evidence_class`/`provenance`; extra keys). See "P0 contract additions" below |
+| `docs/research/member5/insight_cards.json` (6 cards) | Interpretation findings in `data/curated/interpretations/` (R2/R3), with `derived_from` pointing to curated measured ids | Cards become traceable through S3 |
+| `docs/research/member5/investigations.json` | Member 3 merges it into `data/curated/investigations.json` (D1), keeping the candidate PSI ids until they are confirmed | Single investigations file |
+| `tests/research/` (98 tests passing on the branch) | stays | Member 5's test folder (replaces the earlier `tests/integrity/` proposal) |
+| References to "Member 4 / QA" | the assigned member in the item map | There is no Member 4 |
+
+Member 1 answers for each record in `evidence_reported.json` how it maps. This applies the existing contract and changes nothing:
+- `stated_objective` → `Investigation.objectives`;
+- `experimental_result` → a measured qualitative finding (`quantity`/`value`/`unit` all `null`, `value_status: not_applicable`, exact quote and locator);
+- `source_statement` and `hypothesis_under_test` → kept as source quotes for context only, never scored and never presented as findings.
 
 **Start now:** a draft of the ranking criteria and a research outline in `docs/research/`, both unmerged until CP1. No ranking output is produced before R1 is frozen.
 
@@ -132,7 +160,7 @@ Every item must keep the rules in spec §2.
     - never presents itself as a NASA conclusion.
   - No recommendation relies on simulation output.
 - **R4. Independent scientific review.** Review Member 1's ranking, compare and assistant output against the rules, and Member 2's scientific wording.
-- **Q2. Integrity tests** in `tests/integrity/`:
+- **Q2. Integrity tests** in `tests/research/`:
   - No `illustrative_simulation` appears in findings, compare, rankings or assistant output.
   - The ranking, compare and assistant modules do not import simulation code.
   - "according to NASA" appears in no output and in no file under `frontend/`.
@@ -146,7 +174,7 @@ Every item must keep the rules in spec §2.
 |---|---|
 | Criteria frozen before results | git log: the R1 commit is older than the first ranking code or output, and Members 1 and 3 approved it |
 | R2 and R3 are traceable | S3 passes in Member 3's `tests/data/`; schema validation passes |
-| R2 and R3 are scientifically reviewed | Member 1 approves the PR (spec §4.2) |
+| R2 and R3 are scientifically reviewed | Member 1 approves the PR (spec §4.4) |
 | Q2 | CI green on `main` |
 | Q3, Q5, Q6 | Signed entries in `docs/verification/` by the named member |
 
@@ -155,8 +183,8 @@ Every item must keep the rules in spec §2.
 ## Dependencies and integration order
 
 ```
-CP1  contract PR merged; Members 1, 2, 3, 5 declared and approved; TARS approved;
-     feat/research-fire-safety and test/qa-demo decided
+CP1  contract PR merged; Members 1, 2, 3, 5 confirmed and approved; TARS and
+     interface matrix approved; P0 contract additions decided
  │
  ├── M3 D1–D4 ─────────────────┐            (parallel, disjoint folders)
  ├── M1 B1–B2 on fixtures, Q1 harness
@@ -189,11 +217,20 @@ CP5  submission (M5 Q6 complete, M1 verified)
 4. T1 before B6.
 5. Frontend wiring after the backend endpoints it calls are merged.
 
-Every PR merges only with CI green, a review from the owner of each area it touches, and the independent reviewer from spec §4.2 for scientific work.
+Every PR merges only with CI green, a review from the owner of each area it touches, and the independent reviewer from spec §4.4 for scientific work.
 
-## Contract questions raised by the team correction (not applied)
+## P0 contract additions (decision required before approval; not applied to this PR)
 
-These may matter for Member 5's and TARS's work. They are **not** in this PR, because changing the schemas would reopen the contract review. The team decides before approving.
+**Assessment.** Neither field is needed for P0 items 1 to 3: the explorer, comparison and ranking. Ranking by environment already works through `Investigation.relevant_environments`. Both fields are needed for P0 item 4 (traceable interpretation and TARS):
+- R3 cannot tag a recommendation as lunar or Martian.
+- The TARS definition requires uncertainty, and `AssistantAnswer` has nowhere to put it.
+- PR #3 already carries both concepts in its own fields (`relevant_environments` and `limitations` on 11 records and 6 cards).
 
-1. **No environment tag on findings.** `Finding` has no `relevant_environments` field, so a Moon/Mars recommendation (R3) cannot be filtered as lunar or Martian, only described in text. Option: add an optional `relevant_environments` array (reusing the `environment` definition) to interpretation findings.
-2. **No uncertainty field on assistant answers.** The TARS definition says TARS "identifies uncertainty", but `AssistantAnswer` has no field for it. Option: add a required `limitations` array of strings, which may be empty only in `no_evidence` mode.
+**Why decide now.** `Finding` and `AssistantAnswer` use `additionalProperties: false`. Adding a field after CP1 is therefore a breaking change for any validator pinned to v0.2.0. Today there are no approvals and no consumers of v0.2.0, so adding the fields costs nothing.
+
+**Recommended minimal addition.** It is published separately as draft PR #4 against this branch, and is applied only if the team accepts it:
+1. `Finding.relevant_environments`: an optional array of `environment`, allowed **only on interpretation findings**. A measured value records where the experiment ran (`conditions`, `platform`). Saying it is relevant to a lunar base is an interpretation.
+2. `Finding.limitations`: an array of non-empty strings, **required on interpretation findings** (at least 1) and not allowed on measured findings. A measured finding keeps the source-reported `uncertainty`.
+3. `AssistantAnswer.limitations`: a required array of non-empty strings, with at least 1 entry in `ai` and `fallback_quotes` modes.
+
+**If deferred:** R3 puts the environment and limitations in `statement`, and B6 puts uncertainty in `answer`. Both become v0.3 work, with a breaking-change bump.

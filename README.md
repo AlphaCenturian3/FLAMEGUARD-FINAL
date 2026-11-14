@@ -54,7 +54,7 @@ Four active members (1, 2, 3 and 5), each on their own branch. See [`CONTRIBUTIN
 | 1 | `feat/backend-science` | Backend, physics, APIs, integration, TARS backend |
 | 2 | `feat/frontend-dashboard` | Frontend, dashboard, visualizations, UX, TARS UI |
 | 3 | `feat/nasa-data-tars` | NASA datasets, provenance, TARS evidence retrieval |
-| 5 | `feat/research-fire-safety` (proposed) | Research interpretation, ranking guidance, Moon/Mars fire-safety recommendations |
+| 5 | `feat/research-safety-intelligence` | Research interpretation, ranking criteria, Moon/Mars fire-safety recommendations |
 
 `test/qa-demo` is kept, unchanged, until the team decides what happens to it. QA and demo duties are shared across the four members.
 

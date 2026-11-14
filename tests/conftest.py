@@ -16,7 +16,7 @@ os.environ["FLAMEGUARD_AI_API_KEY"] = ""
 def _registry() -> Registry:
     resources = []
     for p in SCHEMAS.glob("*.schema.json"):
-        doc = json.loads(p.read_text())
+        doc = json.loads(p.read_text(encoding="utf-8"))
         resources.append((doc["$id"], Resource.from_contents(doc)))
     return Registry().with_resources(resources)
 
@@ -26,7 +26,7 @@ def validator_for():
     registry = _registry()
 
     def make(schema_name: str) -> Draft202012Validator:
-        schema = json.loads((SCHEMAS / schema_name).read_text())
+        schema = json.loads((SCHEMAS / schema_name).read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
         return Draft202012Validator(schema, registry=registry, format_checker=FormatChecker())
 

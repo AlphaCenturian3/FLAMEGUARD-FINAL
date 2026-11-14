@@ -4,7 +4,7 @@
 - [ ] Member 1 backend  - [ ] Member 2 frontend  - [ ] Member 3 data/TARS evidence  - [ ] Member 5 research/fire safety
 - [ ] contract (needs Members 1 + 2; also 3 + 5 if a data, interpretation or ranking rule changes)
 
-Independent reviewer (spec §4.2, required for scientific work):
+Independent reviewer (spec §4.4, required for scientific work):
 
 ## Evidence (spec §2)
 - [ ] No NASA value is fabricated, estimated, or gap-filled

@@ -10,7 +10,9 @@ from flameguard import CONTRACT_VERSION, SIMULATION_LABEL
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES = ROOT / "contracts" / "examples"
 SCHEMAS = ROOT / "contracts" / "schemas"
-VOCAB = json.loads((ROOT / "contracts" / "vocabulary.json").read_text())["quantities"]
+VOCAB = json.loads((ROOT / "contracts" / "vocabulary.json").read_text(encoding="utf-8"))[
+    "quantities"
+]
 
 EXAMPLE_SCHEMA = {
     "finding.measured.example.json": "finding.schema.json",
@@ -35,7 +37,7 @@ NON_SCIENTIFIC = {
 
 
 def _load(name):
-    return json.loads((EXAMPLES / name).read_text())
+    return json.loads((EXAMPLES / name).read_text(encoding="utf-8"))
 
 
 def _invalid(validator, doc):
@@ -219,16 +221,16 @@ def test_simulation_cannot_claim_measured_or_validated(validator_for):
 
 
 def test_label_and_version_constants_match_contract():
-    sim = json.loads((SCHEMAS / "simulation_result.schema.json").read_text())
+    sim = json.loads((SCHEMAS / "simulation_result.schema.json").read_text(encoding="utf-8"))
     assert sim["properties"]["label"]["const"] == SIMULATION_LABEL
-    spec = (ROOT / "FLAMEGUARD_MASTER_SPEC.md").read_text()
+    spec = (ROOT / "FLAMEGUARD_MASTER_SPEC.md").read_text(encoding="utf-8")
     assert f"**Spec version:** {CONTRACT_VERSION}" in spec
-    vocab = json.loads((ROOT / "contracts" / "vocabulary.json").read_text())
+    vocab = json.loads((ROOT / "contracts" / "vocabulary.json").read_text(encoding="utf-8"))
     assert vocab["vocabulary_version"] == CONTRACT_VERSION
 
 
 def test_quantity_rules_match_vocabulary_exactly():
-    rules = json.loads((SCHEMAS / "quantity_rules.schema.json").read_text())
+    rules = json.loads((SCHEMAS / "quantity_rules.schema.json").read_text(encoding="utf-8"))
     assert rules["properties"]["quantity"]["enum"] == [*VOCAB, None]
     by_key = {}
     for rule in rules["allOf"]:
