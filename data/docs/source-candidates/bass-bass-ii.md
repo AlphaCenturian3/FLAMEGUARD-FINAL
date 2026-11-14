@@ -66,12 +66,17 @@ Each was checked on 2026-11-14 against the record itself (NTRS page or the DataC
 
    **What the evidence shows:** every other place in the article that presents these same 0.64 cm values labels them cm/s. The right-half "(mm/s)" header is the only place that differs.
 
-   **What it does not settle:** this rests on reading plotted points against table values by eye, and it is the authors' table. Per the assignment, **no corrected value is inferred or published**. Options for the team:
-   - (a) ask the corresponding author to confirm;
-   - (b) accept "header typo, cm/s" as a documented FlameGuard-SI judgment, with an interpretation-class flag and the evidence above;
-   - (c) use only the left half.
+   **What it does not settle:** this rests on reading plotted points against table values by eye, and it is the authors' table. **No corrected value is inferred or published.**
 
-   Until decided, the right-half V_f values are not usable as measured data.
+   **Recommendation: (a) ask the corresponding author to clarify.** The supplementary PDF names the corresponding author (University of California, Berkeley). A team member should send the question from their own account; the executor sends nothing. Draft:
+
+   > Supplementary Table S1 of "The Effect of Gravity on Flame Spread over PMMA Cylinders" (Sci. Rep., doi:10.1038/s41598-017-18398-4) labels V_f × 10³ as (cm/s) for d = 1.27 and 0.95 cm, but as (mm/s) for d = 0.64 cm. Figures 5–7 label the same quantity in cm/s for all diameters. Could you confirm the intended unit for the d = 0.64 cm columns?
+
+   **Until the author answers, the disputed rates stay excluded:**
+   - If BASS-II is ever curated from this table, every V_f cell in the right half (d = 0.64 cm) gets a quality flag with `ranking_use: exclude`, giving `value_status: "excluded"` under PR #1. Its reason is the printed unit conflict, and the printed value stays in the registered source file.
+   - Under PR #1's transitive S9 (head `eaae6d6`), nothing derived from those cells may support a ranking, comparison, TARS conclusion or Moon/Mars recommendation.
+   - Fallbacks if no answer comes: (b) a documented FlameGuard-SI judgment ("header typo, cm/s") as an interpretation-class flag with the evidence above, which needs team approval; or (c) curate the left half only.
+   - No BASS-II data is curated now.
 2. **Merged cells.** d, X_O2 and Sample No. span several rows. Expanding them to every row is a layout reading that a second person must confirm.
 3. **Whether it counts as a NASA record (spec §2.1).** This is a peer-reviewed journal supplement with NASA co-authors (Olson, Ferkul), not a NASA archive record. Registering it as `measured` is a team decision.
 4. **Mapping.** V_f fits PR #1's existing `flame_spread_rate` (mm/s) only after the unit conflict is resolved. V_g fits `flow_velocity_mm_s` after an exact ×10 conversion. `flow_configuration` = `opposed`, per the article text quoted above. Rows within one sample are not independent, so statistics must not treat them as separate tests.

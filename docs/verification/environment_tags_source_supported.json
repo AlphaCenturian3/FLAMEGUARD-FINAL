@@ -1,0 +1,75 @@
+{
+  "status": "Member 3 preparation for D1 (data/curated/investigations.json after CP1). Not loaded by the app. Not a contract change. Rule: keep a tag only when the investigation's own cited source directly names the environment; borderline cases are left out until a direct quote is supplied.",
+  "prepared": "2026-11-14",
+  "based_on": "docs/research/member5/investigations.json at PR #3 head a0fa130",
+  "quote_status": "Quotes extracted by script from freshly fetched source text; verbatim in that text. Human context check (C) pending, as in m3_citation_audit_of_member5.md.",
+  "investigations": [
+    {
+      "id": "bass-ii",
+      "measured_environment": "ISS microgravity (Microgravity Science Glovebox)",
+      "tags": [
+        {"tag": "space_station", "url": "https://ntrs.nasa.gov/citations/20160000593", "where": "NTRS abstract", "quote": "The Burning and Suppression of Solids-II (BASS-II) experiment was performed on the International Space Station."},
+        {"tag": "spacecraft", "url": "https://ntrs.nasa.gov/citations/20160000593", "where": "NTRS abstract", "quote": "There are several important implications related to fundamental combustion research as well as spacecraft fire safety."}
+      ],
+      "left_out": [
+        {"tag": "lunar_base", "reason": "no source statement found in NTRS 20160000593 or 20210011385 abstracts"},
+        {"tag": "pressurized_rover", "reason": "no source statement found in NTRS 20160000593 or 20210011385 abstracts"}
+      ]
+    },
+    {
+      "id": "flex",
+      "measured_environment": "ISS microgravity (Combustion Integrated Rack, MDCA)",
+      "tags": [
+        {"tag": "space_station", "url": "https://ntrs.nasa.gov/citations/20150023456", "where": "NASA/TP-2015-216046 (full text)", "quote": "The Flame Extinguishment Experiment (FLEX) is a droplet combustion experiment performed on the International Space Station (ISS)."},
+        {"tag": "spacecraft", "url": "https://ntrs.nasa.gov/citations/20150023456", "where": "NASA/TP-2015-216046 (full text)", "quote": "This objective reflected the FLEX focus on investigating fire safety in spacecraft."}
+      ],
+      "left_out": [
+        {"tag": "lunar_base", "reason": "full-text search of the FLEX report found no lunar, Moon or Mars statement; closest is 'future exploration vehicles' (printed p. 13, PDF p. 19)"}
+      ]
+    },
+    {
+      "id": "sofie",
+      "measured_environment": "ISS microgravity (Combustion Integrated Rack insert)",
+      "tags": [
+        {"tag": "space_station", "url": "https://ntrs.nasa.gov/citations/20200000361", "where": "NTRS title", "quote": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS."},
+        {"tag": "spacecraft", "url": "https://ntrs.nasa.gov/citations/20200000361", "where": "NTRS abstract", "quote": "The Solid Fuel Ignition and Extinction (SoFIE) project studies ignition and flammability of solid spacecraft materials (fuels) in practical geometries and realistic atmospheric conditions."}
+      ],
+      "left_out": [
+        {"tag": "lunar_base", "reason": "borderline: science.nasa.gov SoFIE page mentions the Moon only as general context ('At reduced gravity, such as on the International Space Station (microgravity) or on the Moon (lunar gravity), fire acts differently and can behave unexpectedly.'), not as SoFIE's target environment"},
+        {"tag": "martian_base", "reason": "no source statement found"}
+      ]
+    },
+    {
+      "id": "saffire",
+      "measured_environment": "orbital microgravity, uncrewed Cygnus after departure from ISS",
+      "tags": [
+        {"tag": "spacecraft", "url": "https://ntrs.nasa.gov/citations/20240002981", "where": "NTRS abstract", "quote": "These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries."}
+      ],
+      "left_out": [
+        {"tag": "lunar_base", "reason": "no source statement found in NTRS 20240002981 or 20180005168 abstracts"},
+        {"tag": "martian_base", "reason": "no source statement found in NTRS 20240002981 or 20180005168 abstracts"},
+        {"tag": "pressurized_rover", "reason": "no source statement found in NTRS 20240002981 or 20180005168 abstracts"}
+      ]
+    },
+    {
+      "id": "fm2",
+      "measured_environment": null,
+      "measured_environment_note": "planned lunar payload; flight and data status not verified; no measured evidence",
+      "tags": [
+        {"tag": "lunar_base", "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/", "where": "NASA FM2 page", "quote": "The experiment burns four fuel samples individually in atmospheric conditions planned for future lunar habitats or vehicles."}
+      ],
+      "left_out": []
+    },
+    {
+      "id": "partial-gravity-synthesis",
+      "measured_environment": null,
+      "measured_environment_note": "research-needs synthesis, not an experiment",
+      "tags": [
+        {"tag": "lunar_base", "url": "https://smd-cms.nasa.gov/wp-content/uploads/2023/05/60_afb22b1e538432728848e83bb3ade8c2_LiaoYaTingT.pdf", "where": "printed p. 5 = PDF p. 6 (printed number read from the page text; offset 1, as on PDF p. 4 = printed 3, which was checked visually)", "quote": "This will lead to informed design of fire detection systems, mitigation strategies to stop flame spread and prevent flashover in Lunar habitats, fire extinguishment, and mission-preserving post-fire cleanup strategies."}
+      ],
+      "left_out": [
+        {"tag": "martian_base", "reason": "borderline: the source names Mars landing conditions ('The partial gravity conditions after landing on the Moon or Mars, ...', PDF p. 2, printed number not checked) but not a Mars base or habitat"}
+      ]
+    }
+  ]
+}
