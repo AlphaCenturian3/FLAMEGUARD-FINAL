@@ -28,7 +28,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
 from types import MappingProxyType
@@ -96,7 +96,7 @@ class LoadReport:
 @dataclass(frozen=True)
 class EvidenceStore:
     investigations: tuple[Mapping[str, Any], ...] = ()
-    findings: Mapping[str, Mapping[str, Any]] = MappingProxyType({})
+    findings: Mapping[str, Mapping[str, Any]] = field(default_factory=lambda: MappingProxyType({}))
     exclusion_dependent: frozenset[str] = frozenset()  # S9: never ranking, compare or TARS evidence
     excluded: frozenset[str] = frozenset()
 
