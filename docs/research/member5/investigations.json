@@ -1,6 +1,6 @@
 {
   "status": "draft_pending_review_by_member3",
-  "note": "Member 5 research register for the five initial investigations plus one research synthesis. Shaped like the contract Investigation object plus a 'member5' block. This is NOT curated data: Member 3 owns data/curated/investigations.json and the manifest. measured_records_imported is 0 for every entry. No test-level NASA measurements have been imported. 'dataset_doi' is the investigation-level NASA PSI dataset DOI, checked against the DataCite registry; it is not the DOI of the quoted source.",
+  "note": "Member 5 research register for the five initial investigations plus one research synthesis. Shaped like the contract Investigation object plus a 'member5' block. This is NOT curated data: Member 3 owns data/curated/investigations.json and the manifest. measured_records_imported is 0 for every entry. No test-level NASA measurements have been imported. 'dataset_doi' is the investigation-level NASA PSI dataset DOI, checked against the DataCite registry; it is not the DOI of the quoted source. Investigation tags (relevant_environments) hold only environments the investigation's own sources state (Member 5 decision 2026-11-14, accepting Member 3's proposal in PR #6 docs/verification/environment_tag_mapping.md; gate E2). Wider Moon/Mars applicability belongs in Member 5 interpretation findings with limitations.",
   "retrieved": "2026-11-14",
   "investigations": [
     {
@@ -12,7 +12,10 @@
       "objectives": [
         "The main variables tested in BASS–II were ambient O2 concentration, ventilation flow velocity, and fuel type, thickness, and geometry."
       ],
-      "relevant_environments": ["spacecraft", "space_station", "lunar_base", "pressurized_rover"],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station"
+      ],
       "sources": [
         {
           "title": "Burning and Suppression of Solids–II (BASS-II) Summary Report",
@@ -46,7 +49,8 @@
         "dataset_rights": "CC0-1.0 (DataCite rightsList)",
         "measured_records_imported": 0,
         "kickoff_ref": "M5-01",
-        "verification": "Quotes verified against NTRS records on 2026-11-14. DOI 10.60555/4qc4-de67 verified in DataCite: title 'Burning and Suppression of Solids - II', publisher NASA PSI, type Dataset, url PSI-25. Test-level files not inspected."
+        "verification": "Quotes verified against NTRS records on 2026-11-14. DOI 10.60555/4qc4-de67 verified in DataCite: title 'Burning and Suppression of Solids - II', publisher NASA PSI, type Dataset, url PSI-25. Test-level files not inspected.",
+        "tag_provenance": "Source-stated tags only; the supporting quotes are listed in Member 3's PR #6 docs/verification/environment_tag_mapping.md (not yet human-checked). Removed 2026-11-14 as not source-stated: lunar_base, pressurized_rover."
       }
     },
     {
@@ -58,7 +62,10 @@
       "objectives": [
         "The Flame Extinguishment Experiment (FLEX) experiment was designed to assess and quantify the effectiveness of inert-gas suppressants in microgravity and obtain the most conservative estimate of the limiting oxygen index for steady combustion."
       ],
-      "relevant_environments": ["spacecraft", "space_station", "lunar_base"],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station"
+      ],
       "sources": [
         {
           "title": "Combustion Science (ISS Fluids and Combustion Facility)",
@@ -92,7 +99,8 @@
         "dataset_rights": "CC0-1.0 (DataCite rightsList)",
         "measured_records_imported": 0,
         "kickoff_ref": "M5-02",
-        "verification": "Quotes verified on 2026-11-14. DOI 10.60555/mbq8-0451 verified in DataCite: title 'Flame Extinguishment Experiment', publisher NASA PSI, type Dataset, url PSI-69. Test-level files not inspected. The page issresearchproject.grc.nasa.gov/Investigations/FLEX/ did not resolve and is not used."
+        "verification": "Quotes verified on 2026-11-14. DOI 10.60555/mbq8-0451 verified in DataCite: title 'Flame Extinguishment Experiment', publisher NASA PSI, type Dataset, url PSI-69. Test-level files not inspected. The page issresearchproject.grc.nasa.gov/Investigations/FLEX/ did not resolve and is not used.",
+        "tag_provenance": "Source-stated tags only; the supporting quotes are listed in Member 3's PR #6 docs/verification/environment_tag_mapping.md (not yet human-checked). Removed 2026-11-14 as not source-stated: lunar_base."
       }
     },
     {
@@ -104,7 +112,10 @@
       "objectives": [
         "(1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires"
       ],
-      "relevant_environments": ["spacecraft", "space_station", "lunar_base", "martian_base"],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station"
+      ],
       "sources": [
         {
           "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
@@ -138,7 +149,8 @@
         "dataset_rights": null,
         "measured_records_imported": 0,
         "kickoff_ref": "M5-03",
-        "verification": "Quotes verified on 2026-11-14. A DataCite title search (publisher NASA PSI) found no SoFIE dataset DOI; that does not prove none exists. No SoFIE test-level result publication reviewed."
+        "verification": "Quotes verified on 2026-11-14. A DataCite title search (publisher NASA PSI) found no SoFIE dataset DOI; that does not prove none exists. No SoFIE test-level result publication reviewed.",
+        "tag_provenance": "Source-stated tags only; the supporting quotes are listed in Member 3's PR #6 docs/verification/environment_tag_mapping.md (not yet human-checked). Removed 2026-11-14 as not source-stated: lunar_base, martian_base. lunar_base left out pending evidence (borderline; NASA SoFIE page gives general lunar context only)."
       }
     },
     {
@@ -150,7 +162,9 @@
       "objectives": [
         "These experiments directly address the risks associated with our understanding of spacecraft fire behavior at practical length scales and geometries."
       ],
-      "relevant_environments": ["spacecraft", "lunar_base", "martian_base", "pressurized_rover"],
+      "relevant_environments": [
+        "spacecraft"
+      ],
       "sources": [
         {
           "title": "Preliminary Results from the Saffire VI Experiment",
@@ -177,11 +191,27 @@
         "measured_records_imported": 0,
         "kickoff_ref": "M5-04",
         "psi_datasets_other_flights": [
-          {"flight": "SAFFIRE-I", "psi_id": "PSI-98", "doi": "10.60555/0t15-1z43", "rights": "CC0-1.0"},
-          {"flight": "SAFFIRE-II", "psi_id": "PSI-99", "doi": "10.60555/2chp-m469", "rights": "CC0-1.0"},
-          {"flight": "SAFFIRE-III", "psi_id": "PSI-100", "doi": "10.60555/040q-4h36", "rights": "CC0-1.0"}
+          {
+            "flight": "SAFFIRE-I",
+            "psi_id": "PSI-98",
+            "doi": "10.60555/0t15-1z43",
+            "rights": "CC0-1.0"
+          },
+          {
+            "flight": "SAFFIRE-II",
+            "psi_id": "PSI-99",
+            "doi": "10.60555/2chp-m469",
+            "rights": "CC0-1.0"
+          },
+          {
+            "flight": "SAFFIRE-III",
+            "psi_id": "PSI-100",
+            "doi": "10.60555/040q-4h36",
+            "rights": "CC0-1.0"
+          }
         ],
-        "verification": "Quotes verified against NTRS records on 2026-11-14. The quoted findings come from Saffire IV-VI reports. DataCite lists PSI datasets only for Saffire I-III (PSI-98/99/100); they are recorded as other flights and are NOT cited for the quoted findings."
+        "verification": "Quotes verified against NTRS records on 2026-11-14. The quoted findings come from Saffire IV-VI reports. DataCite lists PSI datasets only for Saffire I-III (PSI-98/99/100); they are recorded as other flights and are NOT cited for the quoted findings.",
+        "tag_provenance": "Source-stated tags only; the supporting quotes are listed in Member 3's PR #6 docs/verification/environment_tag_mapping.md (not yet human-checked). Removed 2026-11-14 as not source-stated: lunar_base, martian_base, pressurized_rover."
       }
     },
     {
@@ -193,7 +223,9 @@
       "objectives": [
         "Conduct the first-ever observations and measurements of flame spread on the Moon."
       ],
-      "relevant_environments": ["lunar_base"],
+      "relevant_environments": [
+        "lunar_base"
+      ],
       "sources": [
         {
           "title": "Flammability of Materials on the Moon (FM2)",
@@ -219,7 +251,8 @@
         "dataset_rights": null,
         "measured_records_imported": 0,
         "kickoff_ref": "M5-05",
-        "verification": "Quotes verified on 2026-11-14. Whether FM2 has flown or returned data was NOT verified. No PSI dataset DOI found. NTRS 20260000646 'Material Flammability at Lunar and Martian Gravity' (2026 extended abstract) has no abstract text in the NTRS API record and was not reviewed."
+        "verification": "Quotes verified on 2026-11-14. Whether FM2 has flown or returned data was NOT verified. No PSI dataset DOI found. NTRS 20260000646 'Material Flammability at Lunar and Martian Gravity' (2026 extended abstract) has no abstract text in the NTRS API record and was not reviewed.",
+        "tag_provenance": "Source-stated tags only; the supporting quotes are listed in Member 3's PR #6 docs/verification/environment_tag_mapping.md (not yet human-checked). No tags removed."
       }
     },
     {
@@ -229,12 +262,15 @@
       "acronym": null,
       "platform": null,
       "objectives": [],
-      "relevant_environments": ["lunar_base", "martian_base"],
+      "relevant_environments": [
+        "lunar_base",
+        "martian_base"
+      ],
       "sources": [
         {
           "title": "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires (Liao et al., decadal-survey white paper hosted by NASA)",
           "url": "https://smd-cms.nasa.gov/wp-content/uploads/2023/05/60_afb22b1e538432728848e83bb3ade8c2_LiaoYaTingT.pdf",
-          "page": 4,
+          "page": "printed p. 3 (PDF p. 4)",
           "quote": "Fire behavior in partial gravity (e.g., on Moon and Mars) cannot be expected to be interpolated between the data obtained in normal and microgravity conditions (which themselves are not yet fully understood).",
           "retrieved": "2026-11-14",
           "archive_id": null
@@ -247,7 +283,8 @@
         "dataset_rights": null,
         "measured_records_imported": 0,
         "kickoff_ref": "M5-I04",
-        "verification": "Quote verified on 2026-11-14 by extracting the PDF text (pypdf, scratch environment). A community white paper authored by university and NASA researchers and hosted on a NASA site; it is not a NASA finding. Excluded from investigation rankings."
+        "verification": "Quote verified on 2026-11-14 by extracting the PDF text (pypdf, scratch environment). A community white paper authored by university and NASA researchers and hosted on a NASA site; it is not a NASA finding. Excluded from investigation rankings.",
+        "tag_provenance": "Source-stated tags only; the supporting quotes are listed in Member 3's PR #6 docs/verification/environment_tag_mapping.md (not yet human-checked). No tags removed. martian_base is subject to team confirmation (the source names Mars surface operations, not a 'base')."
       }
     }
   ]
