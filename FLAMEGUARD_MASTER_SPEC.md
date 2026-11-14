@@ -1,6 +1,6 @@
 # FlameGuard-SI Master Specification
 
-**Spec version:** 0.2.0 (CP1 proposal, **not approved**)
+**Spec version:** 0.2.0 (CP1 final candidate: Command Center decisions of 2026-11-14 recorded; **member approvals pending**)
 **Status:** Scaffold only. Nothing beyond `GET /api/health` and the data-provenance checker exists yet. Workstream tasks and acceptance criteria are in [`docs/CP1_WORKSTREAMS.md`](docs/CP1_WORKSTREAMS.md).
 **Rule:** This file is the single source of truth. If code, a README, or a PR description disagrees with it, this file wins until someone changes it through a reviewed PR.
 
@@ -106,7 +106,7 @@ Secrets such as AI API keys come only from environment variables (see `.env.exam
 
 ### 4.1 TARS
 
-**Proposed definition:** *TARS (Traceable Analysis and Research Support)* is a source-grounded research assistant that cites evidence, identifies uncertainty, and never presents generated interpretations as NASA conclusions.
+**Definition (Command Center decision, 2026-11-14):** *TARS (Traceable Analysis and Research Support)* is a source-grounded research assistant that cites evidence, identifies uncertainty, and never presents generated interpretations as NASA conclusions.
 
 | Part | Member | Location |
 |---|---|---|
@@ -255,7 +255,7 @@ All times are **proposed**. The team confirms them. Submission closes Sunday, No
 
 1. Organizer ruling on pre-event work (§2.5).
 2. License for the submission: the Space Apps terms expect original content to be free or open source (Apache 2.0 is the default). No LICENSE file is added yet, so this is the team's call.
-3. Approval of the TARS definition (§4.1).
+3. ~~TARS definition~~: decided by Command Center ("Traceable Analysis and Research Support", §4.1). Other expansions, such as "Traceable Aerospace Research System" in PR #4, are not used.
 4. Member GitHub usernames (§4); what happens to `test/qa-demo`.
 5. Hosting and deployment target for the demo.
 6. Which GitHub account belongs to which member. Five accounts have access or a pending invitation, for four active members.

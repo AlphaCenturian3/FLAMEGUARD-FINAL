@@ -29,11 +29,15 @@ This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TAR
 1. **Absent and null.** Required keys are always present. `null` means not reported. Do not leave a key out to mean "unknown". Every key in `conditions` is required for this reason.
 2. **Dates** are `YYYY-MM-DD`, enforced by a pattern. Never rely on JSON Schema `format`, because many validators skip it (Ajv does by default). A test confirms that a validator without format checking still rejects bad dates.
 3. **Numbers.** Plain JSON numbers only. `NaN` and `Infinity` are forbidden (rule S0). Python's `json` accepts them by default and `NaN` passes schema bounds, so parse with `tools/check_data_provenance.load_strict_json` or the same `parse_constant` rule. When writing, use `json.dump(..., allow_nan=False)`.
-4. **Units** are exactly the strings in `vocabulary.json`. `"1"` means dimensionless. Never convert units. If a source uses a different unit, raise a contract PR before you enter the value.
+4. **Units** are exactly the strings in `vocabulary.json`. `"1"` means dimensionless.
+   - **Quantity values are never converted.** If a source reports a quantity in a different unit, raise a contract PR before you enter it.
+   - **Condition values** (the `conditions` keys) may be converted only by an exact defined factor, in Member 3's curation tool. The as-printed value and unit stay in the registered source file that the finding's `locator` points to (decision C2).
+   - The only factor allowed so far is **mmHg → kPa: 1 mmHg = 0.133322387415 kPa**. This is the conventional millimetre of mercury, defined as 13.5951 g/cm³ × 9.80665 m/s² × 1 mm; NIST SP 811 lists it rounded to 1.333224 × 10² Pa. Do not use the torr (101.325/760 kPa), which differs in the 7th significant digit. Any new factor needs a contract PR.
 5. **Strings vs. numbers.** A quantity's value is a number, or `null` when missing. A string `value` is allowed only for a qualitative statement, and then `quantity` and `unit` are `null`.
 6. **IDs** use one pattern (`^[a-z0-9][a-z0-9_.-]*$`, at most 128 characters) in three separate spaces: manifest ids, investigation ids and finding ids. Each id is unique within its own space. `Finding.provenance.derived_from` uses finding ids. `manifest.derived_from` uses manifest ids.
 7. **Simulations** exist only as `SimulationResult`. The `Finding`, `Comparison`, `Ranking` and `AssistantAnswer` schemas reject `illustrative_simulation`, and no extra keys are allowed that could carry simulated values.
 8. **Planned endpoints** return `501` with an `Error` body until they are implemented.
+9. **Data-quality flags** (decision C3): a value that Member 3's flags file marks `exclude` is **not emitted** as a numeric `Finding`, so ranking, compare and TARS never see it. A `caution` reason is copied into that finding's `uncertainty`. A `not_available` cell is `not_reported`. Source files are never edited to remove a value.
 
 ## Rules schemas cannot express
 
