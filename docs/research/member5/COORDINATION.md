@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 21:00 UTC (scientific review gate; CP1 head `a6876d1`; Member 1 answers of 20:48 recorded). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 21:05 UTC (documentation revision 2 after Member 1's answers; CP1 head `a6876d1`). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -38,13 +38,13 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 | Current head | **`a6876d174606bea1e2dce05c9dd12e97f30d6cca`** (draft; [approval request](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883970652)). Member 1 reports CI run 43639114781 passed (194 tests). |
 | Superseded heads | `ca128d0` (Member 1's approval there, [6883450234](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883450234), is superseded) and `2ce0d53`. PR #7 was incorporated into `a6876d1` and closed without merge. |
 | What changed since `ca128d0` | `curation_notes` with `source` and `flag_ref`; value status **`excluded`** (named `withheld` at `2ce0d53`); rules **S9** (excluded findings are never ranking inputs or numeric TARS evidence) and **S10** (flag resolution, coverage, quotes verified against the registered source). Option B, the TARS name and C2–C4 stay as before. |
-| Formal approvals at `a6876d1` | **none** (0 reviews; no approval comments). |
+| Formal approvals at `a6876d1` | **1 of 4: Member 1** ([6884018748](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884018748), 20:51 UTC): "APPROVE Member 1 (AlphaCenturian3) at a6876d174606bea1e2dce05c9dd12e97f30d6cca." Member 1 adds: "This is contract approval, not independent certification of NASA source authenticity or approval of ranking weights." Members 2, 3 and 5: none. |
 | C5 (`test/qa-demo`) | Open; Member 1 states it does not block CP1 |
 | Member 5 trial merges into PR #3 | `2ce0d53`: no conflicts, 279 passed. `a6876d1`: see §8. Temporary worktrees; nothing pushed. |
 
 ## 2. Roster and identities
 
-**Roster: UNRESOLVED.** The statements differ:
+**Roster: not yet confirmed by all members.** Command Center's "final roster clarification" ([comment 6884060166](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884060166), 20:54 UTC) states: "The active FlameGuard-SI engineering team consists of Members 1, 2, 3 and 5. There is no currently assigned Member 4." It asks each member to post `Member <N> (<username>) confirms the four-active-member roster.` or a dispute with evidence, and adds: "Silence is not taken as consent." Member 1's CP1 approval covers "the four-active-member ownership model". Member 3 wrote on PR #4 ([6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095)): "My earlier review request mentioning Member 4 is superseded." Members 2, 3 and 5 have **not** posted the requested confirmation on PR #1. Member 5's confirmation or dispute is Member 5's own decision; the executor does not post it. Earlier statements:
 
 | Source | Statement | Kind |
 |---|---|---|
@@ -57,7 +57,7 @@ No member has confirmed the roster from their own account, and no account has cl
 
 | Member | Account | Identity evidence | Formal CP1 approval at `a6876d1` |
 |---|---|---|---|
-| 1 | `AlphaCenturian3` | Designated by coordination | none (re-approval pending) |
+| 1 | `AlphaCenturian3` | Designated by coordination | **approved** (comment 6884018748, 20:51 UTC; contract approval only) |
 | 2 | not confirmed | `buihhlong-a11y` says approval "will come from the Member 2 account holder personally" | none |
 | 3 | `huyenthoai272008` | Self-identified in PR #4 | none |
 | 4 | not established | — | not in the approval table |
@@ -105,6 +105,15 @@ Request posted: [PR #3 comment 6883945480](https://github.com/AlphaCenturian3/FL
 | M3-S2 test-level measurements available | M3 | #4 / `f62330f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | **Ranking cannot be activated**; descriptive quotes are not measurements | Provenance-validated measured findings on `main` |
 | D-12 register → curated | M3 | #3 | — | — | **AWAITING OWNER RESPONSE** | Register stays a research note | M3 decision |
 
+**Member 3 activity since the decision form (none on PR #3):**
+
+- PR #4 ([6884037095](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884037095), head `e9c89aa`): "Member 5 is requested for independent scientific source spot-check and quality-flag review"; "Do not merge before reviewers approve and CP1 alignment is reconciled."
+- PR #6 ([6884037456](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/6#issuecomment-6884037456), head `2b18563`): "Do not create a redundant Finding.flags field"; tracks gaps G1–G7, including "G5 source-quote authentication"; "Member 5: independent source audit".
+
+These are requests **to** Member 5 about Member 3's data (Q3, spec §4.2). They are not answers to the PR #3 form. Every Member 3 item in the table above remains **AWAITING OWNER RESPONSE**. No further notification was sent at 21:05 UTC, because one was posted at 20:51 UTC ([PR #3 comment 6884018291](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6884018291)).
+
+**Reciprocal audits (not a contradiction):** Member 3 authenticates Member 5's 43 citations (Member 1's assignment), and Member 5 spot-checks Member 3's FLEX transcription and quality flags (Q3). Neither may authenticate their own work.
+
 Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-69, DOI 10.60555/mbq8-0451) as CC0-1.0. PR #4 registers its transcription of the NASA/TP report as `permitted_with_citation`. That rights decision belongs to Member 3.
 
 ## 5. Ranking status
@@ -125,7 +134,8 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 | Move the reference code to `research/` (D-08) | Member 1 plus Command Center | **Authorized, after CP1** |
 | D-03 and D-04 reference-implementation alignment | Member 1 owner responses | **Authorized, after CP1** |
 | Card status `wording_confirmed_by_member1` | Member 1 request (6883984161) | Done |
-| Redraft criteria to gate (G1–G3) plus C, T, D with gravity-only C and the dominance invariant; update reference-table labels | Member 1 revision request | **Authorized as a proposal** (documents only); not yet done; needs M3 input |
+| Redraft criteria to gates (E1–E3) plus C, T, D with gravity-only C; record the dominance invariant; reference-table labels | Member 1 revision request; coordinator authorization (documentation only) | **Done as proposals** (revision 2: `CRITERIA_ENVIRONMENT_CONTEXT.md`, `ENVIRONMENT_REFERENCE.md`, `environment_reference.json`, `WEIGHT_SENSITIVITY.md`); not approved; E2 pending M3 |
+| Q3 spot-check of Member 3's FLEX transcription (PR #4) and quality-flag review | Member 3 request (PR #4, #6); spec §4.2 | **Requested of Member 5**; not started (not in this documentation-only authorization) |
 | Environment-only reference ranking with gate and invariant test | Member 1 revision request | **Deferred until after CP1** (move to `research/` first) and the redraft is reviewed |
 | Weight freeze (`config/ranking_criteria_v1.json`) | — | **Not authorized** (needs M1 and M3) |
 | Ranking activation | — | **Not authorized** (needs the freeze plus measured data) |
