@@ -108,3 +108,7 @@ Commit `d117ba9` ("data: add FLEX-010 cautions and contamination context from Me
 **Wording note (minor, Member 3's call):** F045's reason says the droplet left the fields of view "early in the test". The caption does not say "early"; it says the droplet "quickly moved west out of the fields of view" and was "in the HiBMs FOV for only a short time". Quoting those words would be exact. This is not a data error.
 
 **Q3 status:** the PR #4 transcription and flags are verified at `d117ba9` by Member 5's executor. This is not an approval of PR #4, and it does not resolve S-1 or S-3 against PSI data (still blocked).
+
+## H. Status: second verification completed (2026-11-14)
+
+The second FLEX transcription and quality-flag verification (PR #4 `d117ba9`, §G) is **completed**. Member 3's follow-up items 4 and 5 were answered ([comment 6884483333](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884483333)): F001–F043 keep their meaning (only the 10 contamination reasons were extended; type, field, `ranking_use`, page and quote unchanged); `derivation_unverified` → `caution` is appropriate. **Open for Member 3:** F045's wording ("early in the test"). **Still blocked:** S-1 and S-3 against PSI data. Not an approval of PR #4.

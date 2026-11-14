@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 21:30 UTC (Member 2 identity and roster confirmed; renewed Q3 review of PR #4 `d117ba9`; CP1 head `eaae6d6`, corrected S9 oracle not yet pushed). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 21:35 UTC (CP1 head `e44ec26`, 0 of 4 approvals; Member 5 independent S9 oracle review posted; second FLEX verification completed). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -36,16 +36,15 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 
 ## 1. CP1 status (PR #1)
 
-| Item | State on 2026-11-14 at 21:20 UTC |
+| Item | State on 2026-11-14 at 21:35 UTC |
 |---|---|
-| Current head | **`eaae6d627a237db22b6bf1b5f8019cd0e9ea91b0`** (draft), commit "CP1: transitive exclusion protection (S9), Command Center Option (a)", 13:08 PST. No announcement comment found at 21:09 UTC |
-| What changed since `a6876d1` | S9 made **transitive** in CP1 (an exclusion-dependent interpretation may only explain the exclusion; never a ranking input, comparable row, TARS conclusion or Moon/Mars recommendation); S3 cross-reference; contract oracle `tests/test_exclusion_dependency.py`. No schema change |
-| **Formal approvals at `eaae6d6`** | **0 of 4.** Member 1's approval ([6884018748](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884018748)) named `a6876d1` and, under the "approvals name the final SHA" rule, **no longer counts**. Members 2, 3 and 5: none |
-| Earlier heads (superseded) | `ca128d0`, `2ce0d53`, `a6876d1`. PR #7 was incorporated and closed |
-| S9 oracle gaps (Member 2's side, [6884292043](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884292043)) | Member 1 asked Member 5 for an independent scientific review ([6884242484](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884242484)). **Member 5 decision (account holder): "Option 1: fix the oracle in CP1"**; scientific intent confirmed; both oracle gaps confirmed, plus a third (keyword check at line 73) ([6884354754](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884354754)). Consequence: CP1's head will change again and every approval resets. **Member 1: AWAITING OWNER RESPONSE** |
-| S9 | Command Center chose Option (a): **in CP1**. Member 5 had posted "adopts the transitive exclusion rule **after CP1**" ([6884177976](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884177976)). The rule is the same and only the timing differs. Member 5 has since superseded that timing statement in [6884354754](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884354754). Member 1: no separate owner statement beyond the commit |
+| Current head | **`e44ec26e31f58d8a63d40cac0872d0b393de3a6f`** (draft), "CP1: correct the three S9 test-oracle defects (Command Center Option 1)". CI run 43642851847 passed. Approval request: [6884465691](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884465691) |
+| What changed since `eaae6d6` | `tests/test_exclusion_dependency.py` and its documentation only; rule text and schemas unchanged. Adds the S9 runtime-gate rows for B6 and T1 (Member 5 tests them independently) |
+| **Formal approvals at `e44ec26`** | **0 of 4.** All earlier approvals are superseded. Member 2 will approve after reviewing the final head; Member 5's approval is withheld |
+| **Member 5 independent S9 review** ([6884478474](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884478474)) | Defects 1–3 fixed; direct and multi-step chains, per-citation note-text checks and positive controls verified; **mutation evidence reproduced independently** (baseline 29 passed; reinstating defect 1, 2 or 3 fails 5, 2 or 2 tests; cycle short-circuit fails 1; non-transitive ancestors fails 11). **Open finding:** the number regex misses a value with its unit attached (`0.37mm2/s` → only `0` is extracted). Tested fix: lookahead `(?!\d|\.\d)` (13 cases, existing assertions kept). Minor: decimal comma not detected. Suggestion: test an answer citation at depth ≥ 2. **Decision needed (Members 1 and 5):** fix in CP1, or record as a B6/T1 runtime acceptance criterion. AWAITING OWNER RESPONSE |
+| Earlier heads (superseded) | `ca128d0`, `2ce0d53`, `a6876d1`, `eaae6d6` |
 | C5 (`test/qa-demo`) | Non-blocking; **QA owner unresolved** |
-| Member 5 trial merges into PR #3 | `2ce0d53`: 279 passed; `a6876d1`: 299 passed; `eaae6d6`: no conflicts, 325 passed. Temporary worktrees only |
+| Member 5 trial merges into PR #3 | `a6876d1`: 299 passed; `eaae6d6`: 325 passed; **`e44ec26`: no conflicts, 338 passed**. Temporary worktrees only |
 
 ## 2. Roster and identities
 
