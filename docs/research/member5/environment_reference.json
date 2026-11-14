@@ -63,7 +63,7 @@
         {
           "title": "Habitable Atmosphere (OCHMO-TB-003 Rev A), NASA Office of the Chief Health and Medical Officer technical brief",
           "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf",
-          "page": 8,
+          "page": "printed p. 8 (PDF p. 8)",
           "quote": "Currently, the ISS cabin pressure is typically maintained at 14.7 psia with 21% O2, which is equivalent to sea level.",
           "retrieved": "2026-11-14",
           "archive_id": null
@@ -71,7 +71,7 @@
         {
           "title": "Habitable Atmosphere (OCHMO-TB-003 Rev A), NASA Office of the Chief Health and Medical Officer technical brief",
           "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf",
-          "page": 2,
+          "page": "PDF p. 2 (no printed page number)",
           "quote": "14.7psia=101.3 kPa",
           "retrieved": "2026-11-14",
           "archive_id": null
@@ -127,7 +127,7 @@
         {
           "title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524",
           "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf",
-          "page": 20,
+          "page": "printed p. 18 (PDF p. 20)",
           "quote": "Hatch Open: TH operates at Gateway nominal operating conditions (assuming 10.2 psia (70.3 kPa), 26.5% O2 atmosphere) with an open hatch.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20220000524"
@@ -135,7 +135,7 @@
         {
           "title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524",
           "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf",
-          "page": 20,
+          "page": "printed p. 18 (PDF p. 20)",
           "quote": "Hatch Closed: TH closes hatch to operate at Mars Transit conditions (14.7 psia (101.4 kPa), reliant on TH subsystems).",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20220000524"
@@ -213,7 +213,7 @@
         {
           "title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524",
           "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf",
-          "page": 14,
+          "page": "printed p. 12 (PDF p. 14)",
           "quote": "nominal operating pressure of 10.2 psia (70.3 kPa) and 26.5% Oxygen concentration",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20220000524"
@@ -221,7 +221,7 @@
         {
           "title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524",
           "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf",
-          "page": 14,
+          "page": "printed p. 12 (PDF p. 14)",
           "quote": "the capability to operate at 8.2 psi (56.5 kPa)",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20220000524"
@@ -229,7 +229,7 @@
         {
           "title": "Artemis Deep Space Habitation: Enabling a Sustained Human Presence on the Moon and Beyond",
           "url": "https://ntrs.nasa.gov/api/citations/20220000245/downloads/Artemis%20Deep%20Space%20Habitation%20Enabling%20a%20Sustained%20Human%20Presence%20on%20the%20Moon%20and%20Beyond%20(3).pdf",
-          "page": 4,
+          "page": "printed p. 4 (PDF p. 4)",
           "quote": "On-going trade analyses are currently assessing the viability and impacts of transitioning the SH to a nominal operating pressure of 8.2 psia but it is assumed the SH would still need to retain the capability of supporting both pressures.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20220000245"
@@ -320,7 +320,7 @@
         {
           "title": "Recommendations for Exploration Spacecraft Internal Atmospheres: The Final Report of the NASA Exploration Atmospheres Working Group (NASA/TP-2010-216134)",
           "url": "https://www.nasa.gov/wp-content/uploads/2023/03/henninger-8.2-34-atm-tp216134-2010.pdf",
-          "page": 117,
+          "page": "printed p. 107 (PDF p. 117)",
           "quote": "Other recommendations for long-duration outpost habitats on planetary surfaces expose the crews to 8.0 psia @ 32% O2 and 7.6 psia, 32% O2 (altitude equivalents between 5,000 and 6,500 feet, respectively)",
           "retrieved": "2026-11-14",
           "archive_id": "NASA/TP-2010-216134"
@@ -380,7 +380,7 @@
         {
           "title": "Artemis Deep Space Habitation: Enabling a Sustained Human Presence on the Moon and Beyond",
           "url": "https://ntrs.nasa.gov/api/citations/20220000245/downloads/Artemis%20Deep%20Space%20Habitation%20Enabling%20a%20Sustained%20Human%20Presence%20on%20the%20Moon%20and%20Beyond%20(3).pdf",
-          "page": 2,
+          "page": "printed p. 2 (PDF p. 2)",
           "quote": "The base camp core elements include the Lunar Terrain Vehicle (LTV), Pressurized Rover (PR), Surface Habitat (SH), power systems, and in-situ resource utilization (ISRU) systems.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20220000245"

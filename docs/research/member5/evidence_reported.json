@@ -653,7 +653,7 @@
         {
           "title": "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires (Liao et al., decadal-survey white paper hosted by NASA)",
           "url": "https://smd-cms.nasa.gov/wp-content/uploads/2023/05/60_afb22b1e538432728848e83bb3ade8c2_LiaoYaTingT.pdf",
-          "page": 4,
+          "page": "printed p. 3 (PDF p. 4)",
           "quote": "Fire behavior in partial gravity (e.g., on Moon and Mars) cannot be expected to be interpolated between the data obtained in normal and microgravity conditions (which themselves are not yet fully understood).",
           "retrieved": "2026-11-14",
           "archive_id": null
@@ -700,7 +700,7 @@
         {
           "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011 (NASA/TP-2015-216046)",
           "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
-          "page": 8,
+          "page": "printed p. 2 (PDF p. 8)",
           "quote": "they were burned in oxidizing atmospheres at ambient temperature and various pressures between 0.70 and 3.05 atm, over ranges of dilution of oxygen with nitrogen, with carbon dioxide, and with mixtures thereof.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20150023456"
@@ -708,7 +708,7 @@
         {
           "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011 (NASA/TP-2015-216046)",
           "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
-          "page": 19,
+          "page": "printed p. 13 (PDF p. 19)",
           "quote": "then increasing amounts of CO2 were added while the ambient pressure was maintained constant.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20150023456"
@@ -716,7 +716,7 @@
         {
           "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011 (NASA/TP-2015-216046)",
           "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
-          "page": 19,
+          "page": "printed p. 13 (PDF p. 19)",
           "quote": "This also represented the minimum carbon dioxide mole fraction required to extinguish or prevent the spread of a flame.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20150023456"
@@ -727,7 +727,7 @@
       "limitations": [
         "Describes the test method, not a measured value. The per-test compositions and extinction results in the report are not imported.",
         "This report covers methanol and n-heptane droplets with nitrogen and carbon dioxide dilution. Helium and SF6, mentioned in the PSI dataset description for the wider investigation, are not covered by this report.",
-        "Page numbers are PDF page indices of the NTRS download; the quotes were verified manually from the PDF text."
+        "Pages are given as printed page with the PDF index (printed = PDF − 6 in this report), following the team convention agreed with Member 3 (PR #6 finding F1); quotes verified manually from the PDF text."
       ],
       "relevant_environments": [
         "spacecraft",

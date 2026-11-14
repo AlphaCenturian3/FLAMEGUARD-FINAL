@@ -1,5 +1,7 @@
 # Environmental reference conditions (D-01, condition 2)
 
+**Page convention (2026-11-14):** PDF citations give the printed page and the PDF index, for example "printed p. 12 (PDF p. 14)", agreed with Member 3 (PR #6 finding F1).
+
 **Status:** draft, revision 2, for Member 1 and Member 3 review. Machine-readable version with every citation: `environment_reference.json`. All sources were retrieved on 2026-11-14.
 
 **Authentication:** the citations below were checked by the executor (automated or manual PDF check; see `SOURCE_AUDIT.md`). They are **recorded, not independently authenticated**, until Member 3 completes the independent review (Member 1, [comment 6883984161](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883984161)).
@@ -21,7 +23,7 @@
 | `spacecraft` | microgravity in orbit or coast; label **"assumed: coast phase"** (excludes launch, entry and landing) | microgravity (editorial assumption, accepted as labelled by Member 1) | not applicable | not applicable | none; assumption by Member 5, never shown as physical |
 | `lunar_base` | 1.62 m/s² (0.165 × Earth) | partial_gravity | 3 × 10⁻¹⁵ bar at night (effectively vacuum) | not applicable | NASA NSSDC Moon Fact Sheet |
 | `martian_base` | 3.73 m/s² mean (0.380 × Earth) | partial_gravity | 0.636 kPa (6.36 mb at mean radius; 4.0–8.7 mb by season) | 0.0016 (0.16 %; atmosphere 95.1 % CO₂) | NASA NSSDC Mars Fact Sheet |
-| `pressurized_rover` (lunar) | label **"assumed: lunar rover"**: 1.62 m/s² if on the Moon (Artemis PR is a lunar surface element) | partial_gravity (labelled assumption, accepted by Member 1) | location-dependent | location-dependent | Artemis Deep Space Habitation paper (NTRS 20220000245), p. 2 |
+| `pressurized_rover` (lunar) | label **"assumed: lunar rover"**: 1.62 m/s² if on the Moon (Artemis PR is a lunar surface element) | partial_gravity (labelled assumption, accepted by Member 1) | location-dependent | location-dependent | Artemis Deep Space Habitation paper (NTRS 20220000245), printed p. 2 (PDF p. 2) |
 | pressurized rover (Martian) | **reference unknown** | **reference unknown**: the contract context `pressurized_rover` cannot express a Martian rover | reference unknown | reference unknown | no reviewed source |
 | `earth` | 9.820 m/s² mean | normal_gravity | 101.4 kPa (1014 mb) | 0.2095 (20.95 %, dry air) | NASA NSSDC Earth Fact Sheet |
 
@@ -29,13 +31,13 @@
 
 | Context | Atmosphere | Pressure (kPa) | O₂ mole fraction | Status | Source |
 |---|---|---|---|---|---|
-| `space_station` | ISS cabin, typical | 101.3 (14.7 psia) | 0.21 | **operational** | NASA OCHMO-TB-003 Rev A, pp. 8 and 2 |
-| `spacecraft` | Gateway nominal (assumed for the Mars Transit Habitat, hatch open) | 70.3 (10.2 psia) | 0.265 | design assumption | NASA/TM-20220000524 (M2M Habitation Considerations), p. 20 |
-| `spacecraft` | Mars Transit Habitat, hatch closed | 101.4 (14.7 psia) | **unknown** (not stated) | design assumption | NASA/TM-20220000524, p. 20 |
-| `lunar_base` | Surface Habitat, nominal | 70.3 (10.2 psia) | 0.265 | design assumption | NASA/TM-20220000524, p. 14; NTRS 20220000245, p. 4 (trade studies ongoing) |
-| `lunar_base` | Surface Habitat, capability | 56.5 (8.2 psi) | 0.34 | design assumption | NASA/TM-20220000524, p. 14 |
+| `space_station` | ISS cabin, typical | 101.3 (14.7 psia) | 0.21 | **operational** | NASA OCHMO-TB-003 Rev A, printed p. 8 (PDF p. 8) and PDF p. 2 (no printed page number) |
+| `spacecraft` | Gateway nominal (assumed for the Mars Transit Habitat, hatch open) | 70.3 (10.2 psia) | 0.265 | design assumption | NASA/TM-20220000524 (M2M Habitation Considerations), printed p. 18 (PDF p. 20) |
+| `spacecraft` | Mars Transit Habitat, hatch closed | 101.4 (14.7 psia) | **unknown** (not stated) | design assumption | NASA/TM-20220000524, printed p. 18 (PDF p. 20) |
+| `lunar_base` | Surface Habitat, nominal | 70.3 (10.2 psia) | 0.265 | design assumption | NASA/TM-20220000524, printed p. 12 (PDF p. 14); NTRS 20220000245, printed p. 4 (PDF p. 4) (trade studies ongoing) |
+| `lunar_base` | Surface Habitat, capability | 56.5 (8.2 psi) | 0.34 | design assumption | NASA/TM-20220000524, printed p. 12 (PDF p. 14) |
 | `martian_base` | Martian surface habitat, current design | **unknown** | **unknown** | unknown | no reviewed NASA source gives a current design |
-| `martian_base` (context only) | Long-duration planetary-surface outpost habitats, 2010 recommendation | 7.6–8.0 psia (kPa left unconverted) | 0.32 | **historical recommendation**: not a current design, not used for matching | NASA/TP-2010-216134, PDF p. 117 |
+| `martian_base` (context only) | Long-duration planetary-surface outpost habitats, 2010 recommendation | 7.6–8.0 psia (kPa left unconverted) | 0.32 | **historical recommendation**: not a current design, not used for matching | NASA/TP-2010-216134, printed p. 107 (PDF p. 117) |
 | `pressurized_rover` | Pressurized Rover cabin | **unknown** | **unknown** | unknown | no reviewed NASA source gives it |
 | `earth` | none (physical atmosphere is the reference) | — | — | not applicable | — |
 

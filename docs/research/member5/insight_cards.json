@@ -230,7 +230,7 @@
       "member1_review": {
         "verdict": "accept with change, later",
         "requested_change": "Say that FLEX tested extinction in pre-diluted atmospheres (inert gas in the chamber; see the PR #4 composition columns), not a suppressant discharged onto a burning fire. It can become R3 once the FLEX measured findings from PR #4 exist, after the vocabulary PR (C4).",
-        "applied": "Interpretation and limitations state the pre-diluted-atmosphere distinction. Initially attributed to Member 1's review; now verified against the FLEX report (PDF pp. 8 and 19) and cited as m5-flex-prediluted-ambient. Presentation stays pending_measured_data until verified FLEX measured findings exist.",
+        "applied": "Interpretation and limitations state the pre-diluted-atmosphere distinction. Initially attributed to Member 1's review; now verified against the FLEX report (printed pp. 2 and 13; PDF pp. 8 and 19) and cited as m5-flex-prediluted-ambient. Presentation stays pending_measured_data until verified FLEX measured findings exist.",
         "wording_confirmation": "\"The wording matches my review on all six\" (Member 1, PR #3 comment 6883984161, at 22bbd3f). Not an approval of the evidence."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
@@ -261,7 +261,7 @@
       },
       "limitations": [
         "Liquid droplets (methanol and n-heptane in the reviewed report), not solid habitat materials.",
-        "FLEX tested extinction in pre-diluted ambient atmospheres (nitrogen, carbon dioxide or mixtures), not discharged suppressants. Verified by Member 5 against NASA/TP-2015-216046, PDF pages 8 and 19 (evidence m5-flex-prediluted-ambient).",
+        "FLEX tested extinction in pre-diluted ambient atmospheres (nitrogen, carbon dioxide or mixtures), not discharged suppressants. Verified by Member 5 against NASA/TP-2015-216046, printed pp. 2 and 13 (PDF pp. 8 and 19) (evidence m5-flex-prediluted-ambient).",
         "The FLEX report's authors state they do not interpret the results.",
         "No test-level values imported."
       ]

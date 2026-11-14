@@ -18,14 +18,16 @@
 
 ### PDFs checked manually (SHA-256 at retrieval)
 
-| Document | Cited pages | SHA-256 |
+| Document | Cited pages: printed (PDF index) | SHA-256 |
 |---|---|---|
-| Liao et al., partial-gravity white paper | 4 | `0e313e8f833a216e36f0f9a7effd4def7c2f3d5c985248615bb80653e8b8979a` |
-| NASA/TP-2015-216046, FLEX detailed results (NTRS 20150023456) | 8, 19 | `b4f6ca983e2792c33a0b92220a791a818f426bb635b94f7fd33dc8c9c471e79d` |
-| NASA OCHMO-TB-003 Rev A, Habitable Atmosphere | 2, 8 | `a53c44aef8248a7e4858c50ed95faaf8f0521a0c9ec7f3268f4592a355e77163` |
-| NASA/TM-20220000524, M2M Habitation Considerations | 14, 20 | `bf33281400853a5053350455112cd2668a719c153f0d2cf04bb049403f70b179` |
-| NTRS 20220000245, Artemis Deep Space Habitation | 2, 4 | `3e0ab65901986a20fe509cfb0f16cefa238c5db5da60628ce6027e11f9b64d83` |
-| NASA/TP-2010-216134, Exploration Atmospheres Working Group | 117 | `11f1a69be301d7d6ab40c90585c70cf95b2beb5cc88b3260ea85c16ddbf2de91` |
+| Liao et al., partial-gravity white paper | printed 3 (PDF 4) | `0e313e8f833a216e36f0f9a7effd4def7c2f3d5c985248615bb80653e8b8979a` |
+| NASA/TP-2015-216046, FLEX detailed results (NTRS 20150023456) | printed 2, 13 (PDF 8, 19) | `b4f6ca983e2792c33a0b92220a791a818f426bb635b94f7fd33dc8c9c471e79d` |
+| NASA OCHMO-TB-003 Rev A, Habitable Atmosphere | PDF 2 (no printed number); printed 8 (PDF 8) | `a53c44aef8248a7e4858c50ed95faaf8f0521a0c9ec7f3268f4592a355e77163` |
+| NASA/TM-20220000524, M2M Habitation Considerations | printed 12, 18 (PDF 14, 20) | `bf33281400853a5053350455112cd2668a719c153f0d2cf04bb049403f70b179` |
+| NTRS 20220000245, Artemis Deep Space Habitation | printed 2, 4 (PDF 2, 4) | `3e0ab65901986a20fe509cfb0f16cefa238c5db5da60628ce6027e11f9b64d83` |
+| NASA/TP-2010-216134, Exploration Atmospheres Working Group | printed 107 (PDF 117) | `11f1a69be301d7d6ab40c90585c70cf95b2beb5cc88b3260ea85c16ddbf2de91` |
+
+**Independent machine check by Member 3's executor** (PR #6 `docs/verification/m3_citation_audit_of_member5.md`, head `e4d3892`): PyMuPDF and fresh downloads, independent of Member 5's tool. **43 of 43 quotes found; all 6 PDF hashes match.** It is explicitly **not signed off**: the human checks (does the quote support the statement; source authority; rights) and the signature remain Member 3's. These citations are therefore still **recorded, not independently authenticated**.
 
 ## Per-citation results
 
