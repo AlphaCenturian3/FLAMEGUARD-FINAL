@@ -1,0 +1,170 @@
+{
+  "status": "draft_pending_scientific_review",
+  "note": "Qualitative Moon/Mars fire-safety insight cards. Chain per card: Finding -> NASA source (evidence_ids, resolved in evidence_reported.json) -> Interpretation -> Moon/Mars implication -> Limitation. Interpretations and implications are FlameGuard-SI text, not NASA statements.",
+  "cards": [
+    {
+      "id": "card-material-selection",
+      "theme": "material_selection",
+      "title": "1-g material screening may not cover reduced gravity",
+      "review_status": "draft_pending_scientific_review",
+      "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
+      "finding": {
+        "statement": "NASA sources say the 1-g flame propagation test in NASA-STD-6001 is considered by some researchers not to be conservative in low gravity, and list validating 1-g material selection for low-gravity fires as a SoFIE application.",
+        "claim_type": "source_reported",
+        "strength": "stated_objective",
+        "evidence_ids": ["m5-sofie-std6001-concern", "m5-sofie-material-selection"]
+      },
+      "interpretation": {
+        "claim_type": "flameguard_interpretation",
+        "text": "Passing a 1-g screening test is not, on its own, evidence that a material is safe in reduced gravity. SoFIE is built to study this question, but no SoFIE test-level results are imported in FlameGuard-SI yet."
+      },
+      "implication": {
+        "claim_type": "engineering_hypothesis",
+        "environments": ["lunar_base", "martian_base", "spacecraft"],
+        "text": "Material lists for lunar and Martian habitats may need reduced-gravity flammability evidence in addition to 1-g screening results.",
+        "extrapolation_warning": "SoFIE tests microgravity, not lunar or Martian gravity. Partial-gravity behaviour can differ from both 1 g and 0 g."
+      },
+      "limitations": [
+        "Built on stated objectives and a reported expert view, not on measured results.",
+        "No material-specific data is imported."
+      ]
+    },
+    {
+      "id": "card-ventilation-flow",
+      "theme": "ventilation_flow",
+      "title": "Weak low-flow flames can flare up when airflow increases",
+      "review_status": "draft_pending_scientific_review",
+      "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
+      "finding": {
+        "statement": "BASS-II authors report that flames sustained at very low air flow are dim and stable but can flare up quickly with a sudden increase in air flow speed.",
+        "claim_type": "source_reported",
+        "strength": "experimental_result",
+        "evidence_ids": ["m5-bass2-flow-flareup"]
+      },
+      "interpretation": {
+        "claim_type": "flameguard_interpretation",
+        "text": "In microgravity, forced ventilation can be what feeds a flame. A flame that looks harmless at low flow can intensify when ventilation increases."
+      },
+      "implication": {
+        "claim_type": "engineering_hypothesis",
+        "environments": ["space_station", "spacecraft", "lunar_base", "pressurized_rover"],
+        "text": "Fire-response procedures for habitats and rovers could consider how restarting or increasing ventilation affects a small fire. This needs study; it is not a procedure.",
+        "extrapolation_warning": "On the Moon, buoyant flow exists at reduced strength, so low-flow microgravity behaviour may not appear the same way."
+      },
+      "limitations": [
+        "Small samples in a small duct; not habitat-scale fires.",
+        "Flow speeds and test ids behind the statement are not imported."
+      ]
+    },
+    {
+      "id": "card-detection-monitoring",
+      "theme": "detection_monitoring",
+      "title": "Combustion products changed more than temperature or pressure",
+      "review_status": "draft_pending_scientific_review",
+      "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
+      "finding": {
+        "statement": "Preliminary Saffire results report that the spacecraft temperature and pressure rise were less significant than the increase in CO2 and CO. In BASS-II, the CO-CO2 relationship was linear for some datasets but not for all fuel geometries and flows.",
+        "claim_type": "source_reported",
+        "strength": "experimental_result",
+        "evidence_ids": ["m5-saffire6-co-co2", "m5-bass2-co-co2-trend"]
+      },
+      "interpretation": {
+        "claim_type": "flameguard_interpretation",
+        "text": "In these tests, gas-species changes were a larger signal than bulk temperature or pressure. The CO-CO2 relationship depended on fuel geometry and flow, so one fixed ratio may not describe every fire."
+      },
+      "implication": {
+        "claim_type": "engineering_hypothesis",
+        "environments": ["spacecraft", "lunar_base", "martian_base", "pressurized_rover"],
+        "text": "Fire-detection research for habitats could prioritise combustion-product monitoring (CO, CO2) and test how fuel type affects the signal. No detection time, warning time or false-alarm rate is claimed.",
+        "extrapolation_warning": "Both sources are microgravity tests. On the Moon or Mars, buoyant convection and habitat atmosphere change how combustion products spread to sensors."
+      },
+      "limitations": [
+        "Saffire VI results are described by the source as preliminary.",
+        "BASS-II gas readings were taken before and after each test, not continuously.",
+        "No sensor response times are imported."
+      ]
+    },
+    {
+      "id": "card-lunar-partial-gravity",
+      "theme": "lunar_partial_gravity",
+      "title": "Lunar gravity may raise flammability for some materials (hypothesis)",
+      "review_status": "draft_pending_scientific_review",
+      "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
+      "finding": {
+        "statement": "NASA researchers hypothesise that some materials are more flammable in lunar gravity than on Earth, and NASA's FM2 page says modelling and reduced-gravity experiments suggest materials may burn at lower oxygen concentrations in lunar gravity.",
+        "claim_type": "source_reported",
+        "strength": "hypothesis_under_test",
+        "evidence_ids": ["m5-fm2-lower-oxygen-hypothesis", "m5-moon-hypothesis"]
+      },
+      "interpretation": {
+        "claim_type": "flameguard_interpretation",
+        "text": "This is a hypothesis that FM2 is designed to test, not an established lunar result. Until lunar measurements exist, lunar flammability margins remain uncertain."
+      },
+      "implication": {
+        "claim_type": "engineering_hypothesis",
+        "environments": ["lunar_base"],
+        "text": "Lunar habitat material choices may carry more flammability uncertainty than 1-g screening suggests, especially near oxygen limits.",
+        "extrapolation_warning": "No lunar-surface combustion data is in this register. FM2 flight status and results were not verified."
+      },
+      "limitations": [
+        "Based on modelling and short-duration reduced-gravity tests described by the sources, not on lunar data.",
+        "No material-specific oxygen limits are imported."
+      ]
+    },
+    {
+      "id": "card-martian-extrapolation",
+      "theme": "martian_extrapolation",
+      "title": "Martian fire behaviour is an extrapolation",
+      "review_status": "draft_pending_scientific_review",
+      "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
+      "finding": {
+        "statement": "The 'Fire on the Moon' concept plans to refine pressure-gravity scaling relations from 1-g and lunar-g data and apply them to other gravity levels. Saffire data showed enclosure size affected flame spread more than anticipated.",
+        "claim_type": "source_reported",
+        "strength": "stated_objective",
+        "evidence_ids": ["m5-moon-scaling-objective", "m5-saffire-enclosure-effect"]
+      },
+      "interpretation": {
+        "claim_type": "flameguard_interpretation",
+        "text": "None of the investigations in this register tested Martian gravity. Martian statements depend on scaling relations that are still planned, and Saffire shows fire behaviour can depend on factors such as enclosure size that are hard to scale."
+      },
+      "implication": {
+        "claim_type": "engineering_hypothesis",
+        "environments": ["martian_base"],
+        "text": "Any Mars habitat fire-safety claim in FlameGuard-SI should be labelled as extrapolated and list the gravity, atmosphere and enclosure assumptions it relies on.",
+        "extrapolation_warning": "No Martian-gravity or Martian-habitat combustion data is in this register."
+      },
+      "limitations": [
+        "A planned method and one reported result; no scaling relation is available.",
+        "Habitat atmosphere composition and pressure are not addressed by these sources."
+      ]
+    },
+    {
+      "id": "card-fuel-extinction-suppression",
+      "theme": "fuel_extinction_suppression",
+      "title": "Liquid-fuel extinction and inert-gas suppression data exist (FLEX)",
+      "review_status": "draft_pending_scientific_review",
+      "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
+      "finding": {
+        "statement": "FLEX was designed to assess inert-gas suppressant effectiveness in microgravity and estimate the limiting oxygen index, and a NASA report presents results from its first 284 tests.",
+        "claim_type": "source_reported",
+        "strength": "stated_objective",
+        "evidence_ids": ["m5-flex-objective", "m5-flex-dataset"]
+      },
+      "interpretation": {
+        "claim_type": "flameguard_interpretation",
+        "text": "FLEX is the most direct source in this register for liquid-fuel extinction and diluent suppression. Its test-level results are published but have not been imported, so no extinction values are shown."
+      },
+      "implication": {
+        "claim_type": "engineering_hypothesis",
+        "environments": ["spacecraft", "space_station", "lunar_base"],
+        "text": "Research on inert-diluent suppression in habitats could draw on FLEX data, but only for liquid fuels similar to those tested.",
+        "extrapolation_warning": "Droplet tests in microgravity; suppression under lunar gravity with buoyant flow is not covered."
+      },
+      "limitations": [
+        "Liquid droplets, not solid habitat materials.",
+        "The FLEX report's authors state they do not interpret the results.",
+        "No test-level values imported."
+      ]
+    }
+  ]
+}

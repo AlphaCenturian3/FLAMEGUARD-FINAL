@@ -1,0 +1,239 @@
+{
+  "fixture": true,
+  "note": "FIXTURE DATA. NOT NASA DATA. Invented placeholder values used only to test the research package's mechanics. Never copy into data/curated/.",
+  "records": [
+    {
+      "fixture": true,
+      "id": "fixture-a-1",
+      "investigation_id": "fixture-inv-a",
+      "test_id": "fixture-test-001",
+      "evidence_category": "measured",
+      "statement": "Fixture spread rate, material X, condition set 1.",
+      "quantity": "flame_spread_rate",
+      "value": 1.0,
+      "unit": "mm/s",
+      "value_status": "reported",
+      "uncertainty": "fixture uncertainty",
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": 0.21,
+        "pressure_kpa": 101.3,
+        "flow_velocity_mm_s": 50,
+        "flow_configuration": "concurrent",
+        "diluent": "nitrogen",
+        "fuel_or_material": "fixture-material-x",
+        "sample_geometry": "fixture-thin-sheet"
+      },
+      "sources": [
+        {
+          "title": "Fixture source A",
+          "url": "https://example.invalid/fixture-a",
+          "page": 1,
+          "quote": "fixture quote a",
+          "retrieved": "2026-11-14",
+          "archive_id": "fixture-archive-a"
+        }
+      ],
+      "doi": "10.0000/fixture.a",
+      "manifest_id": "fixture-manifest-a",
+      "locator": "fixture table 1 row 1",
+      "interpretation": null,
+      "limitations": ["Fixture limitation."],
+      "relevant_environments": ["spacecraft", "lunar_base"],
+      "extrapolation_warning": "Fixture extrapolation warning.",
+      "fire_safety_topics": ["material_flammability"]
+    },
+    {
+      "fixture": true,
+      "id": "fixture-a-2",
+      "investigation_id": "fixture-inv-a",
+      "test_id": "fixture-test-002",
+      "evidence_category": "measured",
+      "statement": "Fixture spread rate, material X, condition set 1, repeat.",
+      "quantity": "flame_spread_rate",
+      "value": 1.5,
+      "unit": "mm/s",
+      "value_status": "reported",
+      "uncertainty": "fixture uncertainty",
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": 0.21,
+        "pressure_kpa": 101.3,
+        "flow_velocity_mm_s": 50,
+        "flow_configuration": "concurrent",
+        "diluent": "nitrogen",
+        "fuel_or_material": "fixture-material-x",
+        "sample_geometry": "fixture-thin-sheet"
+      },
+      "sources": [
+        {
+          "title": "Fixture source A",
+          "url": "https://example.invalid/fixture-a",
+          "page": 2,
+          "quote": "fixture quote a2",
+          "retrieved": "2026-11-14",
+          "archive_id": "fixture-archive-a"
+        }
+      ],
+      "doi": null,
+      "manifest_id": "fixture-manifest-a",
+      "locator": "fixture table 1 row 2",
+      "interpretation": null,
+      "limitations": ["Fixture limitation."],
+      "relevant_environments": ["spacecraft"],
+      "fire_safety_topics": ["material_flammability"]
+    },
+    {
+      "fixture": true,
+      "id": "fixture-b-1",
+      "investigation_id": "fixture-inv-b",
+      "test_id": null,
+      "evidence_category": "measured",
+      "statement": "Fixture spread rate with partially reported conditions.",
+      "quantity": "flame_spread_rate",
+      "value": 2.0,
+      "unit": "mm/s",
+      "value_status": "reported",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "normal_gravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": 101.3,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": "opposed",
+        "diluent": null,
+        "fuel_or_material": "fixture-material-y",
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Fixture source B",
+          "url": "https://example.invalid/fixture-b",
+          "page": null,
+          "quote": null,
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "manifest_id": "fixture-manifest-b",
+      "locator": "fixture file line 3",
+      "interpretation": null,
+      "limitations": ["Fixture limitation."],
+      "relevant_environments": ["earth"],
+      "fire_safety_topics": ["ignition"]
+    },
+    {
+      "fixture": true,
+      "id": "fixture-b-2",
+      "investigation_id": "fixture-inv-b",
+      "test_id": null,
+      "evidence_category": "measured",
+      "statement": "Fixture extinction limit, not reported by the fixture source.",
+      "quantity": "extinction_oxygen_mole_fraction",
+      "value": null,
+      "unit": "1",
+      "value_status": "not_reported",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "normal_gravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": 101.3,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": "opposed",
+        "diluent": null,
+        "fuel_or_material": "fixture-material-y",
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Fixture source B",
+          "url": "https://example.invalid/fixture-b",
+          "page": null,
+          "quote": null,
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "manifest_id": "fixture-manifest-b",
+      "locator": "fixture file line 4",
+      "interpretation": null,
+      "limitations": ["Fixture limitation."],
+      "relevant_environments": ["earth"],
+      "fire_safety_topics": ["extinction"]
+    },
+    {
+      "fixture": true,
+      "id": "fixture-c-1",
+      "investigation_id": "fixture-inv-c",
+      "test_id": null,
+      "evidence_category": "interpreted",
+      "statement": "Fixture interpretation built on fixture-a-1 and an unresolvable id.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [],
+      "doi": null,
+      "derived_from": ["fixture-a-1", "fixture-does-not-exist"],
+      "method": "fixture-method v0",
+      "generated_by": "FlameGuard-SI",
+      "interpretation": "Fixture interpretation text.",
+      "limitations": ["Fixture limitation."],
+      "relevant_environments": ["lunar_base"],
+      "extrapolation_warning": "Fixture extrapolation warning.",
+      "fire_safety_topics": ["material_flammability", "prevention"]
+    },
+    {
+      "fixture": true,
+      "id": "fixture-d-1",
+      "investigation_id": "fixture-inv-d",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "stated_objective",
+      "statement": "Fixture quoted objective only.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Fixture source D",
+          "url": "https://example.invalid/fixture-d",
+          "page": null,
+          "quote": "fixture objective quote",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": ["Fixture limitation."],
+      "relevant_environments": ["spacecraft"],
+      "fire_safety_topics": ["material_flammability"]
+    }
+  ]
+}
