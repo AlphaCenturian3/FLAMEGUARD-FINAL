@@ -120,3 +120,5 @@ Only F045 changed. Both quoted phrases are verbatim in the Figure 14 caption (pr
 ## J. Member 5 formal scientific-review approval (account holder)
 
 **"Member 5 — FLEX Scientific Review: APPROVED at `2092cdd8c70616d6f51c72c767d28cf6c4eb23c2`"** ([comment 6884636950](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884636950)), posted from the Member 5 account on the account holder's instruction. The account holder's text named `d117ba9`; on their choice it was updated to the current head `2092cdd`, with the F045 refinement recorded as done. **Scope:** NASA source transcription, scientific interpretation and quality-flag consistency only. **Not** an approval of shared contracts, integration readiness or merging PR #4.
+
+Formal GitHub **Approve review** submitted on the account holder's authorization: [review 5907291897](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#pullrequestreview-5907291897), commit `2092cdd8c70616d6f51c72c767d28cf6c4eb23c2`. The changes since `d117ba9` (F045 row, manifest hash, mirrored wording in `data/docs/flex_table_ix.md`) were inspected first. Same scope limits as above.
