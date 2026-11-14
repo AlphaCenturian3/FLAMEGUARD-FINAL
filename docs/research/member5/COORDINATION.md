@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 20:50 UTC (scientific review gate). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 20:55 UTC (scientific review gate; CP1 head moved to `a6876d1` at 20:47). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -33,14 +33,14 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 
 ## 1. CP1 status (PR #1)
 
-| Item | State on 2026-11-14 at 20:43 UTC |
+| Item | State on 2026-11-14 at 20:55 UTC |
 |---|---|
-| Current head | **`2ce0d53756921ba31e272c4833d6d89792e447a6`** (draft). CI green: backend 3.11, 3.12, secrets-and-raw-data. |
-| Alternative head | PR #7 (Member 2's side) proposes the delta `a1e8a89` on top of `2ce0d53`. Member 1 has escalated it to Command Center; not decided. |
-| What changed since `ca128d0` | `value_status: withheld`, `curation_notes`, rule **S9** (withheld findings are never ranking inputs or numeric TARS evidence). Option B, the TARS name and C2–C4 stay as before. |
-| Formal approvals at `2ce0d53` | **none** (0 reviews; no approval comments). Member 1's approval comment at `ca128d0` ([6883450234](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883450234)) is **superseded**, as Member 1 states. |
+| Current head | **`a6876d174606bea1e2dce05c9dd12e97f30d6cca`** (draft; [approval request](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883970652)). Member 1 reports CI run 43639114781 passed (194 tests). |
+| Superseded heads | `ca128d0` (Member 1's approval there, [6883450234](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883450234), is superseded) and `2ce0d53`. PR #7 was incorporated into `a6876d1` and closed without merge. |
+| What changed since `ca128d0` | `curation_notes` with `source` and `flag_ref`; value status **`excluded`** (named `withheld` at `2ce0d53`); rules **S9** (excluded findings are never ranking inputs or numeric TARS evidence) and **S10** (flag resolution, coverage, quotes verified against the registered source). Option B, the TARS name and C2–C4 stay as before. |
+| Formal approvals at `a6876d1` | **none** (0 reviews; no approval comments). |
 | C5 (`test/qa-demo`) | Open; Member 1 states it does not block CP1 |
-| Member 5 trial merge of `2ce0d53` into PR #3 | No conflicts; 279 tests passed (temporary worktree, nothing pushed) |
+| Member 5 trial merges into PR #3 | `2ce0d53`: no conflicts, 279 passed. `a6876d1`: see §8. Temporary worktrees; nothing pushed. |
 
 ## 2. Roster and identities
 
@@ -55,7 +55,7 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 
 No member has confirmed the roster from their own account, and no account has claimed Member 4. No role is assigned to the pending invitee.
 
-| Member | Account | Identity evidence | Formal CP1 approval at `2ce0d53` |
+| Member | Account | Identity evidence | Formal CP1 approval at `a6876d1` |
 |---|---|---|---|
 | 1 | `AlphaCenturian3` | Designated by coordination | none (re-approval pending) |
 | 2 | not confirmed | `buihhlong-a11y` says approval "will come from the Member 2 account holder personally" | none |
@@ -92,7 +92,7 @@ Request posted: [PR #3 comment 6883945480](https://github.com/AlphaCenturian3/FL
 | G-1 applicability gate | M1 | #3 / `22bbd3f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | If G1 is chosen, the weights and sensitivity check are redone | M1 decision |
 | Q-1 contract fit | M1 with M3 | #3 / `22bbd3f` | 6883945480 | — | **AWAITING OWNER RESPONSE** | none until decided | M1 and M3 decision |
 
-**Owner requests to Member 5** (Member 1 on PR #1, [6883818321](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883818321)): "Independently check S9 in tests/research/"; "Your reference ranking must treat withheld as unusable evidence"; review quality flags in `data/curated/interpretations/quality/`. **Status:** accepted by Member 5 as tasks, to be implemented after the CP1 contract is merged, because the branch is still on contract v0.1.0.
+**Owner requests to Member 5** (Member 1 on PR #1, [6883818321](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883818321) and [6883970652](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6883970652)): "Your reference ranking must treat withheld as unusable evidence" (the value status is now `excluded`); "you independently check S9 and S10 in tests/research/, and the quotes in Q3"; review quality flags in `data/curated/interpretations/quality/`. **Status:** accepted by Member 5 as tasks, to be implemented after the CP1 contract is merged, because the branch is still on contract v0.1.0.
 
 ## 4. Member 3 decision records
 
@@ -124,7 +124,7 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 |---|---|---|
 | Card corrections, FLEX verification, D-01 preparation documents | Coordinator instructions B and C | Done (prepared; not approved) |
 | Keep `tests/research/` (D-09) | Member 1 owner response | In place |
-| S9 independent tests and `withheld` handling in the reference ranking | Member 1 request | **Authorized, deferred until the CP1 contract is merged** |
+| S9 and S10 independent tests, `excluded` handling in the reference ranking, Q3 quote checks of curation notes | Member 1 requests | **Authorized, deferred until the CP1 contract is merged** |
 | Move the reference code to `research/` (D-08) | Member 1 plus Command Center | **Authorized, after CP1** |
 | D-03 and D-04 reference-implementation alignment | Member 1 owner responses | **Authorized, after CP1** |
 | Environment-only reference ranking | — | **Not authorized** until D-01.1, D-13, G-1 and Q-1 are decided |
@@ -135,7 +135,7 @@ Note for Member 3 (information only): DataCite lists the FLEX PSI dataset (PSI-6
 
 1. Re-check against `main`, then rebase PR #3 (no force-push to anyone else's branch).
 2. Apply the alignment: `backend/flameguard/research/` → `research/`, keep `tests/research/`, and wait for Member 1's `pythonpath` PR.
-3. Add the S9 tests and `withheld` handling; apply D-03 and D-04.
+3. Add the S9 and S10 tests and `excluded` handling; apply D-03 and D-04.
 4. Rerun ruff, pytest, the provenance check and `verify_sources`; request a fresh review.
 
-CP1 rebase readiness (trial merges only, nothing pushed): `29c7078` 191 passed; `b89604a` 209 passed; `ca128d0` 220 passed; **`2ce0d53` (current) no conflicts, 279 passed**.
+CP1 rebase readiness (trial merges only, nothing pushed): `29c7078` 191 passed; `b89604a` 209 passed; `ca128d0` 220 passed; `2ce0d53` 279 passed; **`a6876d1` (current) no conflicts, 299 passed**.
