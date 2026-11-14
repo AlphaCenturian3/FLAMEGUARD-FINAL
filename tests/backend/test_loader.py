@@ -72,10 +72,19 @@ def test_report_is_deterministic(scenario):
     assert a == load_evidence(scenario.root)
 
 
-def test_real_repository_without_data_loads_nothing():
+def test_real_repository_loads_cleanly_and_only_from_accepted_entries():
+    """Data-agnostic: holds with an empty manifest and after curated data is registered.
+
+    Registered CSV sources are skipped (not parsed), nothing may be rejected, and every
+    finding or investigation in the store must come from an accepted entry.
+    """
     r = load_evidence(REPO)
-    assert r.report.manifest_ok and r.report.entries == ()
-    assert r.store.investigations == () and len(r.store.findings) == 0
+    assert r.report.manifest_ok
+    assert [e.id for e in r.report.rejected] == []
+    assert all(e.role in (Role.SOURCE, Role.SIMULATION) for e in r.report.skipped)
+    assert sum(e.loaded for e in r.report.accepted) == len(r.store.findings) + len(
+        r.store.investigations
+    )
 
 
 # --- 1. Manifest: strict JSON and schema; failure loads nothing ---
