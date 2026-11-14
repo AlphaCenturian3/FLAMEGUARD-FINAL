@@ -97,6 +97,7 @@ def _note_without_flag_ref(**fields):
     del note["flag_ref"]
     return note
 
+
 REJECT = [
     # Excluded values can never be numerically available
     ("withheld-with-value", WITHHELD, _set("value", 0.37)),
