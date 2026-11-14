@@ -1,6 +1,6 @@
 # Member 5 coordination notes and decision log
 
-**Last updated:** 2026-11-14, 21:40 UTC (S9 unit-attached gap: fix in CP1 requested from Member 1 with a validated patch; CP1 head still `e44ec26`). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
+**Last updated:** 2026-11-14, 21:45 UTC (CP1 head `297b9a0`: S9 correction verified by Member 5's independent review; 0 of 4 approvals; F045 wording confirmed). PR #3 is a **draft**. **Not merged, not rebased.** No shared API contract is changed by PR #3. Rankings are **disabled**.
 
 PR #3 adds only new files:
 
@@ -36,16 +36,16 @@ A request that has been posted but not answered is recorded as **AWAITING OWNER 
 
 ## 1. CP1 status (PR #1)
 
-| Item | State on 2026-11-14 at 21:35 UTC |
+| Item | State on 2026-11-14 at 21:45 UTC |
 |---|---|
-| Current head | **`e44ec26e31f58d8a63d40cac0872d0b393de3a6f`** (draft), "CP1: correct the three S9 test-oracle defects (Command Center Option 1)". CI run 43642851847 passed. Approval request: [6884465691](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884465691) |
-| What changed since `eaae6d6` | `tests/test_exclusion_dependency.py` and its documentation only; rule text and schemas unchanged. Adds the S9 runtime-gate rows for B6 and T1 (Member 5 tests them independently) |
-| **Formal approvals at `e44ec26`** | **0 of 4.** All earlier approvals are superseded. Member 2 will approve after reviewing the final head; Member 5's approval is withheld |
-| **Member 5 independent S9 review** ([6884478474](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884478474)) | Defects 1–3 fixed; direct and multi-step chains, per-citation note-text checks and positive controls verified; **mutation evidence reproduced independently** (baseline 29 passed; reinstating defect 1, 2 or 3 fails 5, 2 or 2 tests; cycle short-circuit fails 1; non-transitive ancestors fails 11). **Open finding:** the number regex misses a value with its unit attached (`0.37mm2/s` → only `0` is extracted). Tested fix: lookahead `(?!\d|\.\d)` (13 cases, existing assertions kept). Minor: decimal comma not detected. Suggestion: test an answer citation at depth ≥ 2. **Decided by coordination direction: fix in CP1** (see the next row) |
-| **S9 final correction (coordinator decision: fix in CP1)** | Requested from Member 1, the owner ([6884538969](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884538969)), with a validated patch: lookahead `(?!\d|\.\d)` plus 12 regression tests (attached-unit cases, negative controls, a two-step ancestry citation, a clean two-step chain). Reviewer validation on `e44ec26` in a temporary worktree: S9 suite 41 passed; full suite 235 passed; reverting the regex fails 6; `(?![\d.])` fails 2; no lookbehind fails 2; defects 1–3, cycle short-circuit and non-transitive ancestors fail 10, 2, 2, 1 and 22. Documented limitations: decimal comma; a letter directly before the number (`Δ0.37`). **Awaiting Member 1's commit**, then Member 5's independent review of that exact SHA |
-| Earlier heads (superseded) | `ca128d0`, `2ce0d53`, `a6876d1`, `eaae6d6` |
+| Current head | **`297b9a0506f9cc53ae1e363dfade2961b72580f3`** (draft), "CP1: S9 oracle catches excluded numbers with an attached unit". CI run 43643836527 passed |
+| What changed since `e44ec26` | The `NUMBER` lookahead is now `(?!\d|\.\d)`. Adds tests for attached units, non-excluded numbers, the documented limits (decimal comma, letter prefix), a depth-2 citation and a clean two-step chain. The S9 row in the README states the limits. Schemas unchanged |
+| **Member 5 independent review of `297b9a0`** ([6884613143](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884613143)) | **Verified, no new defects.** S9 suite 44 passed; full suite 238 passed; plus 4 independent Member 5 cases: 48 passed. Mutations caught: old lookahead 9 fail; `(?![\d.])` 3; no lookbehind 3; defect 1 14; string comparison 7; defect 2 2; defect 3 2; cycle short-circuit 1; non-transitive ancestors 26; a missing printed value passing silently 2. Observation: a clean citation sharing the excluded number is also flagged (fails closed). Still a lower bound; B6 and T1 runtime gates remain |
+| **Formal approvals at `297b9a0`** | **0 of 4.** No approval request has been posted for this SHA yet. Member 5's approval is withheld; this review is not an approval |
+| Member 3 S9 provenance response | **AWAITING OWNER RESPONSE** (requested in [6884242484](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884242484) and [6884538969](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/1#issuecomment-6884538969)) |
+| Earlier heads (superseded) | `ca128d0`, `2ce0d53`, `a6876d1`, `eaae6d6`, `e44ec26` |
 | C5 (`test/qa-demo`) | Non-blocking; **QA owner unresolved** |
-| Member 5 trial merges into PR #3 | `a6876d1`: 299 passed; `eaae6d6`: 325 passed; **`e44ec26`: no conflicts, 338 passed**. Temporary worktrees only |
+| Member 5 trial merges into PR #3 | `eaae6d6`: 325 passed; `e44ec26`: 338 passed; **`297b9a0`: no conflicts, 353 passed**. Temporary worktrees only |
 
 ## 2. Roster and identities
 

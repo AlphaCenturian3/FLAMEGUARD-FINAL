@@ -112,3 +112,7 @@ Commit `d117ba9` ("data: add FLEX-010 cautions and contamination context from Me
 ## H. Status: second verification completed (2026-11-14)
 
 The second FLEX transcription and quality-flag verification (PR #4 `d117ba9`, §G) is **completed**. Member 3's follow-up items 4 and 5 were answered ([comment 6884483333](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884483333)): F001–F043 keep their meaning (only the 10 contamination reasons were extended; type, field, `ranking_use`, page and quote unchanged); `derivation_unverified` → `caution` is appropriate. **Open for Member 3:** F045's wording ("early in the test"). **Still blocked:** S-1 and S-3 against PSI data. Not an approval of PR #4.
+
+## I. F045 final wording (PR #4 `2092cdd8c70616d6f51c72c767d28cf6c4eb23c2`)
+
+Only F045 changed. Both quoted phrases are verbatim in the Figure 14 caption (printed p. 38), and "early in the test" is removed. It is still `derivation_unverified` → `caution`; 13.6 s is untouched. The flags SHA-256 `19e7f951…` matches the blob and the manifest; the CSV is unchanged; 45 of 45 quotes are on their cited pages. **Wording confirmed** ([comment 6884613550](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884613550)). Not an approval of PR #4. S-1 and S-3 remain blocked on PSI data.
