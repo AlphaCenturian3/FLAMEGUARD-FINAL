@@ -113,10 +113,12 @@ Every investigation documented so far (BASS-II, FLEX, SoFIE, Saffire) ran in **m
 
 | Option | Content | Status |
 |---|---|---|
-| M-1 (Member 5 recommendation for P0) | No weighted order: an unordered eligible-evidence list of gate-passing investigations, with C, O₂ and pressure shown descriptively and the excluded investigations with their reasons. A weighted score only after real CP2 data shows a criterion that separates eligible investigations, with M1 and M3 approval | **AWAITING OWNER RESPONSE** |
+| M-1 (Member 5 recommendation; **coordinator's preferred interim fallback**, 2026-11-14) | No weighted order: an unordered eligible-evidence list of gate-passing investigations, with C, O₂ and pressure shown descriptively and the excluded investigations with their reasons. A weighted score only after real CP2 data shows a criterion that separates eligible investigations, with M1 and M3 approval | **AWAITING OWNER RESPONSE** |
 | M-2 | Rank by C, T and D, labelled "documentation completeness only" whenever C is constant across the eligible set | **AWAITING OWNER RESPONSE** |
 | M-3 | Add another scorable applicability criterion (for example flow configuration or fuel/material category), with a cited reference per environment and a sensitivity rerun | **AWAITING OWNER RESPONSE** |
 | M-4 | Defer ranking to v0.3 (numeric gravity level, or O₂ and pressure with a sourced equivalence tolerance) | **AWAITING OWNER RESPONSE** |
+
+**Coordinator position (not a team decision):** M-1 is the preferred interim fallback **pending Member 1's decision**. Until Member 1 decides, no production ranking is implemented, and nothing is ordered by a weighted score.
 
 ## Open points (not decided; for Member 1 and Member 3)
 
