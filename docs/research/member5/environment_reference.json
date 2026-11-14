@@ -1,0 +1,125 @@
+{
+  "status": "draft_pending_review_by_member1_and_member3",
+  "purpose": "Cited reference conditions for each contract environment, prepared for Member 1's D-01 condition 2 (condition_match needs a cited target-condition table per environment). Physical planetary conditions and spacecraft/habitat design assumptions are kept in separate blocks. A value no reviewed source gives is null with status 'unknown'. Nothing here is a measurement from a combustion experiment.",
+  "retrieved": "2026-11-14",
+  "status_values": {
+    "physical_reference": "A physical property of the body or orbit, from a NASA reference source.",
+    "operational": "A design value NASA states is in current operational use.",
+    "design_assumption": "A design value NASA states is assumed or under study; it may change.",
+    "editorial_classification": "A classification made by Member 5, not stated by a source. Needs Member 1 confirmation.",
+    "location_dependent": "Depends on where the vehicle operates.",
+    "historical_recommendation": "A past NASA recommendation that is not confirmed as a current design. Shown for context; not used for condition matching.",
+    "not_applicable": "The quantity does not apply.",
+    "unknown": "No reviewed source gives a value. Never estimated."
+  },
+  "conversions": "Values are given in kPa and mole fraction. Where a source prints mb or bar, the exact defined factors 1 mb = 0.1 kPa and 1 bar = 100 kPa are used, and the as-printed value is kept. Percent oxygen is divided by 100. No other conversion is made.",
+  "records": [
+    {
+      "id": "env-space-station",
+      "environment": "space_station",
+      "physical": {
+        "gravity": {"value_m_s2": null, "ratio_to_earth": null, "status": "physical_reference", "note": "Microgravity (orbital free fall); no single numeric value is used.", "source_index": 0},
+        "contract_gravity_environment": {"value": "microgravity", "status": "physical_reference", "source_index": 0},
+        "external_atmosphere": {"pressure_kpa": null, "oxygen_mole_fraction": null, "status": "not_applicable", "note": "Fires are inside the pressurized cabin."}
+      },
+      "design_atmospheres": [
+        {"label": "ISS cabin, typical", "pressure_kpa": 101.3, "pressure_as_printed": "14.7 psia (source states 14.7 psia = 101.3 kPa)", "oxygen_mole_fraction": 0.21, "oxygen_as_printed": "21% O2", "status": "operational", "source_index": [1, 2]}
+      ],
+      "sources": [
+        {"title": "Studying Combustion and Fire Safety", "url": "https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/", "page": null, "quote": "In microgravity, this flow doesn’t occur and on the space station, low-momentum flames tend to be rounded or even spherical.", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Habitable Atmosphere (OCHMO-TB-003 Rev A), NASA Office of the Chief Health and Medical Officer technical brief", "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf", "page": 8, "quote": "Currently, the ISS cabin pressure is typically maintained at 14.7 psia with 21% O2, which is equivalent to sea level.", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Habitable Atmosphere (OCHMO-TB-003 Rev A), NASA Office of the Chief Health and Medical Officer technical brief", "url": "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf", "page": 2, "quote": "14.7psia=101.3 kPa", "retrieved": "2026-11-14", "archive_id": null}
+      ]
+    },
+    {
+      "id": "env-spacecraft",
+      "environment": "spacecraft",
+      "physical": {
+        "gravity": {"value_m_s2": null, "ratio_to_earth": null, "status": "editorial_classification", "note": "Classified as microgravity for vehicles in orbit or transit (free fall). No source reviewed states this for 'spacecraft' in general; Member 1 to confirm."},
+        "contract_gravity_environment": {"value": "microgravity", "status": "editorial_classification"},
+        "external_atmosphere": {"pressure_kpa": null, "oxygen_mole_fraction": null, "status": "not_applicable", "note": "Fires are inside the pressurized cabin."}
+      },
+      "design_atmospheres": [
+        {"label": "Gateway nominal (as assumed for the Mars Transit Habitat, hatch open)", "pressure_kpa": 70.3, "pressure_as_printed": "10.2 psia (70.3 kPa)", "oxygen_mole_fraction": 0.265, "oxygen_as_printed": "26.5% O2", "status": "design_assumption", "source_index": 0},
+        {"label": "Mars Transit Habitat, hatch closed", "pressure_kpa": 101.4, "pressure_as_printed": "14.7 psia (101.4 kPa)", "oxygen_mole_fraction": null, "oxygen_as_printed": null, "status": "design_assumption", "note": "Oxygen fraction not stated in the source: unknown.", "source_index": 1}
+      ],
+      "note": "Cabin atmospheres are vehicle-specific; there is no single value for 'spacecraft'. Both listed atmospheres are design assumptions.",
+      "sources": [
+        {"title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524", "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf", "page": 20, "quote": "Hatch Open: TH operates at Gateway nominal operating conditions (assuming 10.2 psia (70.3 kPa), 26.5% O2 atmosphere) with an open hatch.", "retrieved": "2026-11-14", "archive_id": "NTRS 20220000524"},
+        {"title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524", "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf", "page": 20, "quote": "Hatch Closed: TH closes hatch to operate at Mars Transit conditions (14.7 psia (101.4 kPa), reliant on TH subsystems).", "retrieved": "2026-11-14", "archive_id": "NTRS 20220000524"}
+      ]
+    },
+    {
+      "id": "env-lunar-base",
+      "environment": "lunar_base",
+      "physical": {
+        "gravity": {"value_m_s2": 1.62, "ratio_to_earth": 0.165, "status": "physical_reference", "source_index": 0},
+        "contract_gravity_environment": {"value": "partial_gravity", "status": "physical_reference", "source_index": 0},
+        "external_atmosphere": {"pressure_kpa": 3e-13, "pressure_as_printed": "3 x 10^-15 bar (night)", "oxygen_mole_fraction": null, "status": "physical_reference", "note": "Effectively vacuum; external oxygen fraction not applicable to fires inside a habitat.", "source_index": 1}
+      },
+      "design_atmospheres": [
+        {"label": "Lunar Surface Habitat (SH), nominal", "pressure_kpa": 70.3, "pressure_as_printed": "10.2 psia (70.3 kPa)", "oxygen_mole_fraction": 0.265, "oxygen_as_printed": "26.5% Oxygen", "status": "design_assumption", "source_index": [2, 4]},
+        {"label": "Lunar Surface Habitat (SH), capability", "pressure_kpa": 56.5, "pressure_as_printed": "8.2 psi (56.5 kPa)", "oxygen_mole_fraction": 0.34, "oxygen_as_printed": "34% Oxygen", "status": "design_assumption", "source_index": [3, 4]}
+      ],
+      "note": "NASA states the SH atmosphere is assumed and that trade studies on the nominal pressure are ongoing.",
+      "sources": [
+        {"title": "Moon Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html", "page": "Bulk parameters table, row 'Surface gravity' (Moon, Earth, ratio)", "quote": "Surface gravity (m/s 2 ) 1.62 9.80 0.165", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Moon Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html", "page": "Lunar Atmosphere", "quote": "Surface pressure (night): 3 x 10 -15 bar (2 x 10 -12 torr)", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524", "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf", "page": 14, "quote": "nominal operating pressure of 10.2 psia (70.3 kPa) and 26.5% Oxygen concentration", "retrieved": "2026-11-14", "archive_id": "NTRS 20220000524"},
+        {"title": "Moon to Mars (M2M) Habitation Considerations, NASA/TM-20220000524", "url": "https://ntrs.nasa.gov/api/citations/20220000524/downloads/M2M%20Habitation%20Considerations%20TM%20-%20Final.pdf", "page": 14, "quote": "the capability to operate at 8.2 psi (56.5 kPa)", "retrieved": "2026-11-14", "archive_id": "NTRS 20220000524"},
+        {"title": "Artemis Deep Space Habitation: Enabling a Sustained Human Presence on the Moon and Beyond", "url": "https://ntrs.nasa.gov/api/citations/20220000245/downloads/Artemis%20Deep%20Space%20Habitation%20Enabling%20a%20Sustained%20Human%20Presence%20on%20the%20Moon%20and%20Beyond%20(3).pdf", "page": 4, "quote": "On-going trade analyses are currently assessing the viability and impacts of transitioning the SH to a nominal operating pressure of 8.2 psia but it is assumed the SH would still need to retain the capability of supporting both pressures.", "retrieved": "2026-11-14", "archive_id": "NTRS 20220000245"}
+      ]
+    },
+    {
+      "id": "env-martian-base",
+      "environment": "martian_base",
+      "physical": {
+        "gravity": {"value_m_s2": 3.73, "ratio_to_earth": 0.38, "status": "physical_reference", "source_index": 0},
+        "contract_gravity_environment": {"value": "partial_gravity", "status": "physical_reference", "source_index": 0},
+        "external_atmosphere": {"pressure_kpa": 0.636, "pressure_as_printed": "6.36 mb at mean radius (variable from 4.0 to 8.7 mb depending on season)", "oxygen_mole_fraction": 0.0016, "oxygen_as_printed": "Oxygen (O2) - 0.16%", "status": "physical_reference", "note": "External Martian atmosphere (mostly CO2). It is not the habitat atmosphere.", "source_index": [1, 2, 3]}
+      },
+      "design_atmospheres": [
+        {"label": "Martian surface habitat, current design", "pressure_kpa": null, "oxygen_mole_fraction": null, "status": "unknown", "note": "No reviewed NASA source gives a current Mars surface habitat atmosphere. The Mars Transit Habitat (14.7 psia) is an in-space vehicle and is listed under 'spacecraft'."},
+        {"label": "Long-duration planetary-surface outpost habitats (2010 working-group recommendation)", "pressure_kpa": null, "pressure_as_printed": "8.0 psia and 7.6 psia", "oxygen_mole_fraction": 0.32, "oxygen_as_printed": "32% O2", "status": "historical_recommendation", "note": "From the 2010 NASA Exploration Atmospheres Working Group. Not confirmed as a current design; not used for condition matching. The source gives psia only, so pressure_kpa is left null rather than converted by Member 5.", "source_index": 4}
+      ],
+      "sources": [
+        {"title": "Mars Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html", "page": "Bulk parameters table, row 'Surface gravity (mean)' (Mars, Earth, ratio)", "quote": "Surface gravity (mean) (m/s 2 ) 3.73 9.82 0.380", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Mars Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html", "page": "Martian Atmosphere", "quote": "Surface pressure: 6.36 mb at mean radius (variable from 4.0 to 8.7 mb depending on season)", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Mars Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html", "page": "Martian Atmosphere, composition", "quote": "Major : Carbon Dioxide (CO 2 ) - 95.1% ; Nitrogen (N 2 ) - 2.59%", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Mars Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/marsfact.html", "page": "Martian Atmosphere, minor constituents", "quote": "Oxygen (O 2 ) - 0.16%", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Recommendations for Exploration Spacecraft Internal Atmospheres: The Final Report of the NASA Exploration Atmospheres Working Group (NASA/TP-2010-216134)", "url": "https://www.nasa.gov/wp-content/uploads/2023/03/henninger-8.2-34-atm-tp216134-2010.pdf", "page": 117, "quote": "Other recommendations for long-duration outpost habitats on planetary surfaces expose the crews to 8.0 psia @ 32% O2 and 7.6 psia, 32% O2 (altitude equivalents between 5,000 and 6,500 feet, respectively)", "retrieved": "2026-11-14", "archive_id": "NASA/TP-2010-216134"}
+      ]
+    },
+    {
+      "id": "env-pressurized-rover",
+      "environment": "pressurized_rover",
+      "physical": {
+        "gravity": {"value_m_s2": null, "ratio_to_earth": null, "status": "location_dependent", "note": "The Artemis Pressurized Rover is a lunar surface element, so on the Moon it would see lunar gravity (see env-lunar-base). The contract environment does not say where a rover operates.", "source_index": 0},
+        "contract_gravity_environment": {"value": "partial_gravity", "status": "location_dependent", "note": "Partial gravity for a lunar or Martian rover.", "source_index": 0},
+        "external_atmosphere": {"pressure_kpa": null, "oxygen_mole_fraction": null, "status": "location_dependent"}
+      },
+      "design_atmospheres": [
+        {"label": "Pressurized Rover cabin", "pressure_kpa": null, "oxygen_mole_fraction": null, "status": "unknown", "note": "No reviewed NASA source states the Pressurized Rover cabin atmosphere."}
+      ],
+      "sources": [
+        {"title": "Artemis Deep Space Habitation: Enabling a Sustained Human Presence on the Moon and Beyond", "url": "https://ntrs.nasa.gov/api/citations/20220000245/downloads/Artemis%20Deep%20Space%20Habitation%20Enabling%20a%20Sustained%20Human%20Presence%20on%20the%20Moon%20and%20Beyond%20(3).pdf", "page": 2, "quote": "The base camp core elements include the Lunar Terrain Vehicle (LTV), Pressurized Rover (PR), Surface Habitat (SH), power systems, and in-situ resource utilization (ISRU) systems.", "retrieved": "2026-11-14", "archive_id": "NTRS 20220000245"}
+      ]
+    },
+    {
+      "id": "env-earth",
+      "environment": "earth",
+      "physical": {
+        "gravity": {"value_m_s2": 9.82, "ratio_to_earth": 1.0, "status": "physical_reference", "source_index": 0},
+        "contract_gravity_environment": {"value": "normal_gravity", "status": "physical_reference", "source_index": 0},
+        "external_atmosphere": {"pressure_kpa": 101.4, "pressure_as_printed": "1014 mb", "oxygen_mole_fraction": 0.2095, "oxygen_as_printed": "20.95% Oxygen (O2), dry air", "status": "physical_reference", "source_index": [1, 2]}
+      },
+      "design_atmospheres": [],
+      "note": "For Earth the physical atmosphere is the reference condition; no design atmosphere applies.",
+      "sources": [
+        {"title": "Earth Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html", "page": "Bulk parameters table, row 'Surface gravity (mean)'", "quote": "Surface gravity (mean) (m/s 2 ) 9.820", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Earth Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html", "page": "Terrestrial Atmosphere", "quote": "Surface pressure: 1014 mb", "retrieved": "2026-11-14", "archive_id": null},
+        {"title": "Earth Fact Sheet (NASA NSSDC)", "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html", "page": "Terrestrial Atmosphere, composition", "quote": "78.08% Nitrogen (N 2 ), 20.95% Oxygen (O 2 )", "retrieved": "2026-11-14", "archive_id": null}
+      ]
+    }
+  ]
+}
