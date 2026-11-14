@@ -35,7 +35,7 @@
     },
     "visible_flame_extinction_diameter": {
       "unit": "mm",
-      "description": "Droplet diameter at the moment the visible flame extinguished, as reported by the source. A droplet size, not a flame size. Defined only for tests that ended in extinction.",
+      "description": "Droplet diameter at the moment the visible flame extinguished, as reported by the source. A droplet size, not a flame size. Present only when the source reports one; a reported value does not imply the test's recorded outcome (FLEX-001 is printed as Disruption with a reported value).",
       "minimum": 0
     },
     "burning_rate_constant": {

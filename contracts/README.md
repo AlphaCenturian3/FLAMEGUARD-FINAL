@@ -83,12 +83,12 @@ Follow spec §5.4. The PR touches only `contracts/`, the spec and the version co
 | Four FLEX quantities added to `vocabulary.json` and `quantity_rules.schema.json`: `initial_droplet_diameter` (mm), `visible_flame_extinction_diameter` (mm), `burning_rate_constant` (mm2/s), `burn_time` (s), each `minimum: 0` | Decision C4 accepted these for the FLEX droplet data (NASA/TP-2015-216046 Table IX). No existing quantity is changed. `flame_spread_rate` (mm/s, flame-front speed over a solid) keeps its meaning and is never a substitute for `burning_rate_constant` (droplet D^2-law constant). The change is additive: every document valid under v0.2.0 is still valid |
 | `CONTRACT_VERSION`, spec version and `vocabulary_version` 0.2.0 -> 0.2.1 | The contract-change rule requires the three to move together. Patch level, because the change is additive (spec 5.4 reserves minor bumps for breaking changes); owner decision O4 |
 
-**Open owner decisions for this version (not settled by this PR):**
+**Owner decisions for this version:**
 
-- **O1 Unit string** for `burning_rate_constant`: `mm2/s` (proposed; ASCII like `mm/s`) or `mm^2/s`. Members 1 and 2.
-- **O2 Outcome and test identity.** FLEX values only compare within the same test outcome (Extinction, Disruption, Completion); `visible_flame_extinction_diameter` exists only for Extinction tests. v0.2.1 adds **no** `test_id` or outcome field and does not change `conditions`. Until a structured field is approved, a FLEX row's outcome is carried in the finding `statement` and `locator`, and compare must treat rows with different outcomes as non-comparable. Whether to add a structured field (and where) is a separate contract decision. Members 1 and 2; Member 5 on applicability.
-- **O3 Descriptions and bounds.** All four use `minimum: 0` (non-negative), not `exclusiveMinimum`, so that no reported value is rejected by a tighter bound than the source supports. Member 5 to check the scientific wording.
-- **O4 Version level.** 0.2.1 (patch) proposed. Members 1 and 2.
+- **O1 Unit string** for `burning_rate_constant`: `mm2/s`. Accepted by Members 1 and 2 in their review of `b012645`. Formal approval is given on the PR head.
+- **O2 Outcome and test identity.** No derived FLEX Finding and no FLEX comparison until a structured test identity and outcome is approved. v0.2.1 adds no `test_id` or outcome field and does not change `conditions`. A structured test identity and outcome belong in a separate v0.2.2 contract proposal. Comparability is never inferred from `statement` or `locator` text.
+- **O3 Descriptions and bounds.** All four use `minimum: 0` (non-negative), not `exclusiveMinimum`, so that no reported value is rejected by a tighter bound than the source supports. `visible_flame_extinction_diameter` is present only when the source reports one, and a reported value does not imply the recorded outcome: in NASA/TP-2015-216046 Table IX, FLEX-001 is printed as Disruption with a reported 0.89 mm, and the Figure 5 caption says the droplet "probably disrupted at the end of the test coincident with flame extinction". Accepted by Members 1 and 2 subject to Member 5's scientific review; **Member 5's decision is pending**.
+- **O4 Version level.** 0.2.1 (patch). Accepted by Members 1 and 2 in their review of `b012645`.
 
 ## Changes from v0.1.0
 

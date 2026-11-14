@@ -83,3 +83,21 @@ def test_measured_finding_with_burning_rate_constant_validates(validator_for):
     validator_for("finding.schema.json").validate(doc)
     doc["unit"] = "mm/s"
     assert not validator_for("finding.schema.json").is_valid(doc)
+
+
+def test_extinction_diameter_wording_matches_source_reporting():
+    """F1: FLEX-001 is printed as Disruption with a reported extinction diameter."""
+    desc = Q["visible_flame_extinction_diameter"]["description"]
+    assert "ended in extinction" not in desc
+    assert "does not imply the test's recorded outcome" in desc
+
+
+def test_readme_blocks_flex_findings_and_comparison_until_structured_outcome():
+    """O2: no prose-based comparability; structured identity/outcome deferred to v0.2.2."""
+    readme = (ROOT / "contracts" / "README.md").read_text(encoding="utf-8")
+    assert (
+        "No derived FLEX Finding and no FLEX comparison until a structured test identity "
+        "and outcome is approved." in readme
+    )
+    assert "exists only for Extinction tests" not in readme
+    assert "test_id" not in json.dumps(VOCAB) and "test_outcome" not in json.dumps(VOCAB)
