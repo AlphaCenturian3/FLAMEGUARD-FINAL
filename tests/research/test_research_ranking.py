@@ -3,6 +3,7 @@
 Fixture results test mechanics only. They are not findings.
 """
 
+import csv
 import math
 from pathlib import Path
 
@@ -300,6 +301,41 @@ def test_excluded_and_transitively_dependent_records_are_never_ranked(fx, criter
         first["id"],
         second["id"],
     }
+
+
+def test_flex_010_exclusion_flag_never_enters_reference_ranking(fx, criteria):
+    flags_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "curated"
+        / "interpretations"
+        / "quality"
+        / "flex_tp2015216046_table_ix_001_010.flags.csv"
+    )
+    with flags_path.open(encoding="utf-8", newline="") as stream:
+        flags = list(csv.DictReader(stream))
+    flex_010_flag = next(
+        flag
+        for flag in flags
+        if flag["flex_test"] == "FLEX-010" and flag["field"] == "burning_rate_constant_mm2_per_s"
+    )
+    assert flex_010_flag["ranking_use"] == "exclude"
+
+    # Exercise the status the flag requires with a synthetic fixture only; the CSV's
+    # printed NASA value is never copied into or submitted to the reference ranker.
+    record = _excluded_fixture(fx)
+    record["fixture"] = True
+    record["value_status"] = {"exclude": "excluded"}[flex_010_flag["ranking_use"]]
+    out = rank_investigations(
+        LUNAR_MATERIALS,
+        [record],
+        criteria,
+        allow_fixtures=True,
+    )
+
+    assert out["ranking"]["items"] == []
+    assert out["release_status"] == "fixture_demo_only"
+    assert any(item["id"] == record["id"] for item in out["excluded_records"])
 
 
 def test_broken_derivation_chains_fail_closed(fx, criteria):

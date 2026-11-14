@@ -1,6 +1,7 @@
 """Cross-cutting integrity checks for the Member 5 research package and content."""
 
 import ast
+import csv
 import json
 from pathlib import Path
 
@@ -80,6 +81,41 @@ def test_synthesis_is_not_presented_as_a_nasa_finding(register, real_evidence):
     rec = next(r for r in real_evidence if r["investigation_id"] == synth["id"])
     assert rec["source_claim_strength"] == "source_statement"
     assert any("not a NASA finding" in lim for lim in rec["limitations"])
+
+
+def test_merged_flex_csv_and_quality_flags_remain_separate_from_research_findings(
+    real_evidence,
+):
+    manifest = _read_json(ROOT / "data" / "manifest.json")
+    data_id = "nasa-tp-2015-216046.table-ix.flex-001-010"
+    flags_id = f"{data_id}.flags"
+    entries = {entry["id"]: entry for entry in manifest["datasets"]}
+    assert entries[data_id]["evidence_class"] == "measured"
+    assert entries[data_id]["path"] == ("data/curated/flex_tp2015216046_table_ix_001_010.csv")
+    assert entries[flags_id]["evidence_class"] == "interpretation"
+    assert entries[flags_id]["derived_from"] == [data_id]
+
+    with (ROOT / entries[data_id]["path"]).open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    flex_010 = next(row for row in rows if row["flex_test"] == "FLEX-010")
+    assert flex_010["burning_rate_constant_mm2_per_s"] == "0.37"
+
+    flags_path = ROOT / entries[flags_id]["path"]
+    with flags_path.open(encoding="utf-8", newline="") as stream:
+        flags = list(csv.DictReader(stream))
+    exclusion = next(
+        flag
+        for flag in flags
+        if flag["flex_test"] == "FLEX-010" and flag["field"] == "burning_rate_constant_mm2_per_s"
+    )
+    assert exclusion["flag_id"] == "F042"
+    assert exclusion["ranking_use"] == "exclude"
+
+    assert all(record["evidence_category"] == "reported" for record in real_evidence)
+    assert not any(
+        record.get("test_id") == "FLEX-010" or "FLEX-010" in record["id"]
+        for record in real_evidence
+    )
 
 
 def test_every_card_maps_to_the_kickoff(real_cards):
