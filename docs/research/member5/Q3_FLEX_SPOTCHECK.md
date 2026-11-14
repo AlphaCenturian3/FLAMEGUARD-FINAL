@@ -76,3 +76,15 @@
 `docs/verification/m3_citation_audit_of_member5.md` at PR #6 `e4d3892` is a **machine check by Member 3's executor**, independent of Member 5's tool (PyMuPDF, fresh downloads): **43 of 43 quotes found, all 6 PDF hashes match.** It is explicitly **"NOT SIGNED OFF"**. The human checks (does the quote support the statement; is the source authoritative; are the rights appropriate) and the signature are Member 3's. Member 5's audit therefore stays **recorded, not independently authenticated**.
 
 Member 3's findings and the related tag-mapping proposal (`docs/verification/environment_tag_mapping.md`) need **Member 5 decisions**. They are recorded in `COORDINATION.md`, not applied here.
+
+## F. Member 3 disposition (2026-11-14, 21:20 UTC)
+
+Findings sent on PR #4 ([comment 6884315288](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884315288)). Member 3's account replied ([comment 6884374215](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/4#issuecomment-6884374215)), labelled "Coordinator disposition … proposed fixes authorized, not scientific sign-off":
+
+| Finding | Disposition (quoted) | Next step |
+|---|---|---|
+| S-2 | "ACCEPT: add a caution imaging flag for FLEX-010 initial_droplet_diameter_mm" | Member 3 proposes it on PR #4 |
+| S-3 | "ACCEPT WITH QUALIFICATION … Do not call 13.6 s incorrect, guessed, or experimentally disproven." | Member 3 proposes a caution on PR #4 |
+| S-5 | "ACCEPT WITH QUALIFICATION: include the report's mitigating phrase … as an attributed source assertion" | Member 3 proposes it on PR #4 |
+
+Member 3 will then request **Member 5's renewed independent review of the changed flags**. "No merge or owner approval is implied."
