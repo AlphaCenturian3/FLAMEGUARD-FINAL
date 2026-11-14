@@ -32,7 +32,11 @@
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
-        "environments": ["lunar_base", "martian_base", "spacecraft"],
+        "environments": [
+          "lunar_base",
+          "martian_base",
+          "spacecraft"
+        ],
         "text": "If the question is answered in the negative, material lists for lunar and Martian habitats would need reduced-gravity flammability evidence in addition to 1-g screening results.",
         "extrapolation_warning": "SoFIE tests microgravity, not lunar or Martian gravity. Partial-gravity behaviour can differ from both 1 g and 0 g."
       },
@@ -59,7 +63,9 @@
         "statement": "BASS-II authors report that flames sustained at very low air flow speeds can flare up quickly with a sudden increase in air flow speed.",
         "claim_type": "source_reported",
         "strength": "experimental_result",
-        "evidence_ids": ["m5-bass2-flow-flareup"]
+        "evidence_ids": [
+          "m5-bass2-flow-flareup"
+        ]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
@@ -67,7 +73,12 @@
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
-        "environments": ["space_station", "spacecraft", "lunar_base", "pressurized_rover"],
+        "environments": [
+          "space_station",
+          "spacecraft",
+          "lunar_base",
+          "pressurized_rover"
+        ],
         "text": "Fire-response research for habitats and rovers could study how restarting or increasing ventilation affects a small fire. This needs study; it is not a procedure.",
         "extrapolation_warning": "On the Moon, buoyant flow exists at reduced strength, so low-flow microgravity behaviour may not appear the same way."
       },
@@ -94,7 +105,10 @@
         "statement": "Preliminary Saffire results report that the spacecraft temperature and pressure rise were less significant than the increase in CO2 and CO. In BASS-II, the CO-CO2 relationship was linear for some datasets but not for all fuel geometries and flows.",
         "claim_type": "source_reported",
         "strength": "experimental_result",
-        "evidence_ids": ["m5-saffire6-co-co2", "m5-bass2-co-co2-trend"]
+        "evidence_ids": [
+          "m5-saffire6-co-co2",
+          "m5-bass2-co-co2-trend"
+        ]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
@@ -102,7 +116,12 @@
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
-        "environments": ["spacecraft", "lunar_base", "martian_base", "pressurized_rover"],
+        "environments": [
+          "spacecraft",
+          "lunar_base",
+          "martian_base",
+          "pressurized_rover"
+        ],
         "text": "Fire-detection research for habitats could include combustion-product monitoring (CO, CO2) and test how fuel type affects it. No detection time, warning time or false-alarm rate is claimed.",
         "extrapolation_warning": "Both sources are microgravity tests. On the Moon or Mars, buoyant convection and habitat atmosphere change how combustion products spread to sensors."
       },
@@ -143,7 +162,9 @@
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
-        "environments": ["lunar_base"],
+        "environments": [
+          "lunar_base"
+        ],
         "text": "If the hypothesis holds, lunar habitat material choices would carry more flammability uncertainty than 1-g screening suggests, especially near oxygen limits.",
         "extrapolation_warning": "No lunar-surface combustion data is in this register. FM2 flight status and results were not verified."
       },
@@ -182,7 +203,9 @@
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
-        "environments": ["martian_base"],
+        "environments": [
+          "martian_base"
+        ],
         "text": "Any Mars habitat fire-safety claim in FlameGuard-SI should be labelled as extrapolated and list the gravity, atmosphere and enclosure assumptions it relies on.",
         "extrapolation_warning": "No Martian-gravity or Martian-habitat combustion data is in this register."
       },
@@ -202,28 +225,37 @@
       "member1_review": {
         "verdict": "accept with change, later",
         "requested_change": "Say that FLEX tested extinction in pre-diluted atmospheres (inert gas in the chamber; see the PR #4 composition columns), not a suppressant discharged onto a burning fire. It can become R3 once the FLEX measured findings from PR #4 exist, after the vocabulary PR (C4).",
-        "applied": "Interpretation and limitations state the pre-diluted-atmosphere distinction, attributed to Member 1's review; presentation set to pending_measured_data."
+        "applied": "Interpretation and limitations state the pre-diluted-atmosphere distinction. Initially attributed to Member 1's review; now verified against the FLEX report (PDF pp. 8 and 19) and cited as m5-flex-prediluted-ambient. Presentation stays pending_measured_data until verified FLEX measured findings exist."
       },
       "disclaimer": "Qualitative research insight for discussion. Not a flight-qualified or certified fire-safety recommendation.",
       "finding": {
         "statement": "FLEX was designed to assess inert-gas suppressant effectiveness in microgravity for liquid droplets, and a NASA report presents results from its first 284 tests. NASA's combustion overview says putting out fires in space must consider flame geometry, material characteristics and extinguishing method, because ground methods could be ineffective or make the flame worse.",
         "claim_type": "source_reported",
         "strength": "stated_objective",
-        "evidence_ids": ["m5-flex-objective", "m5-flex-dataset", "m5-bass-ground-methods"]
+        "evidence_ids": [
+          "m5-flex-objective",
+          "m5-flex-dataset",
+          "m5-bass-ground-methods",
+          "m5-flex-prediluted-ambient"
+        ]
       },
       "interpretation": {
         "claim_type": "flameguard_interpretation",
-        "text": "Suppression evidence is specific to fuel phase, geometry and conditions. As Member 1's review notes, FLEX tested extinction in chamber atmospheres pre-diluted with inert gas, not a suppressant discharged onto an established fire. FLEX covers liquid droplets and BASS covers solids; their test-level results have not been imported, so no extinction values or suppressant comparisons are shown."
+        "text": "Suppression evidence is specific to fuel phase, geometry and conditions. The FLEX report (NASA/TP-2015-216046) describes extinction in ambient atmospheres pre-diluted with nitrogen or carbon dioxide before the tests, not a suppressant discharged onto an established fire; this confirms the distinction raised in Member 1's review. FLEX covers liquid droplets and BASS covers solids; their test-level results have not been imported, so no extinction values or suppressant comparisons are shown."
       },
       "implication": {
         "claim_type": "engineering_hypothesis",
-        "environments": ["spacecraft", "space_station", "lunar_base"],
+        "environments": [
+          "spacecraft",
+          "space_station",
+          "lunar_base"
+        ],
         "text": "Results from pre-diluted atmospheres should not be read as the performance of a suppressant discharged onto a fire, and should not be transferred between liquid-droplet and solid-material fires without compatible evidence.",
         "extrapolation_warning": "Droplet tests in microgravity; suppression under lunar gravity with buoyant flow is not covered."
       },
       "limitations": [
-        "Liquid droplets, not solid habitat materials.",
-        "FLEX tested extinction in inert-gas pre-diluted atmospheres, not discharged suppressants (Member 1's review, citing the PR #4 atmosphere-composition columns). Member 5 has not yet checked this against the FLEX report; to be verified when the PR #4 data is reviewed.",
+        "Liquid droplets (methanol and n-heptane in the reviewed report), not solid habitat materials.",
+        "FLEX tested extinction in pre-diluted ambient atmospheres (nitrogen, carbon dioxide or mixtures), not discharged suppressants. Verified by Member 5 against NASA/TP-2015-216046, PDF pages 8 and 19 (evidence m5-flex-prediluted-ambient).",
         "The FLEX report's authors state they do not interpret the results.",
         "No test-level values imported."
       ]

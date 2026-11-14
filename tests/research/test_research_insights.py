@@ -111,8 +111,12 @@ def test_detection_card_does_not_compare_across_units(real_cards):
 def test_flex_card_waits_for_data_and_states_pre_dilution(real_cards):
     card = _cards_by_id(real_cards)["card-fuel-extinction-suppression"]
     assert "PR #4" in card["pending_on"] and "C4" in card["pending_on"]
+    assert card["presentation"] == "pending_measured_data"
     assert "pre-diluted" in card["interpretation"]["text"]
-    assert any("not yet checked" in lim for lim in card["limitations"])
+    # Verified against the FLEX report (NASA/TP-2015-216046) and cited as its own evidence.
+    assert "m5-flex-prediluted-ambient" in card["finding"]["evidence_ids"]
+    assert any("Verified by Member 5" in lim for lim in card["limitations"])
+    assert not any("not yet checked" in lim for lim in card["limitations"])
 
 
 def test_context_cards_are_open_questions_and_name_non_nasa_authors(real_cards, real_evidence):
