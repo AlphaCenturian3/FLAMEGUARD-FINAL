@@ -10,8 +10,9 @@
 | `evidence_reported.json` | 14 qualitative statements quoted exactly from their sources (`evidence_category: "reported"`). No numeric values. |
 | `insight_cards.json` | 6 Moon/Mars insight cards (Finding → source → Interpretation → Moon/Mars implication → Limitation), each mapped to the kickoff with `kickoff_ref`. |
 | `GAP_REPORT.md` | Requirements against implementation, including what is blocked. |
+| `SOURCE_AUDIT.md` | Per-citation verification audit: 21 quote citations, automated vs manual method, PDF hash and page. |
 | `RANKING_METHODOLOGY.md` | How the research-relevance score works, its gates, and what it is not. |
-| `COORDINATION.md` | Ownership against the CP1 proposal, decision log D-01 to D-12, requests per member, CP1 rebase readiness. |
+| `COORDINATION.md` | Roster conflict, GitHub identities and approvals, ownership boundary, decision log D-01 to D-12 (provisional vs approved), CP1 rebase readiness. |
 
 Code: `backend/flameguard/research/`. Proposed criteria: `config/research_relevance_criteria_v1.proposed.json`. Tests: `tests/research/`, with fixtures in `tests/fixtures/research/` (`fixture: true`; not NASA data).
 
