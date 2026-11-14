@@ -1,0 +1,12 @@
+{
+  "fixture": true,
+  "id": "fixture-finding-measured-2",
+  "investigation_id": "fixture-investigation-2",
+  "evidence_class": "measured",
+  "statement": "FIXTURE PLACEHOLDER. The source does not report this value.",
+  "quantity": "flame_spread_rate",
+  "value": null,
+  "unit": "mm/s",
+  "value_status": "not_reported",
+  "provenance": {"manifest_id": "fixture-dataset-2", "locator": "FIXTURE table 0, row 1", "sources": [{"title": "FIXTURE PLACEHOLDER SOURCE", "url": "https://example.invalid/fixture", "page": null, "quote": null, "retrieved": "2026-11-14", "archive_id": null}]}
+}

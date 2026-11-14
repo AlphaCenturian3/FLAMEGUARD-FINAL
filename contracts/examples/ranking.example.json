@@ -1,0 +1,20 @@
+{
+  "fixture": true,
+  "contract_version": "0.2.0",
+  "context": "spacecraft",
+  "criteria_version": "fixture",
+  "criteria": [
+    {"id": "fixture-criterion-a", "description": "FIXTURE criterion A", "weight": 0.5},
+    {"id": "fixture-criterion-b", "description": "FIXTURE criterion B", "weight": 0.5}
+  ],
+  "items": [
+    {"rank": 1, "investigation_id": "fixture-investigation-1", "score": 0.75,
+     "criterion_scores": [
+       {"criterion_id": "fixture-criterion-a", "score": 1.0, "inputs": [{"finding_id": "fixture-finding-measured-1", "evidence_class": "measured"}]},
+       {"criterion_id": "fixture-criterion-b", "score": 0.5, "inputs": [{"finding_id": "fixture-finding-interp-1", "evidence_class": "interpretation"}]}
+     ],
+     "rationale": "FIXTURE rationale."}
+  ],
+  "excluded": [{"investigation_id": "fixture-investigation-2", "reason": "FIXTURE: no reported value for any criterion"}],
+  "generated_by": "FlameGuard-SI"
+}

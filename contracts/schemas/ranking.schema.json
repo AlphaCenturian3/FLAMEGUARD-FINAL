@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ranking.schema.json",
+  "title": "Ranking",
+  "description": "GET /api/rankings?context=<environment>. Transparent: every score is the weighted sum of listed criterion scores, each traced to finding ids. Simulations are never inputs.",
+  "type": "object",
+  "required": ["contract_version", "context", "criteria_version", "criteria", "items", "excluded", "generated_by"],
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {"type": "boolean"},
+    "contract_version": {"type": "string"},
+    "context": {"enum": ["spacecraft", "space_station", "lunar_base", "martian_base", "pressurized_rover", "earth"]},
+    "criteria_version": {"type": "string", "description": "Version of the frozen criteria file (config/ranking_criteria_v<N>.json)."},
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "weight"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "weight": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rank", "investigation_id", "score", "criterion_scores", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "rank": {"type": "integer", "minimum": 1},
+          "investigation_id": {"type": "string"},
+          "score": {"type": "number", "minimum": 0, "maximum": 1},
+          "criterion_scores": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["criterion_id", "score", "inputs"],
+              "additionalProperties": false,
+              "properties": {
+                "criterion_id": {"type": "string"},
+                "score": {"type": "number", "minimum": 0, "maximum": 1},
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["finding_id", "evidence_class"],
+                    "additionalProperties": false,
+                    "properties": {
+                      "finding_id": {"type": "string"},
+                      "evidence_class": {"enum": ["measured", "interpretation"]}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "rationale": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["investigation_id", "reason"],
+        "additionalProperties": false,
+        "properties": {"investigation_id": {"type": "string"}, "reason": {"type": "string"}}
+      }
+    },
+    "generated_by": {"const": "FlameGuard-SI"}
+  }
+}

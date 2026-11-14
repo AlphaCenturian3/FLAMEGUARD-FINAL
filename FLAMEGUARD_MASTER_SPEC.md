@@ -1,7 +1,7 @@
 # FlameGuard-SI Master Specification
 
-**Spec version:** 0.1.0 (initialization)
-**Status:** Scaffold only. Nothing beyond `GET /api/health` and the data-provenance checker exists yet.
+**Spec version:** 0.2.0 (CP1 proposal, **not approved**)
+**Status:** Scaffold only. Nothing beyond `GET /api/health` and the data-provenance checker exists yet. Workstream tasks and acceptance criteria are in [`docs/CP1_WORKSTREAMS.md`](docs/CP1_WORKSTREAMS.md).
 **Rule:** This file is the single source of truth. If code, a README, or a PR description disagrees with it, this file wins until someone changes it through a reviewed PR.
 
 ---
@@ -44,6 +44,7 @@ Every scientific value shown, stored, or sent between components carries exactly
 - Every simulation output and view shows the label **"Fluid and thermal transport model. No combustion chemistry."**, or a stricter label if the model differs.
 - Simulated values never feed the ranking, the assistant's evidence, or any `measured` field.
 - Ranking and assistant modules must not import simulation modules. A test will enforce this once those modules exist.
+- Simulations are never `Finding` objects. They are served only as `SimulationResult` from `/api/simulations/*`. The `Finding`, `Comparison`, `Ranking` and `AssistantAnswer` schemas reject `illustrative_simulation` (contract v0.2.0).
 
 ### 2.4 Attribution and rights
 
@@ -91,48 +92,76 @@ Secrets such as AI API keys come only from environment variables (see `.env.exam
 
 ## 4. Team ownership
 
-| Branch | Workstream | Owns (writes) | Reads |
+| Branch | Workstream | Owner (GitHub) | Owns (writes) |
 |---|---|---|---|
-| `feat/backend-science` | Backend API, analysis, ranking, assistant | `backend/`, `contracts/` (shared, see §5.4) | `data/` |
-| `feat/frontend-dashboard` | Dashboard UI | `frontend/` | `contracts/` |
-| `feat/nasa-data-tars` | NASA data acquisition, curation, provenance | `data/`, `tools/` ingest scripts | `contracts/schemas/data_manifest.schema.json` |
-| `test/qa-demo` | QA, integration tests, demo script, submission checklist | `tests/`, `docs/DEMO.md` | everything |
+| `feat/backend-science` | Backend API, comparison, ranking, interpretation, assistant | _unassigned_ | `backend/`, `config/`, `data/curated/interpretations/`, `tests/backend/`, `pyproject.toml` |
+| `feat/frontend-dashboard` | Dashboard UI | _unassigned_ | `frontend/`, `tests/frontend/` |
+| `feat/nasa-data-tars` | NASA data acquisition, curation, provenance | _unassigned_ | `data/` (except `curated/interpretations/`), `tools/`, `tests/data/` |
+| `test/qa-demo` | QA, integration and integrity tests, demo, submission | _unassigned_ | `tests/integration/`, `tests/e2e/`, `.github/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/` |
+| shared | Contract and spec | all four | `contracts/`, `FLAMEGUARD_MASTER_SPEC.md`, root `tests/test_*.py` |
 
-**Names:** _team to fill in the GitHub handle for each row._ Current collaborators: `AlphaCenturian3`, `buihhlong-a11y`.
+Current collaborators: `AlphaCenturian3`, `buihhlong-a11y`. Two more members still need repository access.
 **Open question:** "TARS" in `feat/nasa-data-tars` is not defined anywhere yet. Define it here.
 
-Changing a file outside your own area is allowed, but the PR must request review from that area's owner.
+Rules that keep the branches from conflicting:
 
-## 5. Integration contract (v0)
+- Change files outside your own area only through a PR that requests review from that area's owner.
+- Dependency changes go in `pyproject.toml` through a small PR of their own, owned by backend. Never bundle them with feature work.
+- Only backend edits `backend/flameguard/api/app.py`. Backend also mounts `frontend/` at `/`.
+- Only QA edits `.github/workflows/`. Another workstream that needs a CI step asks QA.
 
-Full details are in [`contracts/README.md`](contracts/README.md). The schemas are in `contracts/schemas/`, and CI validates the examples in `contracts/examples/` against them.
+## 5. Integration contract (v0.2.0, proposed)
+
+Full details are in [`contracts/README.md`](contracts/README.md). The schemas are in `contracts/schemas/`, the quantity vocabulary is in `contracts/vocabulary.json`, and CI validates the examples in `contracts/examples/` against the schemas.
 
 ### 5.1 Endpoints
 
-| Method and path | Status | Owner | Response |
-|---|---|---|---|
-| `GET /api/health` | **implemented** | backend | `{"status":"ok","service":"flameguard-si","contract_version":"0.1.0"}` |
-| `GET /api/investigations` | planned | backend | `{"items":[Investigation], "contract_version"}` |
-| `GET /api/investigations/{id}` | planned | backend | `Investigation` |
-| `GET /api/findings?investigation_id=` | planned | backend | `{"items":[Finding]}` |
-| `GET /api/rankings?context=` | planned | backend | `{"items":[{investigation_id, score, rationale, inputs:[Finding.id]}]}`. Inputs must be `measured` or `interpretation` only. |
-| `POST /api/assistant/ask` | planned | backend | `{"answer", "citations":[Source], "generated_by":"FlameGuard-SI"}` |
-| `GET /api/simulations/{id}` | planned | backend | `SimulationResult` (carries `label`) |
+All planned endpoints return HTTP 501 with an `Error` body today (`backend/flameguard/api/app.py`).
 
-Planned endpoints should return HTTP 501 with an `Error` body until they are implemented. The frontend must handle 501.
+| Method and path | Status | Response schema |
+|---|---|---|
+| `GET /api/health` | **implemented** | `health` |
+| `GET /api/investigations` | planned | `list_envelope`, items are `investigation` |
+| `GET /api/investigations/{id}` | planned | `investigation`; `error` (`not_found`) with 404 |
+| `GET /api/findings?investigation_id=&evidence_class=&quantity=` | planned | `list_envelope`, items are `finding` |
+| `GET /api/compare?quantity=&investigation_ids=a,b` | planned | `comparison` (measured findings only) |
+| `GET /api/rankings?context=<environment>` | planned | `ranking` |
+| `POST /api/assistant/ask` | planned | request `assistant_request`, response `assistant_answer` |
+| `GET /api/simulations/{id}` | planned, lowest priority | `simulation_result` |
+
+Every query parameter is optional except `quantity` on `/api/compare` and `context` on `/api/rankings`. An unknown parameter value returns 400 with an `invalid_request` error. Lists are not paginated in v0.2.
 
 ### 5.2 Shared objects
 
-- `Source`: a citation (title, URL, page, quote, retrieval date).
-- `Investigation`: a NASA investigation (id, name, platform, objectives, sources).
-- `Finding`: one value or statement, with its `evidence_class` and provenance.
-- `SimulationResult`: an `illustrative_simulation` payload with a required label.
+- `Source`: a citation (title, URL, page, exact quote, retrieval date). Dates are ISO `YYYY-MM-DD`, checked by tests.
+- `Investigation`: a NASA investigation, with `datasets` pointing to manifest ids.
+- `Finding`: one `measured` value or one `interpretation`.
+  - **A measured finding** needs a `locator` (where in the source) and a manifest id.
+  - **`value_status`** is `reported`, `not_reported` or `not_applicable`. A missing value is `null` and can never be filled in.
+  - **A numeric value** needs a `quantity` from `contracts/vocabulary.json` and exactly that unit.
+  - **`conditions`** has fixed keys whose names carry the units. Unknown keys are rejected.
+- `Comparison`: measured rows for one quantity. When it is `comparable: false`, it must give at least one reason. The backend never converts units, interpolates or fills gaps.
+- `Ranking`: frozen criteria with weights. Each score is the weighted sum of its criterion scores, and each criterion score lists its input findings, which are measured or interpretation only. Investigations left out of the ranking appear in `excluded` with a reason.
+- `AssistantAnswer`: `mode` is `ai`, `fallback_quotes` or `no_evidence`. Every mode except `no_evidence` needs at least one citation. Citations are findings only.
+- `SimulationResult`: `illustrative_simulation` with the required label. `verification_status` is `unverified` or `numerically_verified` only.
 - `DataManifest`: the registry of every data file in `data/`.
-- `Error`: `{"error": {"code", "message"}}`.
+- `Error`: `{"error": {"code", "message"}}`, where `code` is `not_implemented`, `not_found`, `invalid_request` or `unavailable`.
+
+### 5.2a Data layout (data team to backend)
+
+| File | Contents | Owner | Manifest `evidence_class` |
+|---|---|---|---|
+| `data/curated/investigations.json` | JSON array of `Investigation` | data | `measured` |
+| `data/curated/findings/<investigation_id>.json` | JSON array of measured `Finding` | data | `measured` |
+| `data/curated/interpretations/<name>.json` | JSON array of interpretation `Finding` | backend | `interpretation` |
+| `data/simulated/<name>.json` | `SimulationResult` | backend | `illustrative_simulation` |
+| `config/ranking_criteria_v<N>.json` | Ranking criteria and weights, frozen in its own commit before any ranking output exists | backend | not data, so it is not in the manifest |
+
+The backend loads only manifest entries that pass `tools/check_data_provenance.py` and whose contents validate against the schemas. If a file fails, the backend fails closed: it skips the file and reports it, and never loads it partially.
 
 ### 5.3 Independent development
 
-- Frontend: build against `contracts/examples/*.json` until the backend serves real data. Example files are fixtures. Never display them as NASA data in the demo.
+- Frontend: build against `contracts/examples/*.json` until the backend serves real data. Example files are fixtures. Fixture mode must be switched on explicitly (`?fixtures=1`). While it is on, every page shows a permanent "FIXTURE DATA. NOT NASA DATA." banner. Never display fixtures as NASA data in the demo.
 - Backend: build against the schemas and use `tests/fixtures/` for test data.
 - Data: register each file in `data/manifest.json`. The backend reads only manifest entries that pass `tools/check_data_provenance.py`.
 
@@ -148,8 +177,8 @@ All times are **proposed**. The team confirms them. Submission closes Sunday, No
 
 | ID | Checkpoint | Exit criteria | Status |
 |---|---|---|---|
-| CP0 | Repository initialized | main, 4 branches, CI green on main | see completion report |
-| CP1 | Contract v0 frozen | All owners approve `contracts/`; owner names filled in §4 | open |
+| CP0 | Repository initialized | main, 4 branches, CI green on main | done: `3dc56ff`, CI run 43627519740 |
+| CP1 | Contract frozen | All four owners named in §4 and approve the contract PR; "TARS" defined; PR merged with CI green | open |
 | CP2 | First real data | ≥1 `measured` manifest entry passes provenance check; rights status recorded | open |
 | CP3 | First integration | Frontend renders backend data from CP2 on `main`; CI green | open |
 | CP4 | Demo freeze | `docs/DEMO.md` walkthrough passes on a clean clone; only fixes after this | open |
@@ -169,3 +198,6 @@ All times are **proposed**. The team confirms them. Submission closes Sunday, No
 3. Definition of "TARS" (§4).
 4. Owner names (§4).
 5. Hosting and deployment target for the demo.
+6. Repository access for the remaining two team members.
+7. Whether the AI assistant uses a live key at the demo, and who holds that key.
+8. Branch protection: GitHub blocks it on a private free-plan repo, so `main` stays green by team convention only.

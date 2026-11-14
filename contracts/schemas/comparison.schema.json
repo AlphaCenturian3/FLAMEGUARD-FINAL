@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comparison.schema.json",
+  "title": "Comparison",
+  "description": "GET /api/compare?quantity=<key>&investigation_ids=a,b. Measured findings only. No unit conversion, interpolation or gap filling.",
+  "type": "object",
+  "required": ["contract_version", "quantity", "unit", "rows", "comparable", "non_comparable_reasons"],
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {"type": "boolean"},
+    "contract_version": {"type": "string"},
+    "quantity": {"type": "string"},
+    "unit": {"type": "string"},
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["investigation_id", "finding_id", "value", "value_status", "conditions"],
+        "additionalProperties": false,
+        "properties": {
+          "investigation_id": {"type": "string"},
+          "finding_id": {"type": "string"},
+          "evidence_class": {"const": "measured"},
+          "value": {"type": ["number", "string", "null"]},
+          "value_status": {"enum": ["reported", "not_reported", "not_applicable"]},
+          "conditions": {"$ref": "conditions.schema.json"}
+        }
+      }
+    },
+    "comparable": {"type": "boolean"},
+    "non_comparable_reasons": {"type": "array", "items": {"type": "string"}, "description": "Required non-empty when comparable is false, e.g. 'pressure_kpa differs'."}
+  },
+  "if": {"properties": {"comparable": {"const": false}}},
+  "then": {"properties": {"non_comparable_reasons": {"minItems": 1}}}
+}

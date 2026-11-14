@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "conditions.schema.json",
+  "title": "Conditions",
+  "description": "Experimental conditions as reported by the source. Units are fixed by key name. null means not reported; never estimate a value.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "gravity_environment": {"enum": ["microgravity", "partial_gravity", "normal_gravity", null]},
+    "oxygen_mole_fraction": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "pressure_kpa": {"type": ["number", "null"], "exclusiveMinimum": 0},
+    "flow_velocity_mm_s": {"type": ["number", "null"], "minimum": 0},
+    "flow_configuration": {"enum": ["opposed", "concurrent", "quiescent", null]},
+    "diluent": {"type": ["string", "null"]},
+    "fuel_or_material": {"type": ["string", "null"]},
+    "sample_geometry": {"type": ["string", "null"]}
+  }
+}

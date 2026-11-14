@@ -4,16 +4,50 @@
   "title": "SimulationResult",
   "description": "Illustrative model output. Never experimental data; never a ranking or assistant input.",
   "type": "object",
-  "required": ["id", "evidence_class", "label", "model", "model_version", "parameters", "outputs"],
+  "required": [
+    "id",
+    "evidence_class",
+    "label",
+    "model",
+    "model_version",
+    "parameters",
+    "outputs",
+    "verification_status"
+  ],
   "properties": {
-    "fixture": {"type": "boolean"},
-    "id": {"type": "string", "minLength": 1},
-    "evidence_class": {"const": "illustrative_simulation"},
-    "label": {"const": "Fluid and thermal transport model. No combustion chemistry."},
-    "model": {"type": "string", "minLength": 1},
-    "model_version": {"type": "string", "minLength": 1},
-    "verification_status": {"enum": ["unverified", "numerically_verified", "validated_against_measured"]},
-    "parameters": {"type": "object"},
-    "outputs": {"type": "object"}
+    "fixture": {
+      "type": "boolean"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_class": {
+      "const": "illustrative_simulation"
+    },
+    "label": {
+      "const": "Fluid and thermal transport model. No combustion chemistry."
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verification_status": {
+      "enum": [
+        "unverified",
+        "numerically_verified"
+      ],
+      "description": "Validation against measured data needs a contract change that defines validation references."
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "outputs": {
+      "type": "object"
+    }
   }
 }

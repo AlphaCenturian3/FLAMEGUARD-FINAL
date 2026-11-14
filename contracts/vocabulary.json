@@ -1,0 +1,11 @@
+{
+  "vocabulary_version": "0.2.0",
+  "note": "Initial quantity keys for comparison. Extend only through a contract PR. A Finding with a numeric value must use one of these keys and exactly this unit.",
+  "quantities": {
+    "flame_spread_rate": {"unit": "mm/s", "description": "Rate of flame front advance over a solid fuel surface."},
+    "extinction_oxygen_mole_fraction": {"unit": "1", "description": "Lowest oxygen mole fraction at which a flame was sustained, as reported."},
+    "ignition_delay": {"unit": "s", "description": "Time from ignition energy onset to sustained flame, as defined by the source."},
+    "flame_length": {"unit": "mm", "description": "Flame length as defined by the source."},
+    "flame_temperature": {"unit": "K", "description": "Flame or gas temperature as reported by the source."}
+  }
+}

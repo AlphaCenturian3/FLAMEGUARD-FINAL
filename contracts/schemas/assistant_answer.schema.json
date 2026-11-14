@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "assistant_answer.schema.json",
+  "title": "AssistantAnswer",
+  "description": "POST /api/assistant/ask. Evidence is measured or interpretation findings only. With no AI key, mode is fallback_quotes and the answer is assembled from exact source quotes.",
+  "type": "object",
+  "required": ["contract_version", "answer", "mode", "citations", "generated_by"],
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {"type": "boolean"},
+    "contract_version": {"type": "string"},
+    "answer": {"type": "string"},
+    "mode": {"enum": ["ai", "fallback_quotes", "no_evidence"]},
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["finding_id", "evidence_class", "source"],
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {"type": "string"},
+          "evidence_class": {"enum": ["measured", "interpretation"]},
+          "source": {"$ref": "source.schema.json"}
+        }
+      }
+    },
+    "generated_by": {"const": "FlameGuard-SI"}
+  },
+  "if": {"properties": {"mode": {"enum": ["ai", "fallback_quotes"]}}},
+  "then": {"properties": {"citations": {"minItems": 1}}}
+}
