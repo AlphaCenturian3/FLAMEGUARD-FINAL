@@ -3,18 +3,58 @@
   "$id": "investigation.schema.json",
   "title": "Investigation",
   "type": "object",
-  "required": ["id", "name", "sources"],
+  "required": [
+    "id",
+    "name",
+    "sources"
+  ],
+  "additionalProperties": false,
   "properties": {
-    "fixture": {"type": "boolean"},
-    "id": {"type": "string", "minLength": 1},
-    "name": {"type": "string", "minLength": 1},
-    "acronym": {"type": ["string", "null"]},
-    "platform": {"type": ["string", "null"], "description": "e.g. ISS, drop tower, parabolic flight"},
-    "objectives": {"type": "array", "items": {"type": "string"}},
+    "fixture": {
+      "type": "boolean"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acronym": {
+      "$ref": "common.schema.json#/$defs/text_or_null"
+    },
+    "platform": {
+      "$ref": "common.schema.json#/$defs/text_or_null",
+      "description": "e.g. ISS, drop tower, parabolic flight"
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "relevant_environments": {
       "type": "array",
-      "items": {"enum": ["spacecraft", "space_station", "lunar_base", "martian_base", "pressurized_rover", "earth"]}
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/environment"
+      }
     },
-    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "source.schema.json"}}
+    "datasets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      },
+      "description": "Manifest ids holding this investigation's measured findings."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "source.schema.json"
+      }
+    }
   }
 }

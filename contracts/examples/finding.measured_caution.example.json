@@ -1,0 +1,58 @@
+{
+  "fixture": true,
+  "id": "fixture-finding-measured-caution-1",
+  "investigation_id": "fixture-investigation-1",
+  "evidence_class": "measured",
+  "statement": "FIXTURE PLACEHOLDER. Reported value with a FlameGuard-SI caution.",
+  "quantity": "flame_spread_rate",
+  "value": 1.0,
+  "unit": "mm/s",
+  "value_status": "reported",
+  "uncertainty": null,
+  "conditions": {
+    "gravity_environment": "microgravity",
+    "oxygen_mole_fraction": null,
+    "pressure_kpa": null,
+    "flow_velocity_mm_s": null,
+    "flow_configuration": null,
+    "diluent": null,
+    "fuel_or_material": null,
+    "sample_geometry": null
+  },
+  "fire_safety_topics": [
+    "material_flammability"
+  ],
+  "provenance": {
+    "manifest_id": "fixture-dataset-1",
+    "locator": "FIXTURE table 0, row 2",
+    "sources": [
+      {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "page": null,
+        "quote": null,
+        "retrieved": "2026-11-14",
+        "archive_id": null
+      }
+    ]
+  },
+  "curation_notes": [
+    {
+      "kind": "caution",
+      "note": "FIXTURE caution: sample contamination noted by the curator.",
+      "generated_by": "FlameGuard-SI",
+      "flag_ref": {
+        "manifest_id": "fixture-quality-flags-1",
+        "flag_id": "F-fixture-1"
+      },
+      "source": {
+        "title": "FIXTURE PLACEHOLDER SOURCE",
+        "url": "https://example.invalid/fixture",
+        "page": 1,
+        "retrieved": "2026-11-14",
+        "archive_id": null,
+        "quote": "FIXTURE quote recorded for the caution flag."
+      }
+    }
+  ]
+}
