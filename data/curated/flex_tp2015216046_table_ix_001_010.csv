@@ -1,0 +1,11 @@
+flex_test,flex_identifier,test_date_as_printed,test_date_iso,test_time_gmt,fuel,ambient_pressure_mmhg,o2_mole_fraction,n2_mole_fraction,co2_mole_fraction,he_mole_fraction,initial_droplet_diameter_mm,visible_flame_extinction_diameter_mm,burning_rate_constant_mm2_per_s,burn_time_s,test_end,source_dash_fields,source_printed_page,source_pdf_page
+FLEX-001,20CAL08,3/5/09,2009-03-05,17:22:03,Methanol,757.7,0.21,0.79,0,0,1.69,0.89,0.52,4.3,Disruption,,20,26
+FLEX-002,20CAL10,3/5/09,2009-03-05,19:20:06,Methanol,762,0.21,0.79,0,0,1.86,0.94,0.6,5,Extinction,,20,26
+FLEX-003,20CAL12,3/5/09,2009-03-05,21:17:46,Methanol,764.2,0.21,0.79,0,0,1.61,0.92,0.58,3.2,Extinction,,20,26
+FLEX-004,30CAL02,3/31/09,2009-03-31,17:16:18,Methanol,760,0.21,0.79,0,0,2.06,,0.6,7.64,Extinction,visible_flame_extinction_diameter_mm,20,26
+FLEX-005,30CAL03,3/31/09,2009-03-31,19:00:48,Methanol,760,0.21,0.79,0,0,1.92,0.81,0.48,6.34,Extinction,,20,26
+FLEX-006,40CAL01,3/31/09,2009-03-31,20:05:49,Methanol,760,0.21,0.79,0,0,2.54,1.53,0.51,9.6,Extinction,,20,26
+FLEX-007,20CAL13,4/10/09,2009-04-10,13:26:11,Heptane,761.3,0.21,0.79,0,0,1.87,,0.67,5.3,Disruption,visible_flame_extinction_diameter_mm,20,26
+FLEX-008,30CAL06,4/10/09,2009-04-10,18:07:15,Heptane,762.4,0.21,0.79,0,0,2.95,,0.79,14.8,Disruption,visible_flame_extinction_diameter_mm,20,26
+FLEX-009,30CAL07,4/10/09,2009-04-10,,Heptane,760,0.21,0.79,0,0,,,,,Disruption,test_time_gmt;initial_droplet_diameter_mm;visible_flame_extinction_diameter_mm;burning_rate_constant_mm2_per_s;burn_time_s,20,26
+FLEX-010,256F002,5/22/09,2009-05-22,14:53:27,Methanol,2319.7,0.21,0.09,0.7,0,3.86,,0.37,13.6,Extinction,visible_flame_extinction_diameter_mm,20,26
