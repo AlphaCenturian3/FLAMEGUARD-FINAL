@@ -107,3 +107,13 @@ def test_conversions_are_exact_defined_factors(ref):
         if a["status"] == "historical_recommendation"
     ]
     assert hist and hist[0]["pressure_kpa"] is None  # psia-only source, not converted
+
+
+def test_member1_labels_and_authentication_status(ref):
+    by_env = {r["environment"]: r for r in ref["records"]}
+    assert by_env["spacecraft"]["physical"]["gravity"]["display_label"] == "assumed: coast phase"
+    variants = {v["case"]: v for v in by_env["pressurized_rover"]["physical"]["variants"]}
+    assert variants["Martian pressurized rover"]["display_label"] == "reference unknown"
+    assert variants["Martian pressurized rover"]["contract_gravity_environment"] is None
+    assert variants["lunar pressurized rover"]["display_label"] == "assumed: lunar rover"
+    assert "not independently authenticated" in ref["status"]

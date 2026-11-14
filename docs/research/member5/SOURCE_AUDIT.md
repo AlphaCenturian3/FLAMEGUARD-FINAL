@@ -2,7 +2,7 @@
 
 **Run date:** 2026-11-14 (re-run after adding the FLEX report quotes and the environmental reference table). **Scope:** every quote citation in `evidence_reported.json`, `investigations.json` and `environment_reference.json`.
 
-**Result:** 43 quote citations. **29 verified automatically**, **14 verified manually**, **0 failed**. Executor check only; an independent review is pending.
+**Result:** 43 quote citations. **29 verified automatically**, **14 verified manually**, **0 failed**. Executor check only: these citations are **recorded, not independently authenticated** (Member 1, PR #3 comment 6883984161) until Member 3 completes the independent review.
 
 | File | Citations | Automated | Manual | Failed |
 |---|---|---|---|---|

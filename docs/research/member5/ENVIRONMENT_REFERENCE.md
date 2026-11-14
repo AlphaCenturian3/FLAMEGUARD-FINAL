@@ -1,6 +1,10 @@
 # Environmental reference conditions (D-01, condition 2)
 
-**Status:** draft for Member 1 and Member 3 review. Machine-readable version with every citation: `environment_reference.json`. All sources were retrieved on 2026-11-14.
+**Status:** draft, revision 2, for Member 1 and Member 3 review. Machine-readable version with every citation: `environment_reference.json`. All sources were retrieved on 2026-11-14.
+
+**Authentication:** the citations below were checked by the executor (automated or manual PDF check; see `SOURCE_AUDIT.md`). They are **recorded, not independently authenticated**, until Member 3 completes the independent review (Member 1, [comment 6883984161](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/3#issuecomment-6883984161)).
+
+**Revision 2:** applies Member 1's requested labels: generic spacecraft gravity **"assumed: coast phase"**; Martian pressurized rover **"reference unknown"**. Under the revised criteria, O₂ and pressure in this table are **descriptive only, not scored** (tolerances inactive).
 
 **Rules used:**
 
@@ -14,10 +18,11 @@
 | Context | Gravity | Contract category | External pressure | External O₂ | Source |
 |---|---|---|---|---|---|
 | `space_station` | microgravity (orbital free fall) | microgravity | not applicable (fires are inside the cabin) | not applicable | NASA, *Studying Combustion and Fire Safety* |
-| `spacecraft` | microgravity in orbit or transit | microgravity (**editorial classification**, Member 1 to confirm) | not applicable | not applicable | none; classification by Member 5 |
+| `spacecraft` | microgravity in orbit or coast; label **"assumed: coast phase"** (excludes launch, entry and landing) | microgravity (editorial assumption, accepted as labelled by Member 1) | not applicable | not applicable | none; assumption by Member 5, never shown as physical |
 | `lunar_base` | 1.62 m/s² (0.165 × Earth) | partial_gravity | 3 × 10⁻¹⁵ bar at night (effectively vacuum) | not applicable | NASA NSSDC Moon Fact Sheet |
 | `martian_base` | 3.73 m/s² mean (0.380 × Earth) | partial_gravity | 0.636 kPa (6.36 mb at mean radius; 4.0–8.7 mb by season) | 0.0016 (0.16 %; atmosphere 95.1 % CO₂) | NASA NSSDC Mars Fact Sheet |
-| `pressurized_rover` | **location-dependent** (Artemis PR is a lunar surface element) | partial_gravity for a lunar or Martian rover | location-dependent | location-dependent | Artemis Deep Space Habitation paper (NTRS 20220000245), p. 2 |
+| `pressurized_rover` (lunar) | label **"assumed: lunar rover"**: 1.62 m/s² if on the Moon (Artemis PR is a lunar surface element) | partial_gravity (labelled assumption, accepted by Member 1) | location-dependent | location-dependent | Artemis Deep Space Habitation paper (NTRS 20220000245), p. 2 |
+| pressurized rover (Martian) | **reference unknown** | **reference unknown**: the contract context `pressurized_rover` cannot express a Martian rover | reference unknown | reference unknown | no reviewed source |
 | `earth` | 9.820 m/s² mean | normal_gravity | 101.4 kPa (1014 mb) | 0.2095 (20.95 %, dry air) | NASA NSSDC Earth Fact Sheet |
 
 ## Design assumptions (cabin and habitat atmospheres)
