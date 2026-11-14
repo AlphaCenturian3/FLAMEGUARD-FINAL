@@ -98,8 +98,8 @@ Secrets such as AI API keys come only from environment variables (see `.env.exam
 |---|---|---|---|---|
 | 1 | `AlphaCenturian3` (designated by coordination; confirm) | `feat/backend-science` | Backend, physics, APIs, scientific implementation and integration; all runtime ranking, comparison and TARS execution | `backend/` (except `backend/flameguard/evidence/`), `config/` (except ranking criteria), `pyproject.toml`, `.github/workflows/`, `tests/backend/`, `tests/integration/` |
 | 2 | _not declared_ | `feat/frontend-dashboard` | Frontend, dashboard, visualizations and UX; TARS UI | `frontend/`, `tests/frontend/`, `tests/e2e/`, `tests/fixtures/frontend/` |
-| 3 | _not declared_ | `feat/nasa-data-tars` | NASA datasets, provenance, TARS evidence integration and retrieval | `data/` (except `data/curated/interpretations/`), `tools/`, `backend/flameguard/evidence/`, `tests/data/`, `docs/verification/data_candidates.md` |
-| 5 | `16trtuoiloz-ducdo` (self-identified in PR #3; confirm) | `feat/research-safety-intelligence` (exists, PR #3) | Research interpretation, ranking criteria, Moon/Mars fire-safety recommendations, judge-demo narrative, independent scientific review | `research/` (non-runtime), `data/curated/interpretations/`, `config/ranking_criteria_v*.json`, `docs/research/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/source_spotcheck.md`, `tests/research/`, `tests/fixtures/research/` |
+| 3 | `huyenthoai272008` (self-identified in PR #4; confirm) | `feat/nasa-data-tars` | NASA datasets, provenance, data-quality flags, TARS evidence integration and retrieval | `data/` (except `data/curated/interpretations/` outside `quality/`), `data/curated/interpretations/quality/`, `tools/`, `backend/flameguard/evidence/`, `tests/data/`, `docs/verification/data_candidates.md` |
+| 5 | `16trtuoiloz-ducdo` (self-identified in PR #3; confirm) | `feat/research-safety-intelligence` (exists, PR #3) | Research interpretation, ranking criteria, Moon/Mars fire-safety recommendations, judge-demo narrative, independent scientific review | `research/` (non-runtime), `data/curated/interpretations/` (except `quality/`), `config/ranking_criteria_v*.json`, `docs/research/`, `docs/DEMO.md`, `docs/SUBMISSION_CHECKLIST.md`, `docs/verification/source_spotcheck.md`, `tests/research/`, `tests/fixtures/research/` |
 | all | | | Contract and spec | `contracts/`, `FLAMEGUARD_MASTER_SPEC.md`, root `tests/test_*.py`, `docs/verification/` (shared log) |
 
 `test/qa-demo` stays on the remote unchanged until the team decides what happens to it. It has no owner, and nobody commits to it in the meantime. Its QA and demo duties are spread across the four members in the plan (`docs/CP1_WORKSTREAMS.md`, item map).
@@ -122,6 +122,7 @@ Each interface has one producer and one consumer. The producer may not change an
 |---|---|---|---|---|
 | Curated measured data | 3 | 1 | `data/curated/investigations.json`, `data/curated/findings/<id>.json` + manifest | contract `investigation`/`finding`; S0–S4 |
 | Interpretations and Moon/Mars recommendations | 5 | 1 | `data/curated/interpretations/<name>.json` + manifest | contract `finding` (interpretation); S3 |
+| Data-quality flags (exclude / caution / not available) | 3 | 1, 5 | `data/curated/interpretations/quality/` + manifest (`interpretation`) | Member 5 reviews independently; the loader and ranking respect `exclude` (see the CP1 decisions in `docs/CP1_WORKSTREAMS.md`) |
 | Ranking criteria | 5 | 1 | `config/ranking_criteria_v1.json`, frozen in its own commit before any ranking output | Members 1 and 3 approve; never edited after the freeze |
 | Evidence retrieval | 3 | 1 | `retrieve(question: str, investigation_ids: list[str] \| None, limit: int) -> list[Finding]` | deterministic, no network or AI calls; returns only `measured`/`interpretation` findings that passed the loader, never a `SimulationResult` |
 | HTTP API | 1 | 2 | the endpoints in §5.1 | the response schemas in `contracts/schemas/` |
@@ -148,6 +149,7 @@ No member reviews their own scientific work. Each artifact needs approval from s
 | Artifact | Author | Independent reviewer |
 |---|---|---|
 | Curated measured data (D1 to D3) | 3 | 5 (source spot check Q3) |
+| Data-quality flags | 3 | 5 |
 | Interpretations, Moon/Mars recommendations (R2, R3) | 5 | 3 (traceability: `derived_from`, quotes) **and** 1 (scientific soundness) |
 | Ranking criteria freeze (R1) | 5 | 1 and 3, approved before any ranking output exists |
 | Ranking, compare and TARS code (B3, B4, B6) | 1 | 5 (independent checks of S5, S6, S8 in `tests/research/`) |
@@ -209,6 +211,8 @@ Every query parameter is optional except `quantity` on `/api/compare` and `conte
 | `data/curated/investigations.json` | JSON array of `Investigation` | Member 3 | `measured` |
 | `data/curated/findings/<investigation_id>.json` | JSON array of measured `Finding` | Member 3 | `measured` |
 | `data/curated/interpretations/<name>.json` | JSON array of interpretation `Finding` (including Moon/Mars recommendations) | Member 5 | `interpretation` |
+| `data/curated/interpretations/quality/<name>.csv` | Data-quality flags on measured values (FlameGuard-SI curation judgments) | Member 3 | `interpretation` |
+| `data/curated/<source>.csv` | As-printed transcription of a NASA table, the registered measured source for the findings files | Member 3 | `measured` |
 | `data/simulated/<name>.json` | `SimulationResult` | Member 1 | `illustrative_simulation` |
 | `config/ranking_criteria_v<N>.json` | Ranking criteria and weights, frozen in its own commit before any ranking output exists | Member 5 (Members 1 and 3 approve) | not data, so it is not in the manifest |
 
