@@ -163,7 +163,9 @@ class Scenario:
         manifest = {"manifest_version": "0.2.0", "datasets": entries}
         manifest_text = self.raw.get("data/manifest.json", dump(manifest))
         (self.root / "data").mkdir(exist_ok=True)
-        (self.root / "data" / "manifest.json").write_text(manifest_text, encoding="utf-8", newline="\n")
+        (self.root / "data" / "manifest.json").write_text(
+            manifest_text, encoding="utf-8", newline="\n"
+        )
         return self.root
 
 

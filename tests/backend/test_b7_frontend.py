@@ -37,9 +37,13 @@ def site_dir(tmp_path):
     (root / "static" / "js").mkdir(parents=True)
     (root / "static" / "css").mkdir(parents=True)
     (root / "index.html").write_text(INDEX, encoding="utf-8", newline="\n")
-    (root / "static" / "js" / "main.js").write_text("export const ok = true;\n", encoding="utf-8", newline="\n")
+    (root / "static" / "js" / "main.js").write_text(
+        "export const ok = true;\n", encoding="utf-8", newline="\n"
+    )
     (root / "static" / "css" / "app.css").write_text("body{}\n", encoding="utf-8", newline="\n")
-    (tmp_path / "secret.txt").write_text("SECRET OUTSIDE THE DASHBOARD", encoding="utf-8", newline="\n")
+    (tmp_path / "secret.txt").write_text(
+        "SECRET OUTSIDE THE DASHBOARD", encoding="utf-8", newline="\n"
+    )
     return root
 
 
