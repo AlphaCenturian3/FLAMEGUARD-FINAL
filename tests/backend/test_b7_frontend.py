@@ -6,6 +6,7 @@ everywhere. The tests that use the real `frontend/` skip with "NOT VERIFIED" whe
 
 from __future__ import annotations
 
+import posixpath
 import re
 import socket
 import subprocess
@@ -298,23 +299,22 @@ def test_every_module_and_stylesheet_of_the_real_dashboard_resolves_on_one_origi
     client = TestClient(create_app(EvidenceSource(REPO), REAL_FRONTEND))
     index = client.get("/")
     assert index.status_code == 200 and 'id="source-banner"' in index.text
-    todo = [m for m in re.findall(r'(?:src|href)="([^"#?]+\.(?:js|css))"', index.text)]
-    seen = set()
+    pattern = r'(?:src|href)="([^"#?]+\.(?:js|css))"'
+    todo = [posixpath.normpath("/" + m) for m in re.findall(pattern, index.text)]
+    seen: set[str] = set()
     while todo:
         path = todo.pop()
         if path in seen:
             continue
         seen.add(path)
-        r = client.get("/" + path.lstrip("/"))
+        r = client.get(path)
         assert r.status_code == 200, f"{path} -> {r.status_code}"
         if path.endswith(".js"):
-            base = Path("/" + path.lstrip("/")).parent
+            base = posixpath.dirname(path)
             for spec in re.findall(
                 r'(?:from|import)\s*\(?\s*["\'](\.{1,2}/[^"\']+\.js)["\']', r.text
             ):
-                todo.append(
-                    str((base / spec).resolve()).lstrip("/") if False else (base / spec).as_posix()
-                )
+                todo.append(posixpath.normpath(posixpath.join(base, spec)))
     assert len(seen) > 20, f"only {len(seen)} assets were reached"
 
 
