@@ -44,7 +44,7 @@ try {
     steps.push(await evaluate(`({
       title: (document.querySelector(".demo-say strong")?.textContent || "").replace(/\\.\\s*$/, ""),
       hash: location.hash,
-      fixtureBanner: document.body.innerText.includes("This is not NASA data"),
+      fixtureBanner: document.body.innerText.includes("NOT NASA DATA"),
       shows501: (document.getElementById("main")?.innerText || "").includes("HTTP 501"),
       text: (document.getElementById("main")?.innerText || "").slice(0, 600),
     })`));
