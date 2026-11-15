@@ -43,12 +43,12 @@
     },
     {
       "id": "G7",
-      "what": "Conditions representation approved: diluent format, fuel_or_material normalisation, sample_geometry label",
+      "what": "Conditions representation (diluent, fuel_or_material, sample_geometry, pressure): acceptance criteria A1-A7 documented in docs/decisions/g7-flex-conditions.md and satisfied (tests, audit against the PDF). A project-owner implementation decision, not an independent scientific verification; the three condition decisions stay owner_provisional.",
       "owners": [
         "Member 1",
         "Member 2"
       ],
-      "status": "open"
+      "status": "closed"
     },
     {
       "id": "Q3",

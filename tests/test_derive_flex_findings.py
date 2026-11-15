@@ -171,7 +171,8 @@ def test_nothing_is_registrable_today(real):
     by_status = {g["id"]: g["status"] for g in real["gates"]["gates"]}
     assert by_status["S10-TITLES"] == "closed" and by_status["PR12"] == "open"
     open_ids = {k for k, v in by_status.items() if v == "open"}
-    assert {"PR12", "PR17", "S10-REGISTRATION", "G7", "Q3", "B1-S11", "F042-NOTE"} <= open_ids
+    assert {"PR12", "PR17", "S10-REGISTRATION", "Q3", "B1-S11", "F042-NOTE"} <= open_ids
+    assert by_status["G7"] == "closed" and "F042-NOTE" in open_ids
     decisions = real["gates"]["conditions"]
     assert {c["status"] for c in decisions.values()} == {"owner_provisional"}
     assert all(
