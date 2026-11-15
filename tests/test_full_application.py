@@ -109,6 +109,7 @@ class Server:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
+            encoding="utf-8",
         )
         deadline = time.monotonic() + 60
         while time.monotonic() < deadline:
@@ -145,7 +146,10 @@ def dom(url):
             "--dump-dom",
             url,
         ]
-        return subprocess.run(cmd, capture_output=True, text=True, timeout=90, check=False).stdout  # noqa: S603
+        done = subprocess.run(  # noqa: S603
+            cmd, capture_output=True, text=True, encoding="utf-8", timeout=90, check=False
+        )
+        return done.stdout
 
 
 def text_of(page):

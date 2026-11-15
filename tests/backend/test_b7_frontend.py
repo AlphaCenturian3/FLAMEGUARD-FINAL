@@ -241,7 +241,9 @@ def test_python_m_flameguard_serve_starts_one_origin_and_reports_what_it_serves(
         "--frontend-dir",
         str(site_dir),
     ]
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)  # noqa: S603
+    proc = subprocess.Popen(  # noqa: S603
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding="utf-8"
+    )  # noqa: S603
     try:
         deadline = time.monotonic() + 40
         while time.monotonic() < deadline:
