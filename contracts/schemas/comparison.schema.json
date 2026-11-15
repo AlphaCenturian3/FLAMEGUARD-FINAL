@@ -61,11 +61,40 @@
           },
           "conditions": {
             "$ref": "conditions.schema.json"
+          },
+          "test_id": {
+            "$ref": "common.schema.json#/$defs/test_id"
+          },
+          "test_outcome": {
+            "$ref": "common.schema.json#/$defs/test_outcome"
           }
         },
         "allOf": [
           {
             "$ref": "common.schema.json#/$defs/value_matches_status"
+          },
+          {
+            "description": "A row that reports an outcome must identify its test (mirrors the Finding rule).",
+            "if": {
+              "required": [
+                "test_outcome"
+              ],
+              "properties": {
+                "test_outcome": {
+                  "type": "string"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "test_id"
+              ],
+              "properties": {
+                "test_id": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ]
       }
@@ -124,7 +153,214 @@
           "non_comparable_reasons": {
             "maxItems": 0
           }
-        }
+        },
+        "allOf": [
+          {
+            "description": "S5: a row whose finding has a test_id must report its outcome, or the rows are not comparable.",
+            "properties": {
+              "rows": {
+                "items": {
+                  "if": {
+                    "required": [
+                      "test_id"
+                    ],
+                    "properties": {
+                      "test_id": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "test_outcome"
+                    ],
+                    "properties": {
+                      "test_outcome": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "description": "S5: outcomes reported for some rows and not for others are not comparable.",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "anyOf": [
+                          {
+                            "not": {
+                              "required": [
+                                "test_outcome"
+                              ]
+                            }
+                          },
+                          {
+                            "required": [
+                              "test_outcome"
+                            ],
+                            "properties": {
+                              "test_outcome": {
+                                "type": "null"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "x-generated-from-outcomes": "Extinction",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "const": "Extinction"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string",
+                            "not": {
+                              "const": "Extinction"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "x-generated-from-outcomes": "Disruption",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "const": "Disruption"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string",
+                            "not": {
+                              "const": "Disruption"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "x-generated-from-outcomes": "Completion",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "const": "Completion"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string",
+                            "not": {
+                              "const": "Completion"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
       },
       "description": "Comparable needs at least two rows, all with reported values, and no reasons."
     }

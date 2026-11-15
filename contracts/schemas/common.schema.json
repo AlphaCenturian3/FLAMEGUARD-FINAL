@@ -176,6 +176,27 @@
           ]
         }
       }
+    },
+    "test_id": {
+      "description": "The source's own identifier for the test, as printed and ASCII-normalized (the report prints 'FLEX–001' with an en dash; the identifier is 'FLEX-001'). A bare identifier, never prose. null means not reported.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "test_outcome": {
+      "description": "Closed vocabulary from contracts/outcomes.json, as printed by the source for the test. null means not reported. Only values confirmed in outcomes.json are valid; while that list is empty only null is valid. Never free text.",
+      "enum": [
+        "Extinction",
+        "Disruption",
+        "Completion",
+        null
+      ]
     }
   }
 }
