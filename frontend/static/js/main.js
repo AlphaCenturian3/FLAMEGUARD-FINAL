@@ -7,6 +7,7 @@ import { h, mount } from "./ui/dom.js";
 import * as compare from "./views/compare.js";
 import * as dashboard from "./views/dashboard.js";
 import * as explorer from "./views/explorer.js";
+import * as flame from "./views/flame.js";
 import * as integrations from "./views/integrations.js";
 import * as interpret from "./views/interpret.js";
 import * as rank from "./views/rank.js";
@@ -22,6 +23,7 @@ import * as tars from "./views/tars.js";
 
 export const ROUTES = {
   "/": { view: dashboard, nav: "Overview", icon: "◎" },
+  "/flame": { view: flame, nav: "Flame Lab", icon: "✦" },
   "/explorer": { view: explorer, nav: "Evidence Explorer", icon: "⌕" },
   "/compare": { view: compare, nav: "Compare", icon: "⇄" },
   "/rank": { view: rank, nav: "Rank", icon: "≡" },

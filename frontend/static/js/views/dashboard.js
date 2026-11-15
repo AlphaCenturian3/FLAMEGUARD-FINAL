@@ -26,7 +26,8 @@ export function render(ctx) {
       h(
         "div",
         { class: "row gap wrap" },
-        h("a", { class: "btn btn-primary", href: "#/explorer" }, "Explore evidence"),
+        h("a", { class: "btn btn-primary", href: "#/flame" }, "Open the Flame Lab"),
+        h("a", { class: "btn", href: "#/explorer" }, "Explore evidence"),
         h("a", { class: "btn", href: "#/compare" }, "Compare investigations"),
         h("button", { type: "button", class: "btn btn-ghost", onclick: () => ctx.demo.start() }, "Start 90-second demo"),
       ),
