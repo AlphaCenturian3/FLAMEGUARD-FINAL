@@ -24,6 +24,14 @@ export function listWarnings(res, what) {
   return out;
 }
 
+/** Alert text when the backend withheld evidence files (X-FlameGuard-Rejected-Entries), else null. */
+export function rejectedWarning(count) {
+  if (count === 0 || count === undefined || count === null) return null;
+  if (Number.isNaN(count)) return "The backend reported that some evidence files were rejected and are not shown. The lists on this page are incomplete; see the server log.";
+  const files = count === 1 ? "1 evidence file was" : `${count} evidence files were`;
+  return `${files} rejected by the backend's checks and ${count === 1 ? "is" : "are"} not shown. The lists on this page are incomplete; see the server log.`;
+}
+
 /** @param {any} err */
 export function resourceFromError(err) {
   return { state: isNotImplemented(err) ? "not_implemented" : "error", error: err };
@@ -54,8 +62,12 @@ export function createStore(source) {
     } catch (err) {
       findings = resourceFromError(err);
     }
+    const rejectedEntries = typeof source.rejectedEntries === "function" ? source.rejectedEntries() : 0;
+    const rejected = rejectedWarning(rejectedEntries);
+    if (rejected) warnings.push(rejected);
     const findingList = findings.state === "ready" ? findings.data : [];
     return {
+      rejectedEntries,
       investigations,
       findings,
       warnings,

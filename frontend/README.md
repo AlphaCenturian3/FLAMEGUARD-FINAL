@@ -28,6 +28,10 @@ Open <http://localhost:8765/frontend/index.html?fixtures=1>.
 | `api=URL` | API base URL (default: same origin; a different origin needs CORS on the backend). |
 | `fixtures_base=URL` | Location of `contracts/examples/` (default `../contracts/examples/`). |
 
+**Rejected evidence.** If the backend withheld evidence files that failed its checks, it sends `X-FlameGuard-Rejected-Entries: <n>` on the list responses. The dashboard then shows a warning that the lists are incomplete, and still shows what was served. No header, or `0`, shows nothing. An unreadable value is shown as "some files were rejected", never read as zero. A page served from a different origin only sees this header if the backend sends `Access-Control-Expose-Headers`. Fixture mode never shows it.
+
+The three situations look different on purpose: **evidence** (live, possibly with the rejected-files warning), **unavailable** (an error panel, no data, e.g. HTTP 503 or an unreachable API) and **fixtures** (the permanent "FIXTURE DATA. NOT NASA DATA." banner).
+
 If the API is unreachable, the page says so and offers a link to fixture mode. It never switches to fixtures silently. If `/api/health` or a list response reports a contract version other than 0.2.0, a warning is shown.
 
 **Fixture mode when FastAPI serves `frontend/` at `/`:** asset paths are relative and work at `/`. The default fixture location resolves to `/contracts/examples/`, which works only if the backend also mounts that directory. Without the mount, `?fixtures=1` shows an explicit HTTP 404 fixture error and no data.

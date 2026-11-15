@@ -1,10 +1,10 @@
 import { assert, test } from "./harness.js";
 import { byId, excluded, interpretation, measured, stubFetch } from "./samples.js";
 import { ApiError, isNotImplemented } from "../static/js/api/errors.js";
-import { createHttpSource } from "../static/js/api/http.js";
+import { createHttpSource, parseRejectedHeader, REJECTED_HEADER } from "../static/js/api/http.js";
 import { createFixtureSource } from "../static/js/api/fixtures.js";
 import { CONTRACT_VERSION, FIXTURE_BANNER, readConfig, urlWithFixtures, versionMismatch } from "../static/js/config.js";
-import { createStore, listWarnings } from "../static/js/store.js";
+import { createStore, listWarnings, rejectedWarning } from "../static/js/store.js";
 import { answerView, reviewAnswer } from "../static/js/integrations/assistant.js";
 import { reviewSimulation } from "../static/js/integrations/simulation.js";
 import { reviewRankings } from "../static/js/model/ranking.js";
@@ -234,4 +234,96 @@ test("tars S9: an excluded ancestor without any exclusion note cannot be explain
   const map = byId([excluded("e3", "a", { curation_notes: [] }), interpretation("i3", "a", ["e3"])]);
   const res = reviewAnswer(ANSWER({ citations: cite("i3"), limitations: ["anything"] }), map);
   assert.ok(res.problems.length > 0);
+});
+
+// ---------- Transparency: rejected evidence, footer version, valid vs unavailable vs fixture ----------
+const LIST = { contract_version: "0.2.0", items: [], total: 0 };
+/** Like stubFetch, but with response headers and a different reply per path. */
+function routedFetch(routes) {
+  return async (url) => {
+    const path = new URL(url, "http://x.test").pathname;
+    const { status = 200, body = LIST, headers = {} } = routes[path] || {};
+    return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...headers } });
+  };
+}
+
+test("rejected evidence: the header is parsed strictly (absent 0, digits, anything else unreadable)", () => {
+  assert.equal(REJECTED_HEADER, "X-FlameGuard-Rejected-Entries");
+  assert.equal(parseRejectedHeader(null), 0);
+  assert.equal(parseRejectedHeader("0"), 0);
+  assert.equal(parseRejectedHeader("3"), 3);
+  for (const bad of ["", "-1", "1.5", "two", "1; drop"]) assert.ok(Number.isNaN(parseRejectedHeader(bad)), `unreadable: ${JSON.stringify(bad)}`);
+});
+
+test("rejected evidence: the http source reports what the list responses said, and resets", async () => {
+  const routes = { "/api/investigations": { headers: { [REJECTED_HEADER]: "2" } }, "/api/findings": { headers: { [REJECTED_HEADER]: "2" } } };
+  const src = createHttpSource({ fetchImpl: routedFetch(routes) });
+  assert.equal(src.rejectedEntries(), 0, "nothing loaded yet");
+  await src.listInvestigations();
+  await src.listFindings();
+  assert.equal(src.rejectedEntries(), 2);
+  routes["/api/investigations"] = {};
+  routes["/api/findings"] = {};
+  await src.listInvestigations();
+  await src.listFindings();
+  assert.equal(src.rejectedEntries(), 0, "a later clean load clears the count");
+});
+
+test("rejected evidence: only list responses count, and an unreadable header is never read as zero", async () => {
+  const health = { "/api/health": { body: { status: "ok" }, headers: { [REJECTED_HEADER]: "9" } } };
+  const a = createHttpSource({ fetchImpl: routedFetch(health) });
+  await a.health();
+  assert.equal(a.rejectedEntries(), 0, "health is not a list");
+  const failing = { "/api/findings": { status: 503, body: { error: { code: "unavailable", message: "x" } }, headers: { [REJECTED_HEADER]: "4" } } };
+  const b = createHttpSource({ fetchImpl: routedFetch(failing) });
+  await assert.rejects(b.listFindings());
+  assert.equal(b.rejectedEntries(), 0, "an error response is not a partial load");
+  const odd = createHttpSource({ fetchImpl: routedFetch({ "/api/findings": { headers: { [REJECTED_HEADER]: "many" } } }) });
+  await odd.listFindings();
+  assert.ok(Number.isNaN(odd.rejectedEntries()));
+});
+
+test("rejected evidence: the store raises a visible warning, and only when files were rejected", async () => {
+  assert.equal(rejectedWarning(0), null);
+  assert.includes(rejectedWarning(1), "1 evidence file was rejected");
+  assert.includes(rejectedWarning(3), "3 evidence files were rejected");
+  assert.includes(rejectedWarning(3), "incomplete");
+  assert.includes(rejectedWarning(NaN), "some evidence files were rejected");
+  const partial = createStore(createHttpSource({ fetchImpl: routedFetch({ "/api/investigations": { headers: { [REJECTED_HEADER]: "1" } }, "/api/findings": { headers: { [REJECTED_HEADER]: "1" } } }) }));
+  const ev = await partial.evidence();
+  assert.equal(ev.rejectedEntries, 1);
+  assert.ok(ev.warnings.some((w) => w.includes("1 evidence file was rejected")));
+  assert.equal(ev.investigations.state, "ready", "the evidence that was served is still shown");
+  const clean = await createStore(createHttpSource({ fetchImpl: routedFetch({}) })).evidence();
+  assert.equal(clean.rejectedEntries, 0);
+  assert.deepEqual(clean.warnings, []);
+});
+
+test("valid, unavailable and fixture evidence stay distinct", async () => {
+  // unavailable (503): an error state with no data and no rejected-files claim
+  const down = { "/api/investigations": { status: 503, body: { error: { code: "unavailable", message: "down" } } }, "/api/findings": { status: 503, body: { error: { code: "unavailable", message: "down" } } } };
+  const ev = await createStore(createHttpSource({ fetchImpl: routedFetch(down) })).evidence();
+  assert.equal(ev.investigations.state, "error");
+  assert.equal(ev.findings.state, "error");
+  assert.equal(ev.rejectedEntries, 0);
+  assert.equal(ev.warnings.length, 0);
+  // empty live evidence: ready with zero items, not an error and not fixtures
+  const empty = await createStore(createHttpSource({ fetchImpl: routedFetch({}) })).evidence();
+  assert.equal(empty.investigations.state, "ready");
+  assert.equal(empty.investigations.data.length, 0);
+  // fixtures never claim a backend rejection
+  const fixtures = createFixtureSource({ baseUrl: EXAMPLES });
+  assert.equal(fixtures.rejectedEntries, undefined);
+  const fx = await createStore(fixtures).evidence();
+  assert.equal(fx.rejectedEntries, 0);
+  assert.ok(!fx.warnings.some((w) => w.includes("rejected")));
+});
+
+test("footer: no hard-coded contract version; it is filled from the single CONTRACT_VERSION", async () => {
+  const html = await (await fetch(new URL("../index.html", import.meta.url))).text();
+  assert.ok(!/Contract v\d/.test(html), "index.html must not hard-code a contract version");
+  assert.includes(html, 'id="footer-contract"');
+  const main = await (await fetch(new URL("../static/js/main.js", import.meta.url))).text();
+  assert.includes(main, "footer-contract");
+  assert.includes(main, "${CONTRACT_VERSION}");
 });
