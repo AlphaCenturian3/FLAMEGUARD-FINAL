@@ -1,0 +1,742 @@
+{
+  "status": "draft_pending_scientific_review",
+  "note": "Quoted qualitative statements from NASA sources (evidence_category 'reported'). No numeric measurements are imported here. Each quote was checked word-for-word against the source text on the retrieval date; rerun with: python -m research.verify_sources docs/research/member5/evidence_reported.json docs/research/member5/investigations.json (PDF sources are reported as needing manual verification).",
+  "records": [
+    {
+      "id": "m5-bass2-flow-flareup",
+      "investigation_id": "bass-ii",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "experimental_result",
+      "statement": "BASS-II authors report that flames sustained at very low air flow speeds can flare up quickly with a sudden increase in air flow speed.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Combustion of Solids in Microgravity: Results from the BASS-II Experiment",
+          "url": "https://ntrs.nasa.gov/citations/20160000593",
+          "page": "Abstract",
+          "quote": "they can flare up quickly with a sudden increase in air flow speed.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20160000593"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Abstract-level statement; the flow speeds, samples and test ids behind it are not imported.",
+        "Small samples in a small flow duct inside the Microgravity Science Glovebox, not habitat-scale fires.",
+        "Quote trimmed to the observational clause (D-05, Member 1 review). The authors' preceding evaluation of fire-safety danger in the same sentence is deliberately not quoted or used."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base",
+        "pressurized_rover"
+      ],
+      "extrapolation_warning": "Observed in microgravity. At lunar gravity buoyant flow is present, so low-flow behaviour seen on the ISS may not occur the same way.",
+      "fire_safety_topics": [
+        "prevention",
+        "material_flammability"
+      ]
+    },
+    {
+      "id": "m5-bass2-co-co2-trend",
+      "investigation_id": "bass-ii",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "experimental_result",
+      "statement": "In BASS-II, CO versus CO2 readings followed a linear trend for some datasets but not for all fuel geometries and flows tested.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Burning and Suppression of Solids–II (BASS-II) Summary Report",
+          "url": "https://ntrs.nasa.gov/citations/20210011385",
+          "page": "Abstract",
+          "quote": "The CO versus CO2 followed a linear trend for some datasets, but not for all the different geometries of fuel and flow tested.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20210011385"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Gas readings were taken before and after each test, not continuously during the fire.",
+        "Abstract-level statement; the datasets and readings are not imported."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "Measured in the ISS cabin atmosphere in microgravity. Product yields and transport may differ under lunar or Martian gravity and habitat atmospheres.",
+      "fire_safety_topics": [
+        "detection"
+      ]
+    },
+    {
+      "id": "m5-saffire6-co-co2",
+      "investigation_id": "saffire",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "experimental_result",
+      "statement": "Preliminary Saffire results report that spacecraft temperature and pressure rise were less significant than the increase in carbon dioxide and carbon monoxide.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Preliminary Results from the Saffire VI Experiment",
+          "url": "https://ntrs.nasa.gov/citations/20240002981",
+          "page": "Abstract",
+          "quote": "Overall, the temperature and pressure rise in the spacecraft were found to be less significant than the increase in carbon dioxide and carbon monoxide.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20240002981"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "The source calls these preliminary results.",
+        "Uncrewed Cygnus vehicle after ISS departure; vehicle volume and ventilation differ from a habitat."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "lunar_base",
+        "martian_base",
+        "pressurized_rover"
+      ],
+      "extrapolation_warning": "Measured in microgravity in a Cygnus vehicle. Buoyant convection on the Moon or Mars changes how combustion products spread.",
+      "fire_safety_topics": [
+        "detection"
+      ]
+    },
+    {
+      "id": "m5-saffire-enclosure-effect",
+      "investigation_id": "saffire",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "experimental_result",
+      "statement": "Saffire data showed that the size of the enclosure around the sample affected flame spread more than anticipated.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Saffire: A Novel Approach to Study of Spacecraft Fire Safety Using Un-Manned Spacecraft",
+          "url": "https://ntrs.nasa.gov/citations/20180005168",
+          "page": "Abstract",
+          "quote": "demonstrated that the size of the enclosure surrounding the sample has more impact on the flame spread than anticipated.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20180005168"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Abstract-level statement; enclosure sizes and spread rates are not imported."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "Observed in microgravity. Whether the enclosure effect holds with buoyant flow at lunar or Martian gravity is untested here.",
+      "fire_safety_topics": [
+        "material_flammability"
+      ]
+    },
+    {
+      "id": "m5-sofie-material-selection",
+      "investigation_id": "sofie",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "stated_objective",
+      "statement": "A stated SoFIE application is safer cabin material selection and validating NASA's 1-g flammability test protocols for low-gravity fires.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS",
+          "url": "https://ntrs.nasa.gov/citations/20200000361",
+          "page": "Abstract",
+          "quote": "(1) Determining safer selection of cabin materials and validating NASA materials flammability selection using 1-g test protocols for low-gravity fires",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20200000361"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A stated application of the hardware, not a result.",
+        "The record predates operations (it projected a July 2021 start)."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "SoFIE runs in microgravity on the ISS. It does not test lunar or Martian gravity.",
+      "fire_safety_topics": [
+        "material_flammability",
+        "prevention"
+      ]
+    },
+    {
+      "id": "m5-sofie-std6001-concern",
+      "investigation_id": "sofie",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "NASA's SoFIE page states that NASA-STD-6001 uses a 1-g flame propagation test that some researchers believe is not conservative in low gravity.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Solid Fuel Ignition and Extinction (SoFIE)",
+          "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/solid-fuel-ignition-and-extinction-sofie/",
+          "page": null,
+          "quote": "NASA-STD-6001 impelements a 1-g flame propagation test for proposed space flight materials which some researchers believe is not conservative in low-g.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Reports a view held by some researchers, not a measured result. The spelling 'impelements' is as published."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "The statement concerns low gravity in general; it gives no lunar- or Martian-specific evidence.",
+      "fire_safety_topics": [
+        "material_flammability",
+        "prevention"
+      ]
+    },
+    {
+      "id": "m5-fm2-lower-oxygen-hypothesis",
+      "investigation_id": "fm2",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "hypothesis_under_test",
+      "statement": "NASA's FM2 page says modelling, supported by parabolic-flight and ISS experiments, suggests materials may burn at lower oxygen concentrations in lunar gravity than on Earth.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Flammability of Materials on the Moon (FM2)",
+          "url": "https://www.nasa.gov/glenn/glenn-expertise-space-exploration/physical-sciences-program/combustion-science/flammability-of-materials-on-the-moon-fm2/",
+          "page": null,
+          "quote": "suggest that materials may burn at lower oxygen concentrations in lunar gravity compared to Earth.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A hypothesis FM2 is designed to test, not a lunar measurement.",
+        "FM2 flight status and any lunar data were not verified or imported."
+      ],
+      "relevant_environments": [
+        "lunar_base"
+      ],
+      "extrapolation_warning": "No lunar-surface combustion data is in this register. Lunar-gravity statements rest on modelling and short-duration reduced-gravity tests.",
+      "fire_safety_topics": [
+        "material_flammability"
+      ]
+    },
+    {
+      "id": "m5-moon-hypothesis",
+      "investigation_id": "fm2",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "hypothesis_under_test",
+      "statement": "The 'Fire on the Moon' experiment concept states its main hypothesis that some materials burning in lunar gravity are more flammable than on Earth.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Fire on the Moon: Solid Fuel Combustion Experiments",
+          "url": "https://ntrs.nasa.gov/citations/20210020516",
+          "page": "Abstract",
+          "quote": "The main hypothesis is that some materials burning in Lunar-g are more flammable than on Earth.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20210020516"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Experiment concept (2021); a hypothesis, not a result."
+      ],
+      "relevant_environments": [
+        "lunar_base"
+      ],
+      "extrapolation_warning": "A hypothesis about lunar gravity; no lunar measurements are cited.",
+      "fire_safety_topics": [
+        "material_flammability"
+      ]
+    },
+    {
+      "id": "m5-moon-scaling-objective",
+      "investigation_id": "fm2",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "stated_objective",
+      "statement": "The 'Fire on the Moon' concept plans to refine pressure-gravity scaling relations from 1-g and lunar-g data and then apply them to other gravity levels.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Fire on the Moon: Solid Fuel Combustion Experiments",
+          "url": "https://ntrs.nasa.gov/citations/20210020516",
+          "page": "Abstract",
+          "quote": "These will refine pressure-gravity scaling relations that will then be applied to other g-levels.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20210020516"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A planned method; no scaling relation or Martian-gravity result is given."
+      ],
+      "relevant_environments": [
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "Any Martian-gravity statement built on this is an extrapolation until scaling relations are published and validated.",
+      "fire_safety_topics": [
+        "material_flammability"
+      ]
+    },
+    {
+      "id": "m5-flex-objective",
+      "investigation_id": "flex",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "stated_objective",
+      "statement": "FLEX was designed to assess inert-gas suppressant effectiveness in microgravity and to obtain a conservative estimate of the limiting oxygen index for steady combustion.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Combustion Science (ISS Fluids and Combustion Facility)",
+          "url": "https://www1.grc.nasa.gov/space/iss-research/iss-fcf/combustion-science/",
+          "page": null,
+          "quote": "The Flame Extinguishment Experiment (FLEX) experiment was designed to assess and quantify the effectiveness of inert-gas suppressants in microgravity and obtain the most conservative estimate of the limiting oxygen index for steady combustion.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A design objective, not a result.",
+        "Liquid-fuel droplets; results do not transfer directly to solid habitat materials."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base"
+      ],
+      "extrapolation_warning": "Droplet tests in microgravity. Suppressant behaviour under lunar gravity with buoyant flow is not covered.",
+      "fire_safety_topics": [
+        "suppression",
+        "extinction"
+      ]
+    },
+    {
+      "id": "m5-flex-dataset",
+      "investigation_id": "flex",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "A NASA technical report presents results from the first 284 FLEX droplet-combustion tests.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "Abstract",
+          "quote": "It also presents the results of the first 284 tests performed.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Test-level results exist in the report but none are imported yet.",
+        "The report's authors state they do not interpret the results."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station"
+      ],
+      "fire_safety_topics": [
+        "extinction"
+      ]
+    },
+    {
+      "id": "m5-bass-ground-methods",
+      "investigation_id": "bass-ii",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "NASA's combustion overview says putting out fires in space must consider flame geometry, material characteristics and extinguishing method, because ground methods could be ineffective or make the flame worse.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Studying Combustion and Fire Safety",
+          "url": "https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/",
+          "page": null,
+          "quote": "Putting out fires in space must consider flame geometry, characteristics of the materials, and methods used to extinguish it, because methods used on the ground could be ineffective or even make the flame worse.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A general statement in a NASA overview, written in the context of BASS; it names no specific test or measurement."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "The statement concerns microgravity. It gives no lunar- or Martian-gravity evidence.",
+      "fire_safety_topics": [
+        "suppression",
+        "extinction"
+      ]
+    },
+    {
+      "id": "m5-sofie-gel-model-trends",
+      "investigation_id": "sofie",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "experimental_result",
+      "statement": "NASA's combustion overview says SoFIE-GEL researchers report that experiment observations agree with trends predicted by the models.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Studying Combustion and Fire Safety",
+          "url": "https://www.nasa.gov/missions/station/iss-research/studying-combustion-and-fire-safety/",
+          "page": null,
+          "quote": "Researchers report that experiment observations agree with trends predicted by the models.",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "The page does not say which trends or models; no SoFIE-GEL data or publication has been reviewed.",
+        "SoFIE-GEL burned solid spherical samples; geometry limits transfer to other materials."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station",
+        "lunar_base"
+      ],
+      "extrapolation_warning": "Microgravity tests. Model agreement in microgravity does not establish model accuracy at lunar gravity.",
+      "fire_safety_topics": [
+        "material_flammability",
+        "ignition"
+      ]
+    },
+    {
+      "id": "m5-partial-gravity-not-interpolated",
+      "investigation_id": "partial-gravity-synthesis",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "A decadal-survey white paper by Ya-Ting Liao, Luca Carmignani, Justin Niehaus and Michael Gollner (hosted on a NASA website) states that fire behaviour in partial gravity, such as on the Moon and Mars, cannot be expected to be interpolated between normal-gravity and microgravity data.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Topical: Challenges and Research Needs for Micro- and Partial-Gravity Fires (Liao et al., decadal-survey white paper hosted by NASA)",
+          "url": "https://smd-cms.nasa.gov/wp-content/uploads/2023/05/60_afb22b1e538432728848e83bb3ade8c2_LiaoYaTingT.pdf",
+          "page": "printed p. 3 (PDF p. 4)",
+          "quote": "Fire behavior in partial gravity (e.g., on Moon and Mars) cannot be expected to be interpolated between the data obtained in normal and microgravity conditions (which themselves are not yet fully understood).",
+          "retrieved": "2026-11-14",
+          "archive_id": null
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "A community white paper (authors from universities and NASA), not a NASA finding or a measurement."
+      ],
+      "relevant_environments": [
+        "lunar_base",
+        "martian_base"
+      ],
+      "extrapolation_warning": "This statement is itself the extrapolation warning: lunar and Martian fire behaviour must not be estimated by interpolating ISS and 1-g results.",
+      "fire_safety_topics": [
+        "material_flammability",
+        "extinction"
+      ]
+    },
+    {
+      "id": "m5-flex-prediluted-ambient",
+      "investigation_id": "flex",
+      "test_id": null,
+      "evidence_category": "reported",
+      "source_claim_strength": "source_statement",
+      "statement": "The FLEX report describes droplets burned in ambient atmospheres whose oxygen was diluted with nitrogen, carbon dioxide or mixtures before the tests; for the CO2 series, CO2 was added to the ambient between tests until quasi-steady burning was no longer observed.",
+      "quantity": null,
+      "value": null,
+      "unit": null,
+      "value_status": "not_applicable",
+      "uncertainty": null,
+      "conditions": {
+        "gravity_environment": null,
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "sources": [
+        {
+          "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011 (NASA/TP-2015-216046)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "printed p. 2 (PDF p. 8)",
+          "quote": "they were burned in oxidizing atmospheres at ambient temperature and various pressures between 0.70 and 3.05 atm, over ranges of dilution of oxygen with nitrogen, with carbon dioxide, and with mixtures thereof.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011 (NASA/TP-2015-216046)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "printed p. 13 (PDF p. 19)",
+          "quote": "then increasing amounts of CO2 were added while the ambient pressure was maintained constant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011 (NASA/TP-2015-216046)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "printed p. 13 (PDF p. 19)",
+          "quote": "This also represented the minimum carbon dioxide mole fraction required to extinguish or prevent the spread of a flame.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ],
+      "doi": null,
+      "interpretation": null,
+      "limitations": [
+        "Describes the test method, not a measured value. The per-test compositions and extinction results in the report are not imported.",
+        "This report covers methanol and n-heptane droplets with nitrogen and carbon dioxide dilution. Helium and SF6, mentioned in the PSI dataset description for the wider investigation, are not covered by this report.",
+        "Pages are given as printed page with the PDF index (printed = PDF − 6 in this report), following the team convention agreed with Member 3 (PR #6 finding F1); quotes verified manually from the PDF text."
+      ],
+      "relevant_environments": [
+        "spacecraft",
+        "space_station"
+      ],
+      "fire_safety_topics": [
+        "suppression",
+        "extinction"
+      ]
+    }
+  ]
+}

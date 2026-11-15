@@ -1,0 +1,31 @@
+{
+  "fixture": true,
+  "note": "SYNTHETIC SOFTWARE FIXTURE. NOT NASA DATA. Invented criterion scores used only to demonstrate the weight-sensitivity method. The investigation ids are placeholders and correspond to no NASA investigation. No score here is a result about any experiment.",
+  "weights": {
+    "purpose_relevance": 0.40,
+    "condition_match": 0.25,
+    "source_traceability": 0.20,
+    "data_completeness": 0.15
+  },
+  "scenarios": {
+    "well-separated": {
+      "description": "Investigations with clearly different evidence; expected to be stable.",
+      "criterion_scores": {
+        "synthetic-a": {"purpose_relevance": 1.0, "condition_match": 0.8, "source_traceability": 0.9, "data_completeness": 0.8},
+        "synthetic-b": {"purpose_relevance": 1.0, "condition_match": 0.5, "source_traceability": 0.7, "data_completeness": 0.6},
+        "synthetic-c": {"purpose_relevance": 1.0, "condition_match": 0.2, "source_traceability": 0.6, "data_completeness": 0.5},
+        "synthetic-d": {"purpose_relevance": 0.0, "condition_match": 0.4, "source_traceability": 0.9, "data_completeness": 0.9},
+        "synthetic-e": {"purpose_relevance": 0.0, "condition_match": 0.1, "source_traceability": 0.5, "data_completeness": 0.4}
+      }
+    },
+    "documentation-trade-off": {
+      "description": "One investigation well matched to the environment but poorly documented, against others less relevant but well documented; expected to be weight-sensitive.",
+      "criterion_scores": {
+        "synthetic-p": {"purpose_relevance": 1.0, "condition_match": 0.5, "source_traceability": 0.25, "data_completeness": 0.2},
+        "synthetic-q": {"purpose_relevance": 1.0, "condition_match": 0.0, "source_traceability": 1.0, "data_completeness": 1.0},
+        "synthetic-r": {"purpose_relevance": 0.0, "condition_match": 1.0, "source_traceability": 1.0, "data_completeness": 0.9},
+        "synthetic-s": {"purpose_relevance": 0.0, "condition_match": 0.5, "source_traceability": 0.75, "data_completeness": 0.7}
+      }
+    }
+  }
+}
