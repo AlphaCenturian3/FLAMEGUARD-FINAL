@@ -25,6 +25,7 @@ jobs:
       - name: Record what was built
         run: |
           docker image inspect flameguard-preview:ci --format 'image id: {{.Id}}  size: {{.Size}}'
+          docker pull -q python:3.12.10-slim >/dev/null  # BuildKit does not keep the base in the local store
           docker image inspect python:3.12.10-slim --format 'base digest: {{index .RepoDigests 0}}'
           echo "commit: $GITHUB_SHA (PR head: ${{ github.event.pull_request.head.sha }})"
 
