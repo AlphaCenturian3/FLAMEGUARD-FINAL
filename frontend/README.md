@@ -2,7 +2,7 @@
 
 Owner: Member 2 (`feat/frontend-dashboard`). Also owns `tests/frontend/`, `tests/e2e/` and `tests/fixtures/frontend/` (spec §4).
 
-**Status:** built against **contract v0.2.0** (CP1, merged at `f7cef55`). No curated NASA data or backend endpoint (other than `/api/health`) exists yet. The dashboard therefore shows either backend responses (HTTP 501 for planned endpoints) or, with `?fixtures=1`, the contract examples, labelled **FIXTURE DATA. NOT NASA DATA.** on every page.
+**Status:** implements **contract v0.2.2** and accepts exactly the explicitly tested versions 0.2.0, 0.2.1 and 0.2.2 (`SUPPORTED_CONTRACT_VERSIONS` in `static/js/config.js`; any other version shows a warning). Originally built against **contract v0.2.0** (CP1, merged at `f7cef55`). No curated NASA data or backend endpoint (other than `/api/health`) exists yet. The dashboard therefore shows either backend responses (HTTP 501 for planned endpoints) or, with `?fixtures=1`, the contract examples, labelled **FIXTURE DATA. NOT NASA DATA.** on every page.
 
 Stack (spec §3): static HTML, CSS, and vanilla JavaScript ES modules. No build step, no dependencies.
 
@@ -31,6 +31,8 @@ Open <http://localhost:8765/frontend/index.html?fixtures=1>.
 **Rejected evidence.** If the backend withheld evidence files that failed its checks, it sends `X-FlameGuard-Rejected-Entries: <n>` on the list responses. The dashboard then shows a warning that the lists are incomplete, and still shows what was served. No header, or `0`, shows nothing. An unreadable value is shown as "some files were rejected", never read as zero. A page served from a different origin only sees this header if the backend sends `Access-Control-Expose-Headers`. Fixture mode never shows it.
 
 The three situations look different on purpose: **evidence** (live, possibly with the rejected-files warning), **unavailable** (an error panel, no data, e.g. HTTP 503 or an unreachable API) and **fixtures** (the permanent "FIXTURE DATA. NOT NASA DATA." banner).
+
+**Test identity (v0.2.2).** Findings that carry `test_id` are grouped by it, and the source's printed outcome is shown verbatim as "Test end as printed: ..." (the label the source prints; not a FlameGuard-SI classification). Findings without a `test_id` keep the older grouping by exact `locator`. Two different outcomes inside one test are shown as a conflict, never resolved. The dashboard never uses the outcome to decide comparability.
 
 If the API is unreachable, the page says so and offers a link to fixture mode. It never switches to fixtures silently. If `/api/health` or a list response reports a contract version other than 0.2.0, a warning is shown.
 

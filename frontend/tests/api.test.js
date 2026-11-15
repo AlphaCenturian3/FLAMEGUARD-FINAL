@@ -16,8 +16,8 @@ const EXAMPLES = new URL("../../contracts/examples/", import.meta.url).href;
 const example = async (name) => (await fetch(new URL(name, EXAMPLES))).json();
 
 // ---------- Config: fixture mode and version (P6/P7) ----------
-test("config: fixture mode only with ?fixtures=1; contract version is 0.2.0", () => {
-  assert.equal(CONTRACT_VERSION, "0.2.0");
+test("config: fixture mode only with ?fixtures=1; contract version is 0.2.2", () => {
+  assert.equal(CONTRACT_VERSION, "0.2.2");
   assert.equal(FIXTURE_BANNER, "FIXTURE DATA. NOT NASA DATA.");
   assert.equal(readConfig("http://x.test/frontend/index.html").source, "api");
   assert.equal(readConfig("http://x.test/frontend/index.html?fixtures=1").source, "fixtures");

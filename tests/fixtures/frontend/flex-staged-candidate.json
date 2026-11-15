@@ -1,0 +1,3194 @@
+[
+  {
+    "id": "flex.flex-001.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 1.69 mm for FLEX-001, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 1.69,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.0183729443455,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-001, field initial_droplet_diameter_mm, CSV line 2; ambient pressure as printed: 757.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-001",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F001"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Igniters overexposed the HiBMs during ignition; droplet diameter could not be measured accurately.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F002"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "so the droplet diameter could not be measured accurately.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F003"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Methanol disruption; the report says methanol disruptive extinction is probably due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F004"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination (assertions)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of methanol is probably due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Printed Disruption with a listed extinction diameter; caption says disruption probably coincided with extinction.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F005"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "The droplet probably disrupted at the end of the test coincident with flame extinction.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-001.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a visible flame extinction diameter of 0.89 mm for FLEX-001, as printed.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": 0.89,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.0183729443455,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-001, field visible_flame_extinction_diameter_mm, CSV line 2; ambient pressure as printed: 757.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-001",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F001"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Methanol disruption; the report says methanol disruptive extinction is probably due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F004"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination (assertions)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of methanol is probably due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Printed Disruption with a listed extinction diameter; caption says disruption probably coincided with extinction.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F005"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "The droplet probably disrupted at the end of the test coincident with flame extinction.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-001.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.52 mm2/s for FLEX-001, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.52,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.0183729443455,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-001, field burning_rate_constant_mm2_per_s, CSV line 2; ambient pressure as printed: 757.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-001",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F001"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Methanol disruption; the report says methanol disruptive extinction is probably due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F004"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination (assertions)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of methanol is probably due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Printed Disruption with a listed extinction diameter; caption says disruption probably coincided with extinction.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F005"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "The droplet probably disrupted at the end of the test coincident with flame extinction.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-001.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 4.3 s for FLEX-001, as printed.",
+    "quantity": "burn_time",
+    "value": 4.3,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.0183729443455,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-001, field burn_time_s, CSV line 2; ambient pressure as printed: 757.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-001",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F001"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Methanol disruption; the report says methanol disruptive extinction is probably due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F004"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination (assertions)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of methanol is probably due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Printed Disruption with a listed extinction diameter; caption says disruption probably coincided with extinction.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F005"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "The droplet probably disrupted at the end of the test coincident with flame extinction.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-002.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 1.86 mm for FLEX-002, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 1.86,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.59165921023,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-002, field initial_droplet_diameter_mm, CSV line 3; ambient pressure as printed: 762 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-002",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F006"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 6 caption (Test FLEX-002)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "30",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F007"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F008"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-002.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a visible flame extinction diameter of 0.94 mm for FLEX-002, as printed.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": 0.94,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.59165921023,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-002, field visible_flame_extinction_diameter_mm, CSV line 3; ambient pressure as printed: 762 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-002",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F006"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 6 caption (Test FLEX-002)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "30",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F007"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-002.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.6 mm2/s for FLEX-002, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.6,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.59165921023,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-002, field burning_rate_constant_mm2_per_s, CSV line 3; ambient pressure as printed: 762 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-002",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F006"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 6 caption (Test FLEX-002)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "30",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F007"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-002.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 5 s for FLEX-002, as printed.",
+    "quantity": "burn_time",
+    "value": 5,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.59165921023,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-002, field burn_time_s, CSV line 3; ambient pressure as printed: 762 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-002",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F006"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 6 caption (Test FLEX-002)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "30",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F007"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-003.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 1.61 mm for FLEX-003, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 1.61,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.884968462543,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-003, field initial_droplet_diameter_mm, CSV line 4; ambient pressure as printed: 764.2 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-003",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F009"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 7 caption (Test FLEX-003)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "31",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F010"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F011"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-003.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a visible flame extinction diameter of 0.92 mm for FLEX-003, as printed.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": 0.92,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.884968462543,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-003, field visible_flame_extinction_diameter_mm, CSV line 4; ambient pressure as printed: 764.2 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-003",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F009"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 7 caption (Test FLEX-003)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "31",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F010"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-003.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.58 mm2/s for FLEX-003, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.58,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.884968462543,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-003, field burning_rate_constant_mm2_per_s, CSV line 4; ambient pressure as printed: 764.2 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-003",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F009"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 7 caption (Test FLEX-003)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "31",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F010"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-003.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 3.2 s for FLEX-003, as printed.",
+    "quantity": "burn_time",
+    "value": 3.2,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.884968462543,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-003, field burn_time_s, CSV line 4; ambient pressure as printed: 764.2 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-003",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F009"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 7 caption (Test FLEX-003)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "31",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F010"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-004.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 2.06 mm for FLEX-004, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 2.06,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-004, field initial_droplet_diameter_mm, CSV line 5; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-004",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F012"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "32",
+          "quote": "This was a calibration test point.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F013"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F014"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-004.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the visible flame extinction diameter of FLEX-004.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": null,
+    "unit": "mm",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-004, field visible_flame_extinction_diameter_mm, CSV line 5; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-004",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F012"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "32",
+          "quote": "This was a calibration test point.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F013"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-004.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.6 mm2/s for FLEX-004, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.6,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-004, field burning_rate_constant_mm2_per_s, CSV line 5; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-004",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F012"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "32",
+          "quote": "This was a calibration test point.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F013"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-004.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 7.64 s for FLEX-004, as printed.",
+    "quantity": "burn_time",
+    "value": 7.64,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-004, field burn_time_s, CSV line 5; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-004",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F012"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "32",
+          "quote": "This was a calibration test point.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F013"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-005.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 1.92 mm for FLEX-005, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 1.92,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-005, field initial_droplet_diameter_mm, CSV line 6; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-005",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F016"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 9 caption (Test FLEX-005)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "33",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F017"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F018"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-005.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a visible flame extinction diameter of 0.81 mm for FLEX-005, as printed.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": 0.81,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-005, field visible_flame_extinction_diameter_mm, CSV line 6; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-005",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F016"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 9 caption (Test FLEX-005)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "33",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F017"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-005.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.48 mm2/s for FLEX-005, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.48,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-005, field burning_rate_constant_mm2_per_s, CSV line 6; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-005",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F016"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 9 caption (Test FLEX-005)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "33",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F017"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-005.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 6.34 s for FLEX-005, as printed.",
+    "quantity": "burn_time",
+    "value": 6.34,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-005, field burn_time_s, CSV line 6; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-005",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F016"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 9 caption (Test FLEX-005)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "33",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F017"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-006.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 2.54 mm for FLEX-006, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 2.54,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-006, field initial_droplet_diameter_mm, CSV line 7; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-006",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F019"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "This was a calibration test.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F020"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F021"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-006.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a visible flame extinction diameter of 1.53 mm for FLEX-006, as printed.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": 1.53,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-006, field visible_flame_extinction_diameter_mm, CSV line 7; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-006",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F019"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "This was a calibration test.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F020"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Droplet drifted out of and back into the HiBMs FOV; A.1 says extinction diameters were extrapolated for droplets that left the FOV. The printed table does not say whether this value was.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F022"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "The droplet drifted out of the High-Bit-Depth Multispectral (HiBMs) field of view (FOV) and then drifted back in the FOV.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-006.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.51 mm2/s for FLEX-006, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.51,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-006, field burning_rate_constant_mm2_per_s, CSV line 7; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-006",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F019"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "This was a calibration test.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F020"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-006.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 9.6 s for FLEX-006, as printed.",
+    "quantity": "burn_time",
+    "value": 9.6,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-006, field burn_time_s, CSV line 7; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-006",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Described as a calibration run in its Appendix B caption; LLUV settings not optimal.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F019"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "This was a calibration test.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F020"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-007.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 1.87 mm for FLEX-007, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 1.87,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.4983335390395,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-007, field initial_droplet_diameter_mm, CSV line 8; ambient pressure as printed: 761.3 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-007",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F023"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F025"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F026"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-007.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the visible flame extinction diameter of FLEX-007.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": null,
+    "unit": "mm",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.4983335390395,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-007, field visible_flame_extinction_diameter_mm, CSV line 8; ambient pressure as printed: 761.3 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-007",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F023"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F026"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-007.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.67 mm2/s for FLEX-007, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.67,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.4983335390395,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-007, field burning_rate_constant_mm2_per_s, CSV line 8; ambient pressure as printed: 761.3 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-007",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F023"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Luminous flame obscured the droplet for much of the test, including the end of the droplet history.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F024"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 11 caption (Test FLEX-007)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "35",
+          "quote": "The last part of the droplet history was obscured by the luminous flame.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F026"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-007.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 5.3 s for FLEX-007, as printed.",
+    "quantity": "burn_time",
+    "value": 5.3,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.4983335390395,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-007, field burn_time_s, CSV line 8; ambient pressure as printed: 761.3 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-007",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F023"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F026"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-008.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 2.95 mm for FLEX-008, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 2.95,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.644988165196,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-008, field initial_droplet_diameter_mm, CSV line 9; ambient pressure as printed: 762.4 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-008",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F028"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "FLEX-001 to FLEX-009 used a 1/30 s shutter; igniter glow made droplet size ambiguous during ignition.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F030"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Soot made the droplet diameter data noisy.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F031"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 12 caption (Test FLEX-008)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "36",
+          "quote": "There is a lot of noise in the droplet diameter data because of the soot",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F032"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-008.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the visible flame extinction diameter of FLEX-008.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": null,
+    "unit": "mm",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.644988165196,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-008, field visible_flame_extinction_diameter_mm, CSV line 9; ambient pressure as printed: 762.4 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-008",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F028"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F032"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-008.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burning rate constant of 0.79 mm2/s for FLEX-008, as printed.",
+    "quantity": "burning_rate_constant",
+    "value": 0.79,
+    "unit": "mm2/s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.644988165196,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-008, field burning_rate_constant_mm2_per_s, CSV line 9; ambient pressure as printed: 762.4 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-008",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F028"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Soot made the droplet diameter data noisy.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F029"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 12 caption (Test FLEX-008)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "36",
+          "quote": "There is a lot of noise in the droplet diameter data because of the soot",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F032"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-008.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 14.8 s for FLEX-008, as printed.",
+    "quantity": "burn_time",
+    "value": 14.8,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.644988165196,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-008, field burn_time_s, CSV line 9; ambient pressure as printed: 762.4 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-008",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F028"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F032"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-009.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the initial droplet diameter of FLEX-009.",
+    "quantity": "initial_droplet_diameter",
+    "value": null,
+    "unit": "mm",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-009, field initial_droplet_diameter_mm, CSV line 10; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-009",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F034"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F038"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-009.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the visible flame extinction diameter of FLEX-009.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": null,
+    "unit": "mm",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-009, field visible_flame_extinction_diameter_mm, CSV line 10; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-009",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F034"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F038"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-009.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the burning rate constant of FLEX-009.",
+    "quantity": "burning_rate_constant",
+    "value": null,
+    "unit": "mm2/s",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-009, field burning_rate_constant_mm2_per_s, CSV line 10; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-009",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F034"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F038"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-009.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the burn time of FLEX-009.",
+    "quantity": "burn_time",
+    "value": null,
+    "unit": "s",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 101.3250144354,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "N2 0.79",
+      "fuel_or_material": "Heptane",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-009, field burn_time_s, CSV line 10; ambient pressure as printed: 760 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-009",
+    "test_outcome": "Disruption",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F034"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Heptane disruption; the report says heptane disruptive extinction may be due to the contaminant.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F038"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-010.initial_droplet_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a initial droplet diameter of 3.86 mm for FLEX-010, as printed.",
+    "quantity": "initial_droplet_diameter",
+    "value": 3.86,
+    "unit": "mm",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 309.2679420865755,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "CO2 0.7; N2 0.09",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-010, field initial_droplet_diameter_mm, CSV line 11; ambient pressure as printed: 2319.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-010",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F041"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "HiBMs image was saturated and its backlight too strong; the droplet size measurement depended on which image quad-slice the droplet was in.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F044"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "38",
+          "quote": "The HiBMs produced a saturated image that influenced the droplet size measurement.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-010.visible_flame_extinction_diameter",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) prints a dash (no value reported) for the visible flame extinction diameter of FLEX-010.",
+    "quantity": "visible_flame_extinction_diameter",
+    "value": null,
+    "unit": "mm",
+    "value_status": "not_reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 309.2679420865755,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "CO2 0.7; N2 0.09",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-010, field visible_flame_extinction_diameter_mm, CSV line 11; ambient pressure as printed: 2319.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-010",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F041"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-010.burning_rate_constant",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) lists a burning rate constant for FLEX-010 that FlameGuard-SI excludes from use; see the exclusion note. No value is stated.",
+    "quantity": "burning_rate_constant",
+    "value": null,
+    "unit": "mm2/s",
+    "value_status": "excluded",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 309.2679420865755,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "CO2 0.7; N2 0.09",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-010, field burning_rate_constant_mm2_per_s, CSV line 11; ambient pressure as printed: 2319.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-010",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F041"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "exclusion",
+        "note": "Table IX reports a burning-rate constant for FLEX-010, but Figure 14 states that no burning-rate constant is reported. The disputed measurement is excluded from quantitative use pending reconciliation with PSI data.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F042"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "38",
+          "quote": "Because the droplet was in the HiBMs FOV for only a short time, no burning rate constant or extinction droplet diameter is reported.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  },
+  {
+    "id": "flex.flex-010.burn_time",
+    "investigation_id": "flex",
+    "evidence_class": "measured",
+    "statement": "NASA/TP-2015-216046 Table IX (printed p. 20) reports a burn time of 13.6 s for FLEX-010, as printed.",
+    "quantity": "burn_time",
+    "value": 13.6,
+    "unit": "s",
+    "value_status": "reported",
+    "uncertainty": null,
+    "conditions": {
+      "gravity_environment": "microgravity",
+      "oxygen_mole_fraction": 0.21,
+      "pressure_kpa": 309.2679420865755,
+      "flow_velocity_mm_s": null,
+      "flow_configuration": null,
+      "diluent": "CO2 0.7; N2 0.09",
+      "fuel_or_material": "Methanol",
+      "sample_geometry": null
+    },
+    "provenance": {
+      "manifest_id": "nasa-tp-2015-216046.flex.findings",
+      "locator": "NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), FLEX-010, field burn_time_s, CSV line 11; ambient pressure as printed: 2319.7 mmHg",
+      "sources": [
+        {
+          "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+          "url": "https://ntrs.nasa.gov/citations/20150023456",
+          "page": "20",
+          "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      ]
+    },
+    "test_id": "FLEX-010",
+    "test_outcome": "Extinction",
+    "curation_notes": [
+      {
+        "kind": "caution",
+        "note": "Coated fuel needles: droplet contained an unknown amount of conformal coating (all tests in this report). The report's authors also assert, p. 17: \"(1) Burning-rate constants were average, and the droplet history was minimally influenced by the contaminant.\" and p. 17: \"(2) The flame size and flame history were similarly minimally influenced by the contaminant.\" Those are the authors' assessments, not independent measurements; the caution is kept, and the report also links disruptive extinction to the contaminant (see disruption_possibly_contaminant flags).",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F041"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Section 5.2 Fuel Needle Contamination",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "contained an unknown amount of the conformal coating",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      },
+      {
+        "kind": "caution",
+        "note": "Figure 14 caption, p. 38: \"quickly moved west out of the fields of view (FOVs)\" of the HiBMs, LLUV and color camera, and p. 38: \"the droplet was in the HiBMs FOV for only a short time\". The report does not state how the printed burn time was obtained. Its derivation has not been verified. The printed value is kept as reported and is not judged incorrect.",
+        "generated_by": "FlameGuard-SI",
+        "flag_ref": {
+          "manifest_id": "nasa-tp-2015-216046.table-ix.flex-001-010.flags",
+          "flag_id": "F045"
+        },
+        "source": {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "38",
+          "quote": "quickly moved west out of the fields of view (FOVs) of the High-Bit-Depth Multispectral (HiBMs), Low Light Level Ultra-Violet (LLUV), and color camera.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        }
+      }
+    ]
+  }
+]
