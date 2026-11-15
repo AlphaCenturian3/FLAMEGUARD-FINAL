@@ -96,6 +96,7 @@ def write_versions(py: Path, tree: Path, backend: str, frontend: str, images: st
         [str(py), "-m", "pip", "freeze", "--disable-pip-version-check"],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     ).stdout
     lines = [
