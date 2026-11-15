@@ -40,5 +40,8 @@ python preview/run.py --frontend-ref origin/feat/visual-research-scene --port 87
 ## Measured (headless Chrome, software WebGL: not representative of a real GPU)
 31 draw calls, about 13,000 triangles and 890 particles per frame; no console errors; no horizontal overflow at 1440x900 or 390x844. Frame rate on real graphics hardware has not been measured.
 
+## Measured on a real GPU
+One Mac only: see [gpu-acceptance.md](gpu-acceptance.md) for the machine, method, results and limits.
+
 ## Screenshots (real application, served by the B7 backend)
 `desktop-microgravity.png`, `desktop-earth-sooty-airflow.png`, `desktop-mars-solid.png`, `mobile-earth.png`, `desktop-fallback.png`.
