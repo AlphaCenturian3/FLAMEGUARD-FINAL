@@ -157,7 +157,10 @@ def dump(chrome: str, url: str, profile: str) -> str:
         f"--user-data-dir={profile}",
     ]
     cmd += ["--virtual-time-budget=8000", "--dump-dom", url]
-    return subprocess.run(cmd, capture_output=True, text=True, timeout=90, check=False).stdout  # noqa: S603
+    done = subprocess.run(  # noqa: S603
+        cmd, capture_output=True, text=True, encoding="utf-8", timeout=90, check=False
+    )
+    return done.stdout
 
 
 def text_of(html: str) -> str:
@@ -483,7 +486,9 @@ def demo_checks(base: str, chrome: str | None) -> None:
         return
     for mode, query in (("fixture", "?fixtures=1"), ("live", "")):
         cmd = [node, str(HERE / "demo_check.mjs"), chrome, base + query]
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=180, check=False)  # noqa: S603
+        proc = subprocess.run(  # noqa: S603
+            cmd, capture_output=True, text=True, encoding="utf-8", timeout=180, check=False
+        )
         try:
             steps = json.loads(proc.stdout)
         except json.JSONDecodeError:
