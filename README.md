@@ -43,6 +43,21 @@ python tools/check_data_provenance.py
 uvicorn flameguard.api.app:app --reload   # http://127.0.0.1:8000/api/health
 ```
 
+### Run the complete application (API and dashboard, one command)
+
+```bash
+pip install -e .                      # once
+python -m flameguard serve --auto-port --open     # prints OPEN THIS ADDRESS: http://127.0.0.1:8000/
+```
+
+One process, one origin: `/api/*` is the API and every other path is the dashboard from `frontend/`.
+It shows only evidence registered in `data/manifest.json` and accepted by the loader; with nothing
+registered the dashboard says so. `compare`, `rankings`, the assistant and simulations are not
+implemented and answer HTTP 501. Demonstration fixtures are **off**; `--fixtures` allows the
+labelled `?fixtures=1` page (placeholder data, banner "FIXTURE DATA. NOT NASA DATA."), and the API
+never returns fixture data. Options: `--port`, `--host` (default: this computer only),
+`--data-root`, `--frontend-dir`. For a process manager: `uvicorn flameguard.api.app:site`.
+
 Copy `.env.example` to `.env` for local settings. Never commit `.env`.
 
 ## Team
