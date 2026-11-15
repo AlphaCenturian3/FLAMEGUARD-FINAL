@@ -27,6 +27,8 @@ packages = ["backend/flameguard"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+# Repository root on sys.path, so tests can import top-level packages such as research/ (spec 4.3).
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
