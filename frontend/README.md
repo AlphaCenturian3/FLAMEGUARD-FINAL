@@ -55,9 +55,9 @@ If the API is unreachable, the page says so and offers a link to fixture mode. I
 
 ## Tests
 
-```powershell
-powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1        # 65 unit tests, headless Chrome/Edge
-powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1    # 47 keyboard / 360 px / theme / served-at-/ checks
+```bash
+python frontend/tools/browser_check.py [--chrome PATH] [--out-dir DIR] [--headed]   # 47 browser checks, any OS
+powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1               # 65 unit tests (Windows; CI: PR #16 runner)
 ```
 
 - **`run-tests.ps1`** loads `frontend/tests/index.html` and exits non-zero on failure. It covers:
@@ -70,7 +70,7 @@ powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1    # 4
   - the fixture adapter against every merged example;
   - TARS modes and exclusion explanations;
   - 400/404/501/network errors, isolation, and attribution.
-- **`browser-check.ps1`** drives Chrome through the DevTools Protocol with real key events. It covers:
+- **`browser_check.py`** (Python 3.10+ standard library only; it replaces the Windows-only `browser-check.ps1`) drives Chrome, Chromium or Edge on Windows, macOS or Linux through the DevTools Protocol. It uses real key events (`Input.dispatchKeyEvent`), real device-metrics emulation and three local servers on `127.0.0.1` (repository root; `frontend/` at `/`; `frontend/` at `/` plus a `/contracts/examples` mount). It prints `ok`/`FAIL` per check and **exits 0 only if all 47 checks ran and passed**. A missing browser (exit 2), any exception, any failure, or a different check count (exit 1) fails. An explicit `--chrome`/`CHROME` path is authoritative. It covers:
   - skip link, Tab order and focus rings, and the demo by keyboard;
   - the light/dark theme toggle;
   - Compare and Rank flows in fixture mode;
@@ -82,7 +82,16 @@ powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1    # 4
 - Base test records are in `tests/fixtures/frontend/records.json` (v0.2.0 shapes, `fixture: true`, `example.invalid` URLs, never loaded by the app). `frontend/tests/samples.js` only clones them and applies overrides.
 - Mutation-checked: seven deliberate breaks of the display guards were each caught by at least one test (see the PR #2 checkpoint comment).
 
-CI: the GitHub Actions workflow is owned by Member 1 and does not run these tests yet. Q4 (Playwright end-to-end tests in a separate CI job) needs Member 1's dependency PR and CI job.
+- The runner's own machinery (WebSocket framing and handshake, fail-closed accounting, glob matching, path confinement, MIME types, browser selection) is unit-tested in `tests/frontend/test_browser_check_runner.py`. Those tests run in the existing pytest CI job and need no browser.
+
+**CI (Member 1 owns `.github/workflows/`).** PR #16 runs the 65 unit tests in headless Chrome. To add the 47 browser checks, append one step to that `frontend` job (ubuntu runners include `google-chrome`, and `CI` makes the runner add `--no-sandbox`):
+
+```yaml
+      - name: Frontend browser checks (keyboard, 360 px, fixture isolation)
+        run: python frontend/tools/browser_check.py --out-dir browser-check-shots
+```
+
+Tested so far on **Windows 11 only** (Chrome 157, Python 3.12). Linux and macOS have not been run yet; the first Linux run would be that CI step.
 
 ## Layout
 
@@ -102,8 +111,9 @@ frontend/
     views/                   dashboard, explorer, compare, rank, interpret, tars, integrations, context
     integrations/            assistant.js (TARS UI), simulation.js (isolated)
   tests/                     Browser test harness, tests, layout.html (360 px page)
-  tools/                     serve.ps1, run-tests.ps1, browser-check.ps1
+  tools/                     browser_check.py (47 browser checks, any OS), run-tests.ps1, serve.ps1
 tests/fixtures/frontend/     Base test records (Member 2)
+tests/frontend/              Unit tests of the browser-check runner (Member 2)
 ```
 
 ## Integration points
