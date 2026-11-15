@@ -35,12 +35,12 @@
     },
     "visible_flame_extinction_diameter": {
       "unit": "mm",
-      "description": "Droplet diameter at the moment the visible flame extinguished, as reported by the source. A droplet size, not a flame size. Present only when the source reports one; a reported value does not imply the test's recorded outcome (FLEX-001 is printed as Disruption with a reported value).",
+      "description": "Droplet diameter at the moment the visible flame extinguished, as reported by the source. A droplet size, not a flame size. A reported value may be a source estimate rather than a direct observation: NASA/TP-2015-216046 extrapolated the burning history when the droplet left the camera field of view before extinction, and Table IX does not mark which values were extrapolated. Present only when the source reports one; a reported value does not imply the test's recorded outcome (FLEX-001 is printed as Disruption with a reported value), and an absent value does not imply that extinction did not occur (FLEX-010 is printed as Extinction with a dash).",
       "minimum": 0
     },
     "burning_rate_constant": {
       "unit": "mm2/s",
-      "description": "Droplet burning-rate constant K: the rate of decrease of droplet diameter squared with time (slope of D^2 versus t), as reported by the source. Not a flame spread rate; never interchangeable with flame_spread_rate.",
+      "description": "Droplet burning-rate constant K, as reported by the source: the magnitude of the rate of decrease of droplet diameter squared with time, K = -d(D^2)/dt, so K is non-negative while the slope of D^2 versus t is negative. FLEX reports an average K from a linear fit of D^2 versus t from shortly after ignition to extinction. Not a flame spread rate; never interchangeable with flame_spread_rate.",
       "minimum": 0
     },
     "burn_time": {
