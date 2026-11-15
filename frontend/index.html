@@ -23,11 +23,12 @@
       </a>
       <span class="topbar-tag">Microgravity combustion evidence</span>
       <div id="health" class="health"></div>
-      <button id="theme-button" class="theme-button" type="button" aria-pressed="false" title="Switch between dark and light theme">
-        <span aria-hidden="true">◐</span> <span class="theme-label">Theme</span><span class="sr-only"> theme (toggle)</span>
+      <button id="theme-button" class="theme-button" type="button" aria-pressed="false" aria-label="Light theme">
+        <span aria-hidden="true">◐</span> <span class="theme-label">Light theme</span>
       </button>
     </header>
-    <div id="source-banner"></div>
+    <div id="source-banner" role="region" aria-label="Data source notices"></div>
+    <div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
     <div class="layout">
       <nav id="sidebar" class="sidebar" aria-label="Primary">
         <div id="nav"></div>

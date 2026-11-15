@@ -62,7 +62,7 @@ If the API is unreachable, the page says so and offers a link to fixture mode. I
 ## Tests
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1        # 65 unit tests, headless Chrome/Edge
+powershell -ExecutionPolicy Bypass -File frontend/tools/run-tests.ps1        # 80 unit tests (65 + 15 accessibility), headless Chrome/Edge
 powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1    # 47 keyboard / 360 px / theme / served-at-/ checks
 ```
 
@@ -90,6 +90,34 @@ powershell -ExecutionPolicy Bypass -File frontend/tools/browser-check.ps1    # 4
 
 CI: the GitHub Actions workflow is owned by Member 1 and does not run these tests yet. Q4 (Playwright end-to-end tests in a separate CI job) needs Member 1's dependency PR and CI job.
 
+## Accessibility (WCAG 2.2 AA, automated checks)
+
+`frontend/tests/a11y.test.js` loads all seven pages in real Chrome (same-origin iframes at 1280, 360 and 320 CSS px) in the dark **and** light themes, and checks:
+
+- **Text contrast:** at least 4.5:1, or 3:1 for large text, computed from rendered colours, including gradients.
+- **Form-control boundaries:** at least 3:1.
+- **Pointer targets:** at least 24×24 px.
+- **Reflow:** no horizontal scrolling at 320 px.
+- **Structure:**
+  - every visible text in a landmark;
+  - exactly one `h1` with no skipped heading levels;
+  - an accessible name on every control;
+  - no duplicate ids.
+- **Specific regressions:**
+  - the labelled notices region keeps the permanent fixture warning;
+  - Explorer results are not a live region, and the count is `role=status`;
+  - each Compare checkbox's name includes its investigation;
+  - the theme button keeps the name "Light theme" with `aria-pressed` carrying the state;
+  - the TARS empty-question error is text, `role=alert`, `aria-invalid`/`aria-describedby`, and moves focus;
+  - comparison results are announced as one line;
+  - `prefers-reduced-motion` turns off animations, transitions and smooth scrolling;
+  - scroll padding keeps focused content clear of the sticky header and the demo bar (2.4.11);
+  - states read as text, not colour.
+
+The helpers live in `frontend/tests/a11y-audit.js`, which is first-party with no third-party engine. They run inside the existing harness, including PR #16's CI runner.
+
+**Not covered by automation:** a screen-reader pass (NVDA, JAWS, VoiceOver), a check by a person on a phone, zoom to 400% on desktop, and user testing. Those still need a person.
+
 ## Layout
 
 ```
@@ -104,10 +132,10 @@ frontend/
     api/                     types.js (v0.2.0 JSDoc), errors.js, http.js (incl. /api/compare), fixtures.js
     model/                   Pure logic, no DOM: evidence.js, trace.js (S9), group.js (P2),
                              filter.js, compare.js (display review only), ranking.js (display guard only)
-    ui/                      dom.js (safe element builder), components.js, chart.js
+    ui/                      dom.js (safe element builder), components.js, chart.js, announce.js (status region, reduced motion)
     views/                   dashboard, explorer, compare, rank, interpret, tars, integrations, context
     integrations/            assistant.js (TARS UI), simulation.js (isolated)
-  tests/                     Browser test harness, tests, layout.html (360 px page)
+  tests/                     Browser test harness, tests, layout.html (360 px page), a11y-audit.js + a11y.test.js
   tools/                     serve.ps1, run-tests.ps1, browser-check.ps1
 tests/fixtures/frontend/     Base test records (Member 2)
 ```

@@ -105,11 +105,30 @@ export function renderAssistantPanel(store) {
   const out = h("div", { "aria-live": "polite" });
   const input = h("textarea", { id: "ask-q", rows: "3", maxlength: "2000", placeholder: "Ask about the loaded evidence…" });
   const button = h("button", { type: "submit", class: "btn btn-primary" }, "Ask TARS");
+  // WCAG 3.3.1 / 3.3.3: an empty question gets a visible, announced text error, not silence.
+  const error = h("p", { id: "ask-q-error", class: "field-error", role: "alert", hidden: true }, "Enter a question before asking TARS.");
+
+  function setError(on) {
+    error.hidden = !on;
+    if (on) {
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", "ask-q-error");
+    } else {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+    }
+  }
+  input.addEventListener("input", () => input.value.trim() && setError(false));
 
   async function submit(e) {
     e.preventDefault();
     const q = input.value.trim();
-    if (!q) return;
+    if (!q) {
+      setError(true);
+      input.focus();
+      return;
+    }
+    setError(false);
     button.disabled = true;
     mount(out, statePanel({ kind: "loading", title: "Waiting for the assistant…" }));
     try {
@@ -133,7 +152,7 @@ export function renderAssistantPanel(store) {
     { class: "card", "aria-labelledby": "assist-h" },
     h("h2", { id: "assist-h" }, "TARS: Traceable Analysis and Research Support"),
     h("p", { class: "small muted" }, "Answers come only from the backend, cite the findings they rely on, state their limitations, and are attributed to FlameGuard-SI. Investigations ticked for comparison are sent as the question's scope."),
-    h("form", { onsubmit: submit }, h("label", { for: "ask-q", class: "field" }, h("span", null, "Question")), input, h("div", { class: "row gap" }, button)),
+    h("form", { onsubmit: submit, novalidate: true }, h("label", { for: "ask-q", class: "field" }, h("span", null, "Question")), input, error, h("div", { class: "row gap" }, button)),
     out,
   );
 }

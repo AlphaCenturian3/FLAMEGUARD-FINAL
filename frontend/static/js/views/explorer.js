@@ -19,7 +19,8 @@ export const title = "Evidence Explorer";
 
 /** @param {import("../main.js").ViewContext} ctx */
 export function render(ctx) {
-  const results = h("div", { class: "results", "aria-live": "polite" });
+  // Not a live region: the role=status count below announces changes; the list itself is not read aloud on every keystroke.
+  const results = h("div", { class: "results" });
   const count = h("p", { class: "result-count muted", role: "status" });
   const filters = { ...EMPTY_FILTERS, query: ctx.params.get("q") || "" };
 
@@ -167,7 +168,7 @@ function investigationCard(ctx, inv, ev) {
             checked: selected,
             onchange: () => ctx.store.selection.toggle(inv.id),
           }),
-          h("span", null, "Compare"),
+          h("span", null, "Compare", h("span", { class: "sr-only" }, ` ${inv.name}`)),
         ),
       ),
     ),
