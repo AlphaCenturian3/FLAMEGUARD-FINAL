@@ -152,3 +152,70 @@ def test_an_empty_string_outcome_next_to_a_reported_one_is_partial_reporting():
         {"finding_id": "b", "test_id": "T-2", "test_outcome": ""},
     ]
     assert any("some rows and not for others" in r for r in outcome_rules(rows))
+
+
+# --- S11: test identity is all-or-nothing within an investigation (Member 5's condition 7) ---
+
+
+def identity_violations(findings):
+    """If any measured finding of an investigation carries a test_id, every measured finding of
+    that investigation must carry one, and a finding that carries an outcome must carry a test_id.
+    This closes the bypass of omitting both fields. It is a contract oracle for the B1 loader
+    (proposed) and for the derivation acceptance tests; it is not runtime code."""
+    out = []
+    by_investigation = {}
+    for f in findings:
+        if f.get("evidence_class") == "measured":
+            by_investigation.setdefault(f["investigation_id"], []).append(f)
+    for inv, group in sorted(by_investigation.items()):
+        has_identity = [f for f in group if _norm(f.get("test_id"))]
+        if has_identity:
+            out += [
+                f"{inv}: {f['id']} has no test_id" for f in group if not _norm(f.get("test_id"))
+            ]
+        out += [
+            f"{inv}: {f['id']} has a test_outcome but no test_id"
+            for f in group
+            if _norm(f.get("test_outcome")) and not _norm(f.get("test_id"))
+        ]
+    return out
+
+
+def _mf(fid, inv, tid=None, outcome=None, cls="measured"):
+    return {
+        "id": fid,
+        "investigation_id": inv,
+        "evidence_class": cls,
+        "test_id": tid,
+        "test_outcome": outcome,
+    }
+
+
+def test_identity_complete_investigation_is_clean():
+    fs = [_mf("a", "inv", "T-1", SYN_A), _mf("b", "inv", "T-2", SYN_B), _mf("c", "other")]
+    assert identity_violations(fs) == []
+
+
+def test_one_finding_without_identity_in_an_identified_investigation_is_a_violation():
+    fs = [_mf("a", "inv", "T-1", SYN_A), _mf("b", "inv")]
+    assert identity_violations(fs) == ["inv: b has no test_id"]
+
+
+def test_omitting_identity_on_every_finding_is_not_detectable_here():
+    """Documented limit: only derivation tests can require identity where none is present."""
+    assert identity_violations([_mf("a", "inv"), _mf("b", "inv")]) == []
+
+
+def test_an_outcome_without_an_identity_is_a_violation():
+    assert identity_violations([_mf("a", "inv", None, SYN_A)]) == [
+        "inv: a has a test_outcome but no test_id"
+    ]
+
+
+def test_interpretations_and_other_investigations_are_not_constrained():
+    fs = [
+        _mf("a", "inv", "T-1", SYN_A),
+        _mf("i", "inv", None, None, cls="interpretation"),
+        _mf("z", "other"),
+    ]
+    assert identity_violations(fs) == []

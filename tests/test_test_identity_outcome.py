@@ -1,9 +1,9 @@
 """v0.2.2: structured test identity and outcome (schema side of S5).
 
-The committed outcome vocabulary is EMPTY and UNCONFIRMED, so against the real contract no
-outcome string is valid. To test the positive paths without inventing scientific values, a
-fixture copies contracts/ into a temp folder, writes clearly SYNTHETIC outcome values, runs the
-REAL generator (contracts/build_outcome_rules.py) there, and validates against the result.
+The committed outcome vocabulary holds the three values Member 5 confirmed (Table IX's printed
+'Test end' labels). The generator tests below still use clearly SYNTHETIC values in a temp copy of
+contracts/, so they prove the MECHANISM independently of any scientific value, and run the REAL
+generator (contracts/build_outcome_rules.py) there.
 """
 
 import copy
@@ -94,12 +94,97 @@ def _comparison(rows, comparable=True):
 # --- Committed contract: the gate ---
 
 
-def test_outcome_vocabulary_is_unconfirmed_and_empty_so_no_outcome_is_valid(real):
-    finding_v, _ = real
+CONFIRMED = ["Extinction", "Disruption", "Completion"]  # Member 5, decision P1, 2026-11-14
+
+
+def test_outcome_vocabulary_is_exactly_the_confirmed_table_ix_labels(real):
+    """The values are Table IX's printed 'Test end' labels, confirmed by Member 5. Nothing else."""
     registry = json.loads((ROOT / "contracts" / "outcomes.json").read_text(encoding="utf-8"))
-    assert registry["outcomes"] == [] and registry["status"] == "UNCONFIRMED"
-    for value in ("Extinction", "Disruption", SYN_A, "", "extinguished"):
-        _rejects(finding_v, _finding(test_outcome=value))
+    assert registry["outcomes"] == CONFIRMED and registry["status"] == "CONFIRMED"
+    assert "pull/17#issuecomment-6886309607" in registry["confirmed_by"]
+    assert registry["confirmed_on"] == "2026-11-14"
+    finding_v, _ = real
+    for value in CONFIRMED:
+        finding_v.validate(_finding(test_id="FLEX-004", test_outcome=value))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "extinction",  # case
+        "EXTINCTION",
+        "Extinction ",  # whitespace
+        " Disruption",
+        "",
+        "Disruptive extinction",  # report prose, not a Table IX value (condition 2)
+        "Radiative extinction",
+        "Diffusive extinction",
+        "Extinguished",
+        "Complete",
+        SYN_A,
+    ],
+)
+def test_only_the_exact_confirmed_labels_are_valid_outcomes(real, value):
+    _rejects(real[0], _finding(test_id="FLEX-004", test_outcome=value))
+
+
+def test_the_report_prints_an_en_dash_but_the_identifier_is_ascii(real):
+    """Member 5's N1: the identifier is the registered CSV's ASCII form, not the printed dash."""
+    real[0].validate(_finding(test_id="FLEX-001"))
+    _rejects(real[0], _finding(test_id="FLEX\u2013001"))  # U+2013 EN DASH
+    desc = json.loads((ROOT / "contracts/schemas/common.schema.json").read_text(encoding="utf-8"))
+    assert "ASCII-normalized" in desc["$defs"]["test_id"]["description"]
+
+
+# --- Real values: S5 with the committed vocabulary -------------------------------------------
+
+
+def _real_rows(*pairs):
+    return [_row(f"T-{i}", outcome) for i, outcome in enumerate(pairs, 1)]
+
+
+def test_same_confirmed_outcome_rows_can_be_comparable(real):
+    for outcome in CONFIRMED:
+        real[1].validate(_comparison(_real_rows(outcome, outcome)))
+
+
+@pytest.mark.parametrize(
+    "outcomes",
+    [
+        ("Extinction", "Disruption"),
+        ("Disruption", "Completion"),
+        ("Completion", "Extinction"),
+        ("Extinction", "Extinction", "Disruption"),
+        ("Extinction", None),
+        (None, None),
+    ],
+)
+def test_real_vocabulary_forbids_mixed_or_missing_outcomes(real, outcomes):
+    rows = _real_rows(*outcomes)
+    _rejects(real[1], _comparison(rows, comparable=True))
+    real[1].validate(_comparison(rows, comparable=False))
+
+
+def test_a_row_that_reports_an_outcome_must_identify_its_test(real):
+    """Member 5's N2: the Finding rule is mirrored on comparison rows."""
+    rows = [_row(None, "Extinction"), _row(None, "Extinction")]
+    _rejects(real[1], _comparison(rows, comparable=False))
+    _rejects(
+        real[1],
+        _comparison([_row("T-1", "Extinction"), _row(None, "Extinction")], comparable=False),
+    )
+
+
+def test_known_limit_rows_with_neither_field_are_valid_so_derivation_must_set_them(real):
+    """Member 5's condition 7, pinned honestly. The schema cannot know that a row belongs to a
+    source that prints per-test outcomes, so rows carrying NEITHER field stay valid and may be
+    comparable. Rule S11 (README) and the derivation acceptance tests must therefore require
+    non-null test_id and test_outcome on every derived Finding of such a source."""
+    bare = [
+        {k: v for k, v in _row(None, None, f"b{i}").items() if k not in ("test_id", "test_outcome")}
+        for i in range(2)
+    ]
+    real[1].validate(_comparison(bare, comparable=True))
 
 
 def test_confirmed_values_require_a_recorded_confirmation():

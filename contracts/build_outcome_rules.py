@@ -9,7 +9,8 @@ It rewrites exactly two things, and nothing else:
                           allOf entry tagged        "no row with outcome v together with a row
                           x-generated-from-outcomes  whose outcome is a different string"
 
-With an empty `outcomes` list the enum is [null] and no per-value rule is generated.
+With an empty `outcomes` list the enum is [null] and no per-value rule is generated; the committed
+list holds the values Member 5 confirmed (see outcomes.json for the evidence and conditions of use).
 A test fails if the committed schemas differ from this script's output.
 """
 
@@ -29,7 +30,8 @@ def test_outcome_def(outcomes: list[str]) -> dict:
         "description": (
             "Closed vocabulary from contracts/outcomes.json, as printed by the source "
             "for the test. "
-            "null means not reported. While that list is empty (status UNCONFIRMED) only null is "
+            "null means not reported. Only values confirmed in outcomes.json are valid; while that "
+            "list is empty only null is "
             "valid. Never free text."
         ),
         "enum": [*outcomes, None],

@@ -72,6 +72,29 @@
         "allOf": [
           {
             "$ref": "common.schema.json#/$defs/value_matches_status"
+          },
+          {
+            "description": "A row that reports an outcome must identify its test (mirrors the Finding rule).",
+            "if": {
+              "required": [
+                "test_outcome"
+              ],
+              "properties": {
+                "test_outcome": {
+                  "type": "string"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "test_id"
+              ],
+              "properties": {
+                "test_id": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ]
       }
@@ -204,6 +227,132 @@
                             }
                           }
                         ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "x-generated-from-outcomes": "Extinction",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "const": "Extinction"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string",
+                            "not": {
+                              "const": "Extinction"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "x-generated-from-outcomes": "Disruption",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "const": "Disruption"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string",
+                            "not": {
+                              "const": "Disruption"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "x-generated-from-outcomes": "Completion",
+            "not": {
+              "allOf": [
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "const": "Completion"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "rows": {
+                      "contains": {
+                        "required": [
+                          "test_outcome"
+                        ],
+                        "properties": {
+                          "test_outcome": {
+                            "type": "string",
+                            "not": {
+                              "const": "Completion"
+                            }
+                          }
+                        }
                       }
                     }
                   }
