@@ -1,6 +1,7 @@
 import { availableQuantities, reviewComparison, rowDisplay } from "../model/compare.js";
 import { CONDITIONS, isFixture, isMissing, valueStatusInfo } from "../model/evidence.js";
 import { resourceFromError } from "../store.js";
+import { announce } from "../ui/announce.js";
 import { barChart } from "../ui/chart.js";
 import { fixtureBadge, investigationMeta, resourcePanel, statePanel, valueStatusBadge } from "../ui/components.js";
 import { h, mount } from "../ui/dom.js";
@@ -10,7 +11,8 @@ export const title = "Experiment Comparison";
 /** @param {import("../main.js").ViewContext} ctx */
 export function render(ctx) {
   const controls = h("form", { class: "card compare-controls", onsubmit: (e) => e.preventDefault() });
-  const result = h("div", { class: "compare-body", "aria-live": "polite" });
+  // Not a live region: a one-line summary is announced instead (ui/announce.js).
+  const result = h("div", { class: "compare-body" });
   const root = h(
     "section",
     { class: "view" },
@@ -69,8 +71,10 @@ export function render(ctx) {
       try {
         const resp = await ctx.store.source.compare(quantity, ids);
         mount(result, comparisonView(resp, ev, all));
+        announce(`Comparison loaded: ${resp.comparable ? "comparable" : "not comparable"}${(resp.non_comparable_reasons || []).length ? `, ${resp.non_comparable_reasons.length} reason${resp.non_comparable_reasons.length === 1 ? "" : "s"} given` : ""}.`);
       } catch (err) {
         mount(result, resourcePanel(resourceFromError(err), "Comparison", `GET /api/compare?quantity=${quantity}`));
+        announce("Comparison could not be loaded.");
       }
     }
     controls.addEventListener("submit", request);

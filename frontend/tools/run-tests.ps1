@@ -25,7 +25,7 @@ try {
     try { Invoke-WebRequest -UseBasicParsing $url -TimeoutSec 2 | Out-Null; break } catch { Start-Sleep -Milliseconds 250 }
   }
   $profileDir = Join-Path ([IO.Path]::GetTempPath()) "flameguard-test-profile"
-  $dom = & $browser --headless=new --disable-gpu --no-first-run "--user-data-dir=$profileDir" --virtual-time-budget=15000 --dump-dom $url | Out-String
+  $dom = & $browser --headless=new --disable-gpu --no-first-run "--user-data-dir=$profileDir" --virtual-time-budget=60000 --dump-dom $url | Out-String
   $pre = [regex]::Match($dom, '<pre id="results">([\s\S]*?)</pre>').Groups[1].Value
   $text = [System.Net.WebUtility]::HtmlDecode($pre)
   Write-Output $text

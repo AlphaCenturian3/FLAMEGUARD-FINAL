@@ -3,6 +3,7 @@
 import { createDataSource, FIXTURE_BANNER, readConfig, urlWithFixtures, versionMismatch } from "./config.js";
 import { createDemo } from "./demo.js";
 import { createStore } from "./store.js";
+import { prefersReducedMotion } from "./ui/announce.js";
 import { h, mount } from "./ui/dom.js";
 import * as compare from "./views/compare.js";
 import * as dashboard from "./views/dashboard.js";
@@ -46,7 +47,7 @@ const demo = createDemo({
   go(route, anchor) {
     if (location.hash !== route) location.hash = route;
     else renderRoute();
-    if (anchor) requestAnimationFrame(() => setTimeout(() => document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth", block: "start" }), 50));
+    if (anchor) requestAnimationFrame(() => setTimeout(() => document.getElementById(anchor)?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" }), 50));
   },
   async selectAll() {
     const ev = await store.evidence();
@@ -175,7 +176,7 @@ function applyTheme(theme) {
   if (btn) {
     const effective = theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
     btn.setAttribute("aria-pressed", String(effective === "light"));
-    btn.querySelector(".theme-label").textContent = effective === "light" ? "Light" : "Dark";
+    // The accessible name stays "Light theme"; aria-pressed carries the state (WCAG 4.1.2, 2.5.3).
   }
 }
 let savedTheme = null;

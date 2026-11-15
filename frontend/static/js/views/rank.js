@@ -2,6 +2,7 @@ import { environmentLabel, isFixture } from "../model/evidence.js";
 import { reviewRankings } from "../model/ranking.js";
 import { resourceFromError } from "../store.js";
 import { evidenceBadge, fixtureBadge, resourcePanel, statePanel } from "../ui/components.js";
+import { announce } from "../ui/announce.js";
 import { h, mount } from "../ui/dom.js";
 import { contextSelect, getContext } from "./context.js";
 
@@ -9,7 +10,7 @@ export const title = "Ranking";
 
 /** @param {import("../main.js").ViewContext} ctx */
 export function render(ctx) {
-  const out = h("div", { "aria-live": "polite" });
+  const out = h("div");
   const root = h(
     "section",
     { class: "view" },
@@ -48,10 +49,12 @@ export function render(ctx) {
     if (getContext() !== context) return; // a newer request superseded this one
     if (resource.state !== "ready") {
       mount(out, resourcePanel(resource, "Rankings", `GET /api/rankings?context=${context}`));
+      announce(resource.state === "not_implemented" ? "Rankings are not implemented by the backend yet." : "Rankings could not be loaded.");
       return;
     }
     const data = resource.data;
     const { criteria, accepted, rejected, notRanked } = reviewRankings(data, ev.findingsById);
+    announce(`Ranking loaded for ${environmentLabel(context)}: ${accepted.length} ranked, ${rejected.length} withheld, ${notRanked.length} not ranked.`);
     const invName = (id) => (ev.investigations.state === "ready" ? ev.investigations.data.find((i) => i.id === id)?.name : null) || id;
     const critName = (id) => criteria.find((c) => c.id === id)?.description || id;
 
