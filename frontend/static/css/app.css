@@ -119,6 +119,9 @@ main { padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 8rem; outline: none; }
 }
 .banner-error { background: rgb(255 107 107 / 0.1); color: var(--err-text); border-bottom-color: rgb(255 107 107 / 0.4); }
 .banner a { color: inherit; font-weight: 600; }
+/* Permanent, neutral (not the fixture yellow): this is a deployment status, not a data source. */
+.banner-preview { background: var(--panel); color: var(--text); padding-block: 0.4rem; font-size: 0.86rem; }
+.banner-preview p { margin: 0; }
 
 /* ---------- Cards, buttons, fields ---------- */
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.15rem; box-shadow: var(--shadow); min-width: 0; }

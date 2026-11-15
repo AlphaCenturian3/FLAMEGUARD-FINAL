@@ -1,0 +1,15 @@
+# Render Blueprint: one Docker web service = one HTTPS URL, API and dashboard on the same origin.
+# Created only when a repository owner connects this repo in the Render dashboard (New > Blueprint).
+# Nothing here deploys by itself, and no secret is needed.
+services:
+  - type: web
+    name: flameguard-si-preview
+    runtime: docker
+    plan: free
+    branch: integration/website-preview   # change to main once the integrated work is reviewed and merged
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: false                     # deploy deliberately, after review
+    envVars:
+      - key: FLAMEGUARD_AI_API_KEY        # no AI is called; kept empty on purpose
+        value: ""
