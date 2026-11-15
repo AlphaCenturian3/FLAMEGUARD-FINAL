@@ -29,7 +29,7 @@ def version_tuple(v):
 
 def test_the_backend_contract_version_is_one_the_dashboard_explicitly_supports():
     assert CONTRACT_VERSION in js_supported(), (
-        f"backend contract {CONTRACT_VERSION} is not in the dashboard's SUPPORTED_CONTRACT_VERSIONS; "
+        f"backend contract {CONTRACT_VERSION} is not in the dashboard's supported versions; "
         "test the dashboard with that version, then add it deliberately"
     )
 
@@ -53,10 +53,7 @@ def test_the_vocabulary_version_matches_the_contract_version():
 
 def test_the_staged_flex_fixture_matches_the_contract_schemas(validator_for):
     if version_tuple(CONTRACT_VERSION) < (0, 2, 2):
-        pytest.skip(
-            "NOT VERIFIED: the schemas of this tree (v%s) predate test_id/test_outcome"
-            % CONTRACT_VERSION
-        )
+        pytest.skip(f"NOT VERIFIED: schemas of v{CONTRACT_VERSION} predate test_id/test_outcome")
     findings = json.loads(
         (ROOT / "tests/fixtures/frontend/flex-staged-candidate.json").read_text(encoding="utf-8")
     )
