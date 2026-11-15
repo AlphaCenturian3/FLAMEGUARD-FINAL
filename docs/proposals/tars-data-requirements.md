@@ -1,35 +1,107 @@
-# Proposal: TARS data requirements
+# TARS data requirements (aligned with contract v0.2.0)
 
-**Status:** proposal from `feat/nasa-data-tars`, for review by the backend owner (`feat/backend-science`). Not approved. Nothing here changes `contracts/` or `backend/`.
-**Date:** 2026-11-14
+**Status:** documentation-only correction proposal from Member 3 (`feat/nasa-data-tars`), 2026-11-14. It restates what merged contract v0.2.0 (`main` `f7cef55`, PR #1) already requires of TARS evidence, and lists what is still open. **It adds no rule and changes no contract, code or data.** Where this document and the spec or contract disagree, the spec and `contracts/` win. The earlier version of this file predated the merged contract; see "Changes from the earlier version" at the end.
 
-## Definition
+## Definition and ownership
 
-**TARS = Traceable Analysis and Research Support.** This is the name decided by the Command Center (decision C1, recorded in the contract v0.2.0 proposal, PR #1); this document follows it. An earlier draft here proposed "Traceable Aerospace Research System", which is withdrawn. TARS is an evidence-grounded research assistant. It explains NASA combustion investigations, compares compatible experimental findings, and communicates source-backed fire-safety relevance with explicit uncertainty.
+**TARS = Traceable Analysis and Research Support** (Command Center decision C1, spec §4.1): "a source-grounded research assistant that cites evidence, identifies uncertainty, and never presents generated interpretations as NASA conclusions."
 
-In the current contract TARS is the assistant behind `POST /api/assistant/ask` (planned, returns 501 today). The backend owns its implementation. The data workstream owns the evidence it may draw on.
+| Part | Owner | Location (spec §4.1) |
+|---|---|---|
+| Evidence retrieval, `retrieve()` (T1) | Member 3 | `backend/flameguard/evidence/` |
+| Assistant backend: endpoint, AI call, quotes-only fallback, reply checks (B6) | Member 1 | `backend/flameguard/assistant/` |
+| Assistant UI (F5) | Member 2 | `frontend/` |
 
-## Requirements on TARS (proposed)
+Order: T1 before B6 (`docs/CP1_WORKSTREAMS.md`).
 
-1. **Evidence scope.** TARS answers only from `data/manifest.json` entries that pass `tools/check_data_provenance.py`, and from the cited source passages in those entries. Entries with `evidence_class: illustrative_simulation` are never used as evidence (spec §2.3).
-2. **Evidence class is visible.** Every value TARS states carries its evidence class. A `measured` value is quoted as printed, with its unit and its manifest id. Anything TARS computes or infers is an `interpretation` attributed to FlameGuard-SI, never to NASA. Do not write "according to NASA" (spec §2.4).
-3. **Citations.** Every answer returns `citations` as `Source` objects, taken from the manifest entry's `sources`: title, url, page, exact quote, retrieved date, archive_id. TARS never invents a page or a quote.
-4. **Missing stays missing.** An empty cell listed in `source_dash_fields` is reported as "not reported in the source", never as 0 and never estimated.
-5. **Respect usage flags.** TARS reads the flags file (`...flags.csv`, manifest `...flex-001-010.flags`). It never uses a value flagged `exclude` (currently the FLEX-010 burning rate) or `not_available` (printed dashes). It shows the reason for any value flagged `caution` alongside the value.
-6. **Limitations travel with values.** When TARS uses a dataset, it surfaces the dataset's limitations from the manifest `description` and `data/docs/`. For the first dataset these are needle contamination, early-test imaging, calibration runs, possibly extrapolated extinction diameters, and the FLEX-010 burning-rate conflict.
-7. **Compatible comparisons only.** TARS compares findings only when fuel, ambient composition, pressure and outcome type are compatible, and it states the conditions next to the comparison. Extinction, disruption and completion outcomes are never pooled.
-8. **No out-of-scope outputs.** No risk scores, alarms, extinction predictions, warning times or safety guarantees (spec §1, out of scope).
-9. **Works without an AI key.** With `FLAMEGUARD_AI_API_KEY` empty, TARS falls back to returning the matching source quotes and table rows verbatim (spec §3).
+## Evidence boundary (what TARS may see)
 
-## What the data workstream provides now
+1. **Only Findings from `retrieve()`.** The interface is `retrieve(question: str, investigation_ids: list[str] | None, limit: int) -> list[Finding]` (spec §4.2):
+   - deterministic, with no network or AI calls;
+   - returns only `measured` and `interpretation` findings that passed the B1 loader;
+   - never returns a `SimulationResult`.
 
-- `data/curated/flex_tp2015216046_table_ix_001_010.csv`: 10 FLEX tests, `measured`, all cells verified against the PDF.
-- Manifest entry `nasa-tp-2015-216046.table-ix.flex-001-010`, with 7 verbatim quotes (table title, A.1 dash definition, contamination, shutter speed, two figure captions).
-- `data/curated/interpretations/quality/flex_tp2015216046_table_ix_001_010.flags.csv`: 45 source-cited usage flags (`interpretation`).
-- `data/docs/flex_table_ix.md`: data dictionary and caveats.
+   TARS does **not** read CSV files, the quality-flags file, manifest descriptions or `data/docs/` directly.
+2. **No simulations, ever.** The `AssistantAnswer` schema rejects `illustrative_simulation`, and the assistant module must not import simulation code (spec §2.3, B8).
+3. **Measured findings come from Member 3's curated JSON.** That is `data/curated/findings/<id>.json` plus manifest entries (D2, D3), checked by S0–S4. For FLEX this JSON **does not exist yet** (see "Current state").
 
-## Open questions for the backend owner
+## Traceability (what every answer must carry)
 
-1. **Limitations field.** `data_manifest.schema.json` has no limitations field, so limitations live in `description` for now. A structured `limitations: [string]` field (and maybe `known_conflicts`) would let TARS show them reliably. That is a contract change (spec §5.4: backend and frontend approval, version bump). Do you want it?
-2. **Row-level findings.** Should the backend turn CSV rows into `Finding` objects (one per cell, with `provenance.manifest_id`), or should the data workstream publish a Findings JSON alongside the CSV?
-3. **Answer shape.** Is `{answer, citations, generated_by}` enough? Or should the response also carry `evidence_class` per statement and a `limitations` list (another contract change)?
+The response follows `contracts/schemas/assistant_answer.schema.json`:
+- `contract_version`, `answer`, `mode`, `citations`, `generated_by: "FlameGuard-SI"` and `limitations` are all required.
+- **Citations are findings.** Each citation is `{finding_id, evidence_class, source}`, where `evidence_class` is `measured` or `interpretation`. By rule **S8**, the `finding_id` must resolve, the `source` must be one of that finding's own `sources`, and the finding must have been returned by `retrieve()` for this request. TARS never invents a page or a quote.
+- **Modes:**
+
+  | Mode | When | Citations | `limitations` |
+  |---|---|---|---|
+  | `ai` | AI key set and evidence retrieved | ≥ 1 | ≥ 1 |
+  | `fallback_quotes` | No key; the answer is assembled from exact source quotes of the retrieved findings | ≥ 1 | ≥ 1 |
+  | `no_evidence` | Nothing retrieved | none required | — |
+
+- **Attribution.** Generated text is attributed to FlameGuard-SI, never to NASA; no "according to NASA" (spec §2.4). The UI shows "Generated by FlameGuard-SI" and the mode (F5).
+- **Request.** `assistant_request.schema.json`: `question` of 1–2000 characters, optional `investigation_ids` (at most 20).
+
+## Values TARS must not misuse
+
+| Case | How it reaches TARS (v0.2.0) | What TARS may do |
+|---|---|---|
+| Missing (printed dash) | Finding with `value_status: "not_reported"`, `value: null`, no note (flag `not_available`, convention 9) | Say "not reported by the source". Never 0, never estimated |
+| Excluded (e.g. FLEX-010 burning rate, flag `exclude`) | Finding with `value_status: "excluded"`, `value: null`, an exclusion note with `flag_ref` | **S9:** cite only to explain the exclusion; never state the excluded number; never use it as support. S9 is **transitive**: the same applies to any interpretation that depends on it at any `derived_from` depth |
+| Caution (flag `caution`) | Caution note in `curation_notes`, attributed to FlameGuard-SI, with `flag_ref` and the source quote | Show the caution with the value, as a FlameGuard-SI assessment. Never present it as source uncertainty |
+| Source-reported uncertainty | `uncertainty`, source text only (convention 10) | Quote it as reported by the source |
+
+**S9 runtime gate (mandatory before any B6 or T1 merge):**
+- `retrieve()` marks every exclusion-dependent finding it returns (T1).
+- B6 routes those findings only to a separate exclusion-explanation step, never to the answer generator as evidence.
+- Member 3 provides the **as-printed value resolver** for excluded findings. It reads the number at the finding's `locator` in the registered source file, so tests can check that the answer and its limitations never contain it.
+- Member 5 tests both independently.
+
+## Comparisons
+
+TARS does not decide comparability. The single runtime implementation is Member 1's `GET /api/compare` (spec §4.3, S5). The frontend displays that decision and never computes its own (§4.2), and the same applies to TARS. How FLEX test outcomes (Extinction, Disruption, Completion) are kept non-comparable is **open** in the D5 draft (PR #12, findings F2 and O2).
+
+## Out of scope
+
+No risk scores, alarms, extinction predictions, warning times or safety guarantees (spec §1).
+
+## Current state for FLEX (2026-11-14)
+
+- **On `main` (PR #4, `ef71422`):**
+  - The as-printed CSV (`measured`): 10 tests.
+  - The quality-flags file (`interpretation`): 45 flags — 1 `exclude`, 9 `not_available`, 35 `caution`.
+  - Their manifest entries.
+  - The local PDF verifier.
+- **Not yet available, so `retrieve()` has no FLEX findings and TARS would answer `no_evidence` for FLEX:**
+  - The FLEX vocabulary quantities: D5, draft PR #12, decisions F1, F2, O1–O4 pending.
+  - Registered source coverage for 15 flags (S10): draft PR #13, pending.
+  - Test-outcome representation (G2 / O2).
+  - The derivation tool and `data/curated/findings/flex.json`.
+  - `retrieve()` (T1) and the as-printed resolver.
+
+## Open questions
+
+These come from merged v0.2.0, not from this document:
+1. **Dataset-level limitations.** The manifest still has no structured limitations field. FLEX caveats reach TARS only through per-finding caution notes; for example, contamination is a row-level caution on every FLEX finding. Is that sufficient for `AssistantAnswer.limitations`, or should a dataset-level field be proposed? That would be a contract change. Members 1 and 2.
+2. **Outcome comparability for FLEX.** See PR #12 F2 and O2. Members 1 and 2.
+3. **Live AI key at the demo**, and who holds it (spec §8, item 7). Team.
+
+## Changes from the earlier version of this file
+
+| # | Earlier text | Problem against v0.2.0 | Now |
+|---|---|---|---|
+| 1 | "Nothing here changes `contracts/` or `backend/`"; "The backend owns its implementation. The data workstream owns the evidence" | Spec §4.1 splits TARS three ways; Member 3 owns `retrieve()` in `backend/flameguard/evidence/` | Ownership table from §4.1 |
+| 2 | Definition: "explains NASA combustion investigations, compares compatible experimental findings, and communicates source-backed fire-safety relevance" | Not the decided definition; implies TARS compares | Spec §4.1 definition, quoted |
+| 3 | "answers only from `data/manifest.json` entries … and from the cited source passages in those entries" | TARS sees only Findings from `retrieve()` (§4.2, B6, S8) | Evidence boundary 1 |
+| 4 | "Every answer returns `citations` as `Source` objects, taken from the manifest entry's `sources`" | Citations are `{finding_id, evidence_class, source}`; the source must be one of that finding's sources (S8) | Traceability section |
+| 5 | "An empty cell listed in `source_dash_fields` …" | TARS sees `value_status: not_reported`, not CSV cells | "Values TARS must not misuse" table |
+| 6 | "TARS reads the flags file (`...flags.csv`) … never uses a value flagged `exclude` or `not_available`" | Flags reach TARS only through `value_status` and `curation_notes` (convention 9, S10). S9 allows citing an excluded finding to explain the exclusion, and it is transitive | Table plus S9 runtime gate |
+| 7 | "It shows the reason for any value flagged `caution`" | Cautions are FlameGuard-SI `curation_notes`, never `uncertainty` (convention 10) | Table row "Caution" |
+| 8 | "surfaces the dataset's limitations from the manifest `description` and `data/docs/`" | TARS does not read those; `AssistantAnswer.limitations` is required (≥ 1 in `ai` and `fallback_quotes`) | Traceability section; open question 1 |
+| 9 | "TARS compares findings only when fuel, ambient composition, pressure and outcome type are compatible" | Comparability has one runtime implementation, `/api/compare` (§4.3) | "Comparisons" section |
+| 10 | "falls back to returning the matching source quotes and table rows verbatim" | Fallback is `mode: fallback_quotes` from retrieved findings' quotes; plus `no_evidence` | Modes table |
+| 11 | Open question: add a `limitations` field? | `AssistantAnswer.limitations` (required) and `Finding.limitations` (interpretation only) now exist; the manifest still has none | Open question 1, narrowed |
+| 12 | Open question: who turns CSV rows into Findings? | Decided: Member 3's derivation tool writes `data/curated/findings/<id>.json` (D2) | Removed; listed under "Current state" |
+| 13 | Open question: is `{answer, citations, generated_by}` enough? | Decided by `assistant_answer.schema.json` (adds `contract_version`, `mode`, `limitations`) | Removed |
+| 14 | "What the data workstream provides now" | Omitted that no Findings, vocabulary or `retrieve()` exist yet | "Current state for FLEX" |
+
+**Kept unchanged:** missing values stay missing; no simulations as evidence; no "according to NASA"; the out-of-scope list; the quotes-only fallback when there is no key.
