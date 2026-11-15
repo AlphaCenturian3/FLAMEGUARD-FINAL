@@ -232,3 +232,116 @@ def test_a_registered_file_in_the_staging_folder_is_still_checked_like_any_evide
     manifest_path.write_text(manifest_text, encoding="utf-8")
     result = load_evidence(root)
     assert "S11" in rejection(result)[1] and not result.store.findings
+
+
+# ---------------------------------------------------------------------------------------------
+# Adversarial: attempts to get staged files in through the manifest
+# ---------------------------------------------------------------------------------------------
+
+
+def register(scenario, entry_id, rel, evidence_class, **fields):
+    text = json.dumps(staged_lookalike())
+    scenario.extra_entries.append(
+        {"id": entry_id, "path": rel, "evidence_class": evidence_class, "text": text, **fields}
+    )
+
+
+def served_ids(scenario):
+    client = TestClient(create_app(EvidenceSource(scenario.write())))
+    return [f["id"] for f in client.get("/api/findings").json()["items"]], client
+
+
+def test_registering_a_staged_file_outside_data_curated_makes_the_whole_manifest_unservable(
+    scenario,
+):
+    """Fail closed: the manifest schema refuses the path, so nothing at all is served (503)."""
+    only(scenario, finding("m1", test_id="T-1"))
+    register(
+        scenario,
+        "ds-staged",
+        "staging/findings/flex.json",
+        "measured",
+        sources=[
+            {"title": "SYNTHETIC", "url": "https://example.invalid/s", "retrieved": "2026-11-14"}
+        ],
+        rights_status="under_review",
+    )
+    client = TestClient(create_app(EvidenceSource(scenario.write())))
+    for path in ("/api/findings", "/api/investigations"):
+        r = client.get(path)
+        assert r.status_code == 503 and r.json()["error"]["code"] == "unavailable"
+        assert "flex.flex-010" not in r.text
+
+
+def test_a_staged_file_under_an_unrecognised_curated_path_is_rejected_not_served(scenario):
+    only(scenario, finding("m1", test_id="T-1"))
+    register(
+        scenario,
+        "ds-staged",
+        "data/curated/staging/flex.json",
+        "measured",
+        sources=[
+            {"title": "SYNTHETIC", "url": "https://example.invalid/s", "retrieved": "2026-11-14"}
+        ],
+        rights_status="under_review",
+    )
+    ids, client = served_ids(scenario)
+    assert ids == ["m1"]
+    status, reasons = rejection(load_evidence(scenario.root), "ds-staged")
+    assert status == "rejected" and "not a recognized evidence document" in reasons
+    assert client.get("/api/findings").headers[REJECTED_HEADER] == "1"
+
+
+def test_a_staged_file_registered_as_a_simulation_is_never_opened_or_served(scenario):
+    only(scenario, finding("m1", test_id="T-1"))
+    register(
+        scenario,
+        "ds-sim",
+        "data/simulated/flex.json",
+        "illustrative_simulation",
+        model="SYNTHETIC",
+        model_version="0",
+        label="Fluid and thermal transport model. No combustion chemistry.",
+    )
+    ids, _ = served_ids(scenario)
+    assert ids == ["m1"]
+    status, reasons = rejection(load_evidence(scenario.root), "ds-sim")
+    assert status == "skipped" and "never evidence" in reasons
+
+
+def test_a_staged_file_registered_as_an_interpretation_of_nothing_is_rejected(scenario):
+    only(scenario, finding("m1", test_id="T-1"))
+    register(
+        scenario,
+        "ds-fake",
+        "data/curated/interpretations/flex.json",
+        "interpretation",
+        derived_from=["ds-a"],
+        method="SYNTHETIC",
+    )
+    ids, _ = served_ids(scenario)
+    assert "flex.flex-010.burn_time" not in ids, (
+        "a measured staged finding cannot pose as an interpretation"
+    )
+    status, reasons = rejection(load_evidence(scenario.root), "ds-fake")
+    assert status == "rejected" and "evidence_class must be interpretation" in reasons
+
+
+def test_a_staged_investigation_cannot_be_reached_by_id_filter_or_path_tricks(scenario):
+    only(scenario, finding("m1", test_id="T-1"))
+    root = scenario.write()
+    scatter(root)
+    client = TestClient(create_app(EvidenceSource(root)))
+    for path in (
+        "/api/investigations/flex",
+        "/api/investigations/..%2Fstaging%2Finvestigations",
+        "/api/investigations/flex%2Fflex",
+        "/api/findings?investigation_id=flex",
+        "/api/findings?investigation_id=flex&evidence_class=measured",
+        "/api/findings?evidence_class=measured&quantity=burn_time",
+    ):
+        r = client.get(path)
+        text = r.text.lower()
+        assert "flex.flex-010" not in text and "synthetic staged" not in text, path
+        assert r.status_code in (200, 400, 404), path
+    assert client.get("/api/findings?quantity=burn_time").json()["items"] == []
