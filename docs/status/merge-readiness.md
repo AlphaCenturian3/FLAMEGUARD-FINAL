@@ -1,4 +1,4 @@
-# Merge-readiness matrix (snapshot 2026-11-15, updated after the #28 draft; written by Member 1 for Command Center)
+# Merge-readiness matrix (snapshot 2026-11-15, updated after the frontend-compat, test-fix and registration-candidate drafts; written by Member 1 for Command Center)
 
 Nothing here authorizes a merge. Rules used: CONTRIBUTING.md (at least one approving review; scientific work also needs the independent reviewer of spec section 4.4; contract changes need Members 1 and 2, plus 3 and 5 when a data, interpretation or ranking rule changes; nobody approves their own scientific work; a changed head SHA needs renewed review and CI). GitHub branch protection could not be read on this plan, so the documented rules above are the checkable requirement. All heads below are drafts unless noted.
 
@@ -30,6 +30,9 @@ Nothing here authorizes a merge. Rules used: CONTRIBUTING.md (at least one appro
 | #14 | TARS requirements (docs) | main | 67edf2f | n/a | Member 1 | Members 2/3/5 as the doc owner requires | review |
 | #2 | frontend dashboard | main | c48eaf6 | n/a | Member 1 | Member 5 scientific review | review |
 | #28 | PR #12 wording corrections (draft, text only) | #12 | 23cd7ad | green | none | Member 3 cherry-picks (or adopts the wording); Member 5 re-review; Members 1+2 re-approve on the new #12 head. Not to be merged itself | Member 3 |
+| #29 | frontend: contract v0.2.2 compatibility, group by `test_id`, printed test outcome | #21 | a5cc826 / 9655a57 | green (backend jobs only); browser 89/89 locally | none | Member 2 review; Member 5 wording review; #2 and #21 merged first | #2, #21, reviews |
+| #30 | tests: registration-independent derivation tests + registered-state integrity tests (deliberate gate red light) | #24 | see PR | pending | none | #24 merged first; Member 3 review | #24 |
+| #31 | **REGISTRATION CANDIDATE** (3 files: 2 derived files + 2 manifest entries) | #30 | see PR | **red by design** until every gate closes | none | all of steps 1-5 of the integration plan, Members 3 and 5 (and 1) | **gates**, #30 |
 | #21 | frontend: rejected-files warning, footer | #2 | 3c9ce44 | green (backend jobs only) | none | Member 2 review, Member 5 wording review; #2 merged | #2, reviews |
 | #16 | CI frontend browser tests | main | ed4ccaf | green | none | Member 2 approval | review |
 | #8 / #19 | dev preview / B2 preview | main / #8 | 993fdc4 / 2c82959 | green | none | reviews; #19 serves unmerged #18 and #21 (pinned) | not for production |
@@ -41,3 +44,12 @@ Open: PR12, PR17, S10-REGISTRATION, Q3 (Member 5 review of the staged Findings),
 
 ## Test status of the staged output
 40 Findings staged (31 reported, 8 not_reported, 1 excluded), 96 notes. Audit against the checksum-verified PDF: 0 failures, 96/96 quotes verbatim. Live API serves none of them (tests in #26). Staging stays staging-only.
+
+## Future review assignments (recorded only; nobody has been contacted, no review requested, no approval implied)
+| Item | Reviewer | What they are asked to do, later |
+|---|---|---|
+| PR #23 (S10 validation tool) | **Member 3** | Independent provenance and code review. Then squash merge per CONTRIBUTING, by whoever is authorized. |
+| PR #28 (prepared #12 wording corrections) | **Member 3** | Adopt the prepared corrections into PR #12 (cherry-pick `23cd7ad`) or the equivalent wording. Member 5 then re-reviews and Members 1 and 2 re-approve on the new head. |
+| **Q3** (derived Findings) | **Member 5** | Independent scientific review of the 40 derived Findings, using `~/flameguard-audit/flex_acceptance_report.json` (regenerate with `tools/audit_flex_findings.py`) and the PDF. |
+| **F042-NOTE** | **Member 5** | An explicit **written** approval that records the exact curated note text and the reviewed commit SHA. Until it exists the gate stays open. |
+| G7 condition decisions | an independent scientist (Member 5 or a delegate named by the owner) | Move diluent, fuel and sample-geometry representations from `owner_provisional` to `approved`. Nobody has done this. |

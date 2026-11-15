@@ -52,3 +52,9 @@ Everything in 1-4 can be reviewed in parallel; the merges are sequential in the 
 1. Authorize me to build the **frontend compatibility changes** (gaps 1-3) on my own branch, stacked on #21, for Member 2's review. No merge.
 2. Authorize me to prepare the **registration PR as a draft** (tests updated, generated files) so it is ready the moment steps 1-5 are done. It stays draft and unmergeable until then.
 3. Confirm who should be asked (when people are available) for: #23 approval (Member 3), the #28 adoption, and Member 5's Q3 and F042-NOTE reviews. I will not contact anyone without your say.
+
+## 6. Progress after the authorizations (2026-11-15)
+- **Step 6 (frontend compatibility):** drafted as **#29**. Accepts exactly 0.2.0, 0.2.1 and 0.2.2; groups by `test_id`; shows the printed outcome verbatim; 89/89 browser tests over the 40 staged Findings. Found and fixed one more integration issue in the integration tree (a test pinned the fixture examples to 0.2.0).
+- **Step 7 (registration):** drafted as **#31** (three files only), on top of **#30**, which makes the derivation tests registration-independent and adds registered-state integrity tests. **#31's CI is red by design** until every gate is closed.
+- **Integration tree (throwaway, never pushed):** 40 Findings served by the real API; the excluded value withheld everywhere; compare, rankings and assistant 501; dashboard shows 10 test rows and no version warning; the pinned demo and its 60 smoke checks are unaffected.
+- **Step 8 still open:** with live data the preview smoke checks that assert "live is empty" (11) and the footer version check must become registration-aware; that belongs with the re-pin, after registration is approved.
