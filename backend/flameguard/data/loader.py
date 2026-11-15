@@ -346,6 +346,8 @@ def _check_items(
                 else:
                     why = f"names entry {mid!r}, whose file does not hold it"
                 doc.reasons.append(f"S1: {label}: manifest_id {why}")
+    if role is Role.FINDINGS:
+        doc.reasons.extend(_identity_reasons(items))
     if role is Role.INVESTIGATIONS:
         counts: dict[str, int] = {}
         for item in items:
@@ -356,6 +358,36 @@ def _check_items(
             for k, c in counts.items()
             if c > 1
         )
+
+
+def _identity_reasons(items: list[dict[str, Any]]) -> list[str]:
+    """S11: test identity is all-or-nothing within an investigation (one findings file holds
+    exactly one investigation, S2). If any measured finding carries a `test_id`, all must, and a
+    finding with a `test_outcome` needs a `test_id`. Absent, null and empty all mean "not reported".
+    A file where no finding carries an identity passes: only the derivation tests can require it
+    for a source that prints per-test outcomes."""
+    measured = [
+        f
+        for f in items
+        if isinstance(f, dict) and f.get("evidence_class") == "measured" and "id" in f
+    ]
+
+    def identified(f: dict[str, Any]) -> bool:
+        return bool(f.get("test_id"))
+
+    reasons = []
+    if any(identified(f) for f in measured):
+        reasons.extend(
+            f"S11: {f['id']}: no test_id, but other findings of this investigation have one"
+            for f in measured
+            if not identified(f)
+        )
+    reasons.extend(
+        f"S11: {f['id']}: has a test_outcome but no test_id"
+        for f in measured
+        if f.get("test_outcome") and not identified(f)
+    )
+    return reasons
 
 
 def _report(doc: _Doc) -> EntryReport:
