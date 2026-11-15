@@ -189,12 +189,33 @@ def test_with_nothing_registered_the_api_stays_honestly_empty_whatever_is_staged
         assert body["items"] == [] and body["total"] == 0
 
 
-def test_the_real_repository_serves_no_evidence_while_flex_is_only_staged(tmp_path):
-    """The shipped manifest registers no Findings JSON, so the live API is empty."""
+def registered_ids(kind):
+    """Ids inside the Findings/investigation files that the shipped manifest registers."""
+    manifest = json.loads((REPO / "data" / "manifest.json").read_text(encoding="utf-8"))
+    ids = set()
+    for entry in manifest["datasets"]:
+        path = entry["path"]
+        is_inv = path == "data/curated/investigations.json"
+        is_finding = path.startswith(("data/curated/findings/", "data/curated/interpretations/"))
+        if (kind == "investigations" and is_inv) or (kind == "findings" and is_finding):
+            ids |= {item["id"] for item in json.loads((REPO / path).read_text(encoding="utf-8"))}
+    return ids
+
+
+def test_the_real_repository_serves_exactly_what_its_manifest_registers():
+    """Registered evidence is served, and nothing else: not staged files, not source CSVs.
+
+    Before the FLEX registration this set is empty (the API is honestly empty); once the derived
+    files are registered it is the 40 Findings and their investigation. Either way an unregistered
+    or staged file can never appear.
+    """
     client = TestClient(create_app(EvidenceSource(REPO)))
-    for path in ("/api/investigations", "/api/findings"):
-        body = client.get(path).json()
-        assert body["items"] == [], "no staged or unregistered Finding may appear"
+    findings = client.get("/api/findings").json()
+    investigations = client.get("/api/investigations").json()
+    assert {f["id"] for f in findings["items"]} == registered_ids("findings")
+    assert {i["id"] for i in investigations["items"]} == registered_ids("investigations")
+    assert findings["total"] == len(findings["items"])
+    assert not [f for f in findings["items"] if f.get("fixture")], "no fixture is ever served"
 
 
 def test_compare_rankings_and_the_assistant_stay_501_with_staged_files_present(scenario):
