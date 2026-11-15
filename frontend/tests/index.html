@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>running…</title>
+    <style>
+      body { font: 14px/1.5 ui-monospace, Consolas, monospace; background: #0b1020; color: #dde; padding: 1rem; }
+      body[data-status="pass"] h1 { color: #4ad295; }
+      body[data-status="fail"] h1 { color: #ff6b6b; }
+    </style>
+  </head>
+  <body>
+    <h1>FlameGuard-SI frontend tests</h1>
+    <pre id="results">running…</pre>
+    <script type="module">
+      import { run } from "./harness.js";
+      import "./model.test.js";
+      import "./api.test.js";
+      import "./ui.test.js";
+      import "./flex.test.js";
+      import "./a11y.test.js";
+      run().catch((err) => {
+        document.getElementById("results").textContent = "Harness error: " + (err && err.stack ? err.stack : err);
+        document.title = "FAIL harness";
+        document.body.dataset.status = "fail";
+      });
+    </script>
+  </body>
+</html>

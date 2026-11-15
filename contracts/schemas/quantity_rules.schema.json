@@ -12,6 +12,10 @@
         "ignition_delay",
         "flame_length",
         "flame_temperature",
+        "initial_droplet_diameter",
+        "visible_flame_extinction_diameter",
+        "burning_rate_constant",
+        "burn_time",
         null
       ]
     }
@@ -174,6 +178,138 @@
               {
                 "type": "number",
                 "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "initial_droplet_diameter"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "mm"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "visible_flame_extinction_diameter"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "mm"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "burning_rate_constant"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "mm2/s"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "quantity": {
+            "const": "burn_time"
+          }
+        },
+        "required": [
+          "quantity"
+        ]
+      },
+      "then": {
+        "required": [
+          "unit"
+        ],
+        "properties": {
+          "unit": {
+            "const": "s"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
               },
               {
                 "type": "null"

@@ -1,0 +1,115 @@
+name: Docker preview
+
+# Builds the deployment image and checks the running container the way a host will run it:
+# platform $PORT, health path, what is and is not served, no secrets, no registered findings,
+# then the real-browser site check against it. Builds and pushes nothing anywhere.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PORT: "10000" # Render's default $PORT
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build the image
+        run: docker build --pull -t flameguard-preview:ci .
+
+      - name: Record what was built
+        run: |
+          docker image inspect flameguard-preview:ci --format 'image id: {{.Id}}  size: {{.Size}}'
+          docker pull -q python:3.12.10-slim >/dev/null  # BuildKit does not keep the base in the local store
+          docker image inspect python:3.12.10-slim --format 'base digest: {{index .RepoDigests 0}}'
+          echo "commit: $GITHUB_SHA (PR head: ${{ github.event.pull_request.head.sha }})"
+
+      - name: Image contents (no secrets, no test tools, no raw data)
+        run: |
+          set -eu
+          run() { docker run --rm --entrypoint sh flameguard-preview:ci -c "$1"; }
+          echo "user: $(run 'id -u')"; test "$(run 'id -u')" = "10001"
+          run 'test ! -e /app/.env && test ! -e /app/.git && test ! -d /app/frontend/tests && test ! -d /app/frontend/tools && test ! -d /app/data/raw'
+          test -z "$(run 'find /app -name "*.pdf" -o -name ".env*" | head -1')"
+          # GPG_KEY (some python base tags) is the public release-signing key id, not a credential.
+          if docker run --rm --entrypoint env flameguard-preview:ci | grep -v '^GPG_KEY=' | grep -iE '(key|token|secret|password)=.+'; then
+            echo "a credential-like environment variable is set in the image"; exit 1
+          fi
+          run 'python -m pip freeze' | sort > image-freeze.txt
+          grep -v '^#' deploy/requirements.lock | sort > lock.txt
+          diff lock.txt image-freeze.txt && echo "installed packages == deploy/requirements.lock"
+
+      - name: Start the container on the platform port
+        run: |
+          docker run -d --name fg -p "$PORT:$PORT" -e PORT="$PORT" flameguard-preview:ci
+          for i in $(seq 1 60); do
+            curl -fsS "http://127.0.0.1:$PORT/api/investigations" >/dev/null 2>&1 && break
+            sleep 1
+          done
+          docker logs fg
+
+      - name: Endpoints
+        run: |
+          set -eu
+          B="http://127.0.0.1:$PORT"
+          code() { curl -s -o /dev/null -w '%{http_code}' "$B$1"; }
+          expect() { got=$(code "$1"); echo "$1 -> $got (want $2)"; test "$got" = "$2"; }
+          expect / 200
+          expect /api/health 200
+          expect /api/investigations 200
+          expect /api/findings 200
+          expect "/?fixtures=1" 200
+          expect /contracts/examples/finding_list.example.json 200
+          expect "/api/compare?quantity=burn_time" 501
+          expect /api/rankings 501
+          expect /api/nope 404
+          expect /tests/index.html 404
+          expect /tools/site_check.py 404
+          expect /README.md 404
+          curl -s "$B/api/health"; echo
+          curl -s "$B/api/investigations"; echo
+          test "$(curl -s "$B/api/findings" | python3 -c 'import json,sys; print(json.load(sys.stdin)["total"])')" = "0"
+          curl -s "$B/" | grep -q 'Development preview.'
+          grep -q 'FIXTURE DATA. NOT NASA DATA.' frontend/static/js/config.js
+          curl -sI "$B/" | grep -i -E 'nosniff|referrer-policy'
+
+      - name: Docker HEALTHCHECK reports healthy
+        run: |
+          for i in $(seq 1 45); do
+            s=$(docker inspect -f '{{.State.Health.Status}}' fg); echo "health: $s"
+            [ "$s" = healthy ] && exit 0
+            sleep 2
+          done
+          exit 1
+
+      - name: A different $PORT is honoured
+        run: |
+          docker run -d --name fg2 -p 8080:8080 -e PORT=8080 flameguard-preview:ci
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/api/health && exit 0; sleep 1; done
+          docker logs fg2; exit 1
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Real-browser site check against the container
+        env:
+          CI: "1"
+        run: python frontend/tools/site_check.py "http://127.0.0.1:$PORT/" --out-dir site-shots
+
+      - name: Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-preview-screenshots
+          path: site-shots/
+          if-no-files-found: ignore
+
+      - name: Container logs
+        if: always()
+        run: docker logs fg || true

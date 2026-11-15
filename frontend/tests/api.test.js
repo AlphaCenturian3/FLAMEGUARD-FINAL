@@ -1,0 +1,329 @@
+import { assert, test } from "./harness.js";
+import { byId, excluded, interpretation, measured, stubFetch } from "./samples.js";
+import { ApiError, isNotImplemented } from "../static/js/api/errors.js";
+import { createHttpSource, parseRejectedHeader, REJECTED_HEADER } from "../static/js/api/http.js";
+import { createFixtureSource } from "../static/js/api/fixtures.js";
+import { CONTRACT_VERSION, FIXTURE_BANNER, SUPPORTED_CONTRACT_VERSIONS, readConfig, urlWithFixtures, versionMismatch } from "../static/js/config.js";
+import { createStore, listWarnings, rejectedWarning } from "../static/js/store.js";
+import { answerView, reviewAnswer } from "../static/js/integrations/assistant.js";
+import { reviewSimulation } from "../static/js/integrations/simulation.js";
+import { reviewRankings } from "../static/js/model/ranking.js";
+import { reviewComparison } from "../static/js/model/compare.js";
+import { provenanceIssues } from "../static/js/model/evidence.js";
+
+const NOT_IMPL = { error: { code: "not_implemented", message: "This endpoint is planned in contract v0.2.0 and not implemented yet." } };
+const EXAMPLES = new URL("../../contracts/examples/", import.meta.url).href;
+const example = async (name) => (await fetch(new URL(name, EXAMPLES))).json();
+
+// ---------- Config: fixture mode and version (P6/P7) ----------
+test("config: fixture mode only with ?fixtures=1; contract version is 0.2.2", () => {
+  assert.equal(CONTRACT_VERSION, "0.2.2");
+  assert.equal(FIXTURE_BANNER, "FIXTURE DATA. NOT NASA DATA.");
+  assert.equal(readConfig("http://x.test/frontend/index.html").source, "api");
+  assert.equal(readConfig("http://x.test/frontend/index.html?fixtures=1").source, "fixtures");
+  assert.equal(readConfig("http://x.test/frontend/index.html?fixtures=0").source, "api");
+  assert.equal(readConfig("http://x.test/frontend/index.html?source=fixtures").source, "api", "the v0.1 switch no longer enables fixtures");
+  assert.equal(readConfig("http://x.test/frontend/index.html?fixtures=1").fixturesBase, "http://x.test/contracts/examples/");
+  assert.equal(new URL(urlWithFixtures(true, "http://x.test/?a=1#/rank")).searchParams.get("fixtures"), "1");
+  assert.equal(new URL(urlWithFixtures(false, "http://x.test/?fixtures=1")).searchParams.has("fixtures"), false);
+});
+
+test("config: a different API contract version produces a warning", () => {
+  assert.equal(versionMismatch("0.2.0"), null);
+  assert.includes(versionMismatch("0.1.0"), "reports contract 0.1.0");
+  assert.equal(versionMismatch(undefined), null);
+});
+
+test("store: list display checks warn on total mismatch (S7) and version, never alter data", () => {
+  assert.deepEqual(listWarnings({ contract_version: "0.2.0", items: [1, 2], total: 2 }, "L"), []);
+  assert.includes(listWarnings({ contract_version: "0.2.0", items: [1], total: 2 }, "L").join(" "), "S7");
+  assert.includes(listWarnings({ contract_version: "0.1.0", items: [], total: 0 }, "L").join(" "), "0.1.0");
+  assert.includes(listWarnings({ items: [] }, "L").join(" "), "no total");
+});
+
+// ---------- HTTP adapter (F6) ----------
+test("http: 501 Error body becomes a not_implemented ApiError", async () => {
+  const src = createHttpSource({ fetchImpl: stubFetch(501, NOT_IMPL) });
+  await assert.rejects(src.listInvestigations(), (err) => {
+    assert.ok(err instanceof ApiError);
+    assert.equal(err.status, 501);
+    assert.ok(isNotImplemented(err));
+  });
+});
+
+test("http: 400, 404, non-JSON errors and network failure are distinguished", async () => {
+  await assert.rejects(createHttpSource({ fetchImpl: stubFetch(400, { error: { code: "invalid_request", message: "bad context" } }) }).getRankings("mars"), (err) => assert.equal(err.code, "invalid_request"));
+  await assert.rejects(createHttpSource({ fetchImpl: stubFetch(404, { error: { code: "not_found", message: "no" } }) }).getInvestigation("x"), (err) => assert.equal(err.code, "not_found"));
+  await assert.rejects(createHttpSource({ fetchImpl: stubFetch(500, "<html>oops</html>") }).health(), (err) => assert.equal(err.code, "http_500"));
+  const failing = async () => {
+    throw new TypeError("Failed to fetch");
+  };
+  await assert.rejects(createHttpSource({ fetchImpl: failing }).health(), (err) => assert.equal(err.code, "network_error"));
+});
+
+test("http: endpoints and query encoding follow spec §5.1 (v0.2.0)", async () => {
+  const f = stubFetch(200, { items: [] });
+  const src = createHttpSource({ baseUrl: "http://api.test/", fetchImpl: f });
+  await src.listFindings("inv 1&x");
+  await src.compare("flame_spread_rate", ["a", "b c"]);
+  await src.compare("flame_spread_rate");
+  await src.getRankings("lunar_base");
+  await src.ask("why?", ["a"]);
+  assert.equal(f.calls[0].url, "http://api.test/api/findings?investigation_id=inv%201%26x");
+  assert.equal(f.calls[1].url, "http://api.test/api/compare?quantity=flame_spread_rate&investigation_ids=a,b%20c");
+  assert.equal(f.calls[2].url, "http://api.test/api/compare?quantity=flame_spread_rate");
+  assert.equal(f.calls[3].url, "http://api.test/api/rankings?context=lunar_base");
+  assert.equal(f.calls[4].init.method, "POST");
+  assert.deepEqual(JSON.parse(f.calls[4].init.body), { question: "why?", investigation_ids: ["a"] });
+});
+
+test("store: 501 on lists yields not_implemented state, not empty data", async () => {
+  const store = createStore(createHttpSource({ fetchImpl: stubFetch(501, NOT_IMPL) }));
+  const ev = await store.evidence();
+  assert.equal(ev.investigations.state, "not_implemented");
+  assert.equal(ev.investigations.data, undefined);
+});
+
+// ---------- Fixture adapter against the merged v0.2.0 examples ----------
+test("fixtures: every contract example loads, every record is a fixture, list totals hold", async () => {
+  const src = createFixtureSource({ baseUrl: EXAMPLES });
+  const invs = await src.listInvestigations();
+  assert.ok(SUPPORTED_CONTRACT_VERSIONS.includes(invs.contract_version), `examples are contract ${invs.contract_version}`);
+  assert.equal(invs.total, invs.items.length);
+  assert.ok(invs.items.every((i) => i.fixture === true));
+  const fl = await src.listFindings();
+  assert.equal(fl.total, fl.items.length);
+  assert.ok(fl.items.every((f) => f.fixture === true));
+  assert.deepEqual([...new Set(fl.items.map((f) => f.value_status))].sort(), ["excluded", "not_applicable", "not_reported", "reported"]);
+  const only = await src.listFindings("fixture-investigation-2");
+  assert.equal(only.total, only.items.length);
+});
+
+test("fixtures: all example findings pass the frontend's v0.2.0 provenance check", async () => {
+  const fl = await example("finding_list.example.json");
+  for (const f of fl.items) assert.deepEqual(provenanceIssues(f), [], f.id);
+  for (const name of ["finding.measured.example.json", "finding.measured_caution.example.json", "finding.measured_excluded.example.json", "finding.measured_missing.example.json", "finding.interpretation.example.json"]) {
+    assert.deepEqual(provenanceIssues(await example(name)), [], name);
+  }
+});
+
+test("fixtures: ranking, comparison and answer examples render through the display guards", async () => {
+  const src = createFixtureSource({ baseUrl: EXAMPLES });
+  const map = byId((await src.listFindings()).items);
+  const r = reviewRankings(await src.getRankings("spacecraft"), map);
+  assert.equal(r.accepted.length, 1, JSON.stringify(r.rejected.map((x) => x.problems)));
+  assert.equal(r.notRanked.length, 1);
+  const c = reviewComparison(await src.compare("flame_spread_rate"), map);
+  assert.equal(c.chartable, false, "the example is not comparable; it must not be charted");
+  assert.deepEqual(c.problems, []);
+  assert.deepEqual(reviewAnswer(await src.ask("q"), map).problems, []);
+});
+
+test("fixtures: requests with no example return not_found instead of an invented result", async () => {
+  const src = createFixtureSource({ baseUrl: EXAMPLES });
+  await assert.rejects(src.getRankings("lunar_base"), (err) => assert.equal(err.code, "not_found"));
+  await assert.rejects(src.compare("flame_temperature"), (err) => assert.equal(err.code, "not_found"));
+});
+
+test("fixtures: missing fixture directory gives a fixture_unavailable error", async () => {
+  const src = createFixtureSource({ baseUrl: "http://fixtures.test/", fetchImpl: stubFetch(404, {}) });
+  await assert.rejects(src.listInvestigations(), (err) => assert.equal(err.code, "fixture_unavailable"));
+});
+
+test("fixtures: simulation example passes the label check", async () => {
+  const sim = await createFixtureSource({ baseUrl: EXAMPLES }).getSimulation("fixture-sim-1");
+  assert.deepEqual(reviewSimulation(sim), []);
+  assert.ok(reviewSimulation({ ...sim, label: "Simulated flame" }).length > 0);
+});
+
+// ---------- P5: TARS ----------
+const SRC = { title: "TEST SOURCE", url: "https://example.invalid/t", retrieved: "2026-11-14" };
+const ANSWER = (extra = {}) => ({ contract_version: "0.2.0", answer: "TEST answer.", mode: "fallback_quotes", citations: [{ finding_id: "m", evidence_class: "measured", source: SRC }], generated_by: "FlameGuard-SI", limitations: ["TEST limitation"], ...extra });
+const TARS_FINDINGS = byId([measured("m", "a"), excluded("e", "a"), interpretation("i1", "a", ["e"]), interpretation("i2", "a", ["i1"])]);
+
+test("tars: valid answers in each mode pass; attribution, citations and limitations are required", () => {
+  assert.deepEqual(reviewAnswer(ANSWER(), TARS_FINDINGS).problems, []);
+  assert.deepEqual(reviewAnswer(ANSWER({ mode: "ai" }), TARS_FINDINGS).problems, []);
+  assert.deepEqual(reviewAnswer(ANSWER({ mode: "no_evidence", citations: [], limitations: [] }), TARS_FINDINGS).problems, []);
+  assert.includes(reviewAnswer(ANSWER({ generated_by: "NASA" }), TARS_FINDINGS).problems.join(" "), "FlameGuard-SI");
+  assert.includes(reviewAnswer(ANSWER({ citations: [] }), TARS_FINDINGS).problems.join(" "), "cites no findings");
+  assert.includes(reviewAnswer(ANSWER({ limitations: [] }), TARS_FINDINGS).problems.join(" "), "no limitations");
+  assert.includes(reviewAnswer(ANSWER({ citations: [{ finding_id: "ghost", evidence_class: "measured", source: SRC }] }), TARS_FINDINGS).problems.join(" "), "does not resolve");
+});
+
+test("tars: an exclusion-dependent citation is an exclusion explanation, and needs its exclusion reason (S9)", () => {
+  for (const id of ["e", "i1", "i2"]) {
+    const cls = id === "e" ? "measured" : "interpretation";
+    const bad = reviewAnswer(ANSWER({ citations: [{ finding_id: id, evidence_class: cls, source: SRC }] }), TARS_FINDINGS);
+    assert.includes(bad.problems.join(" "), "do not give that exclusion reason", id);
+    const good = reviewAnswer(ANSWER({ limitations: ["Cited only to explain an exclusion: TEST exclusion reason for e"], citations: [{ finding_id: id, evidence_class: cls, source: SRC }] }), TARS_FINDINGS);
+    assert.deepEqual(good.problems, [], id);
+    assert.equal(good.citations[0].role, "exclusion_explanation");
+  }
+  assert.equal(reviewAnswer(ANSWER(), TARS_FINDINGS).citations[0].role, "evidence");
+});
+
+test("tars: rendered answer shows mode, attribution, limitations and separates exclusion explanations", () => {
+  const el = answerView(ANSWER({ answer: "Also evidence.", limitations: ["TEST limitation", "TEST exclusion reason for e"], citations: [{ finding_id: "m", evidence_class: "measured", source: SRC }, { finding_id: "i2", evidence_class: "interpretation", source: SRC }] }), TARS_FINDINGS);
+  const text = el.textContent;
+  assert.includes(text, "Quotes only (no AI)");
+  assert.includes(text, "Generated by FlameGuard-SI. Not a NASA statement.");
+  assert.includes(text, "TEST limitation");
+  assert.includes(text, "Evidence cited (1)");
+  assert.includes(text, "Cited to explain exclusions (1)");
+  assert.includes(text, "Cited only to explain an exclusion");
+  const withheld = answerView(ANSWER({ generated_by: "NASA" }), TARS_FINDINGS);
+  assert.includes(withheld.textContent, "Answer withheld by dashboard check");
+  assert.ok(!withheld.textContent.includes("TEST answer."), "a withheld answer's text is not shown");
+});
+
+// ---------- Isolation ----------
+/** All modules reachable from `entry` through static or dynamic imports. */
+async function importGraph(entry) {
+  const seen = new Set();
+  const queue = [new URL(entry, import.meta.url).href];
+  const specifier = /(?:import|export)\s[^;]*?from\s*["']([^"']+)["']|import\s*\(\s*["']([^"']+)["']\s*\)|import\s*["']([^"']+)["']/g;
+  while (queue.length) {
+    const url = queue.pop();
+    if (seen.has(url)) continue;
+    seen.add(url);
+    // Strip comments first: JSDoc `import("...")` type annotations are not real imports.
+    const text = (await (await fetch(url)).text()).replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
+    for (const m of text.matchAll(specifier)) queue.push(new URL(m[1] || m[2] || m[3], url).href);
+  }
+  return [...seen];
+}
+
+test("isolation: ranking, interpretation, compare and TARS never reach a simulation module", async () => {
+  for (const entry of ["../static/js/model/ranking.js", "../static/js/views/rank.js", "../static/js/views/interpret.js", "../static/js/views/compare.js", "../static/js/integrations/assistant.js"]) {
+    const graph = await importGraph(entry);
+    const bad = graph.filter((u) => /simulation/i.test(new URL(u).pathname.split("/").pop()));
+    assert.deepEqual(bad, [], `${entry} reaches ${bad.join(", ")}`);
+  }
+  assert.ok((await importGraph("../static/js/views/integrations.js")).some((u) => u.endsWith("/integrations/simulation.js")));
+});
+
+test("attribution: the phrase 'according to NASA' appears in no frontend module", async () => {
+  const graph = await importGraph("../static/js/main.js");
+  for (const url of graph) assert.ok(!/according to NASA/i.test(await (await fetch(url)).text()), url);
+});
+
+// ---------- Pre-merge review follow-up (S9): exclusion explanation must be in limitations, for every excluded ancestor ----------
+const TWO_EXCL = byId([measured("m", "a"), excluded("e1", "a"), excluded("e2", "a"), interpretation("i12", "a", ["e1", "e2"]), interpretation("i12b", "a", ["i12"])]);
+const R1 = "TEST exclusion reason for e1";
+const R2 = "TEST exclusion reason for e2";
+const cite = (id) => [{ finding_id: id, evidence_class: "interpretation", source: SRC }];
+
+test("tars S9: a citation with two excluded ancestors needs both exclusion reasons; one is not enough", () => {
+  for (const id of ["i12", "i12b"]) {
+    const one = reviewAnswer(ANSWER({ citations: cite(id), limitations: [`Explains an exclusion: ${R1}`] }), TWO_EXCL);
+    assert.includes(one.problems.join(" "), "e2", `${id}: the unexplained ancestor e2 must be named`);
+    const both = reviewAnswer(ANSWER({ citations: cite(id), limitations: [`Explains exclusions: ${R1}`, R2] }), TWO_EXCL);
+    assert.deepEqual(both.problems, [], id);
+  }
+});
+
+test("tars S9: the exclusion reason must be in limitations; the answer text alone does not count", () => {
+  const inAnswerOnly = reviewAnswer(ANSWER({ answer: `The value is excluded: ${R1} ${R2}`, citations: cite("i12"), limitations: ["TEST generic limitation"] }), TWO_EXCL);
+  assert.includes(inAnswerOnly.problems.join(" "), "limitations", "reason only in the answer text must fail closed");
+  const inLimitations = reviewAnswer(ANSWER({ answer: "TEST answer.", citations: cite("i12"), limitations: [R1, R2] }), TWO_EXCL);
+  assert.deepEqual(inLimitations.problems, []);
+});
+
+test("tars S9: an excluded ancestor without any exclusion note cannot be explained, so the answer is withheld", () => {
+  const map = byId([excluded("e3", "a", { curation_notes: [] }), interpretation("i3", "a", ["e3"])]);
+  const res = reviewAnswer(ANSWER({ citations: cite("i3"), limitations: ["anything"] }), map);
+  assert.ok(res.problems.length > 0);
+});
+
+// ---------- Transparency: rejected evidence, footer version, valid vs unavailable vs fixture ----------
+const LIST = { contract_version: "0.2.0", items: [], total: 0 };
+/** Like stubFetch, but with response headers and a different reply per path. */
+function routedFetch(routes) {
+  return async (url) => {
+    const path = new URL(url, "http://x.test").pathname;
+    const { status = 200, body = LIST, headers = {} } = routes[path] || {};
+    return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...headers } });
+  };
+}
+
+test("rejected evidence: the header is parsed strictly (absent 0, digits, anything else unreadable)", () => {
+  assert.equal(REJECTED_HEADER, "X-FlameGuard-Rejected-Entries");
+  assert.equal(parseRejectedHeader(null), 0);
+  assert.equal(parseRejectedHeader("0"), 0);
+  assert.equal(parseRejectedHeader("3"), 3);
+  for (const bad of ["", "-1", "1.5", "two", "1; drop"]) assert.ok(Number.isNaN(parseRejectedHeader(bad)), `unreadable: ${JSON.stringify(bad)}`);
+});
+
+test("rejected evidence: the http source reports what the list responses said, and resets", async () => {
+  const routes = { "/api/investigations": { headers: { [REJECTED_HEADER]: "2" } }, "/api/findings": { headers: { [REJECTED_HEADER]: "2" } } };
+  const src = createHttpSource({ fetchImpl: routedFetch(routes) });
+  assert.equal(src.rejectedEntries(), 0, "nothing loaded yet");
+  await src.listInvestigations();
+  await src.listFindings();
+  assert.equal(src.rejectedEntries(), 2);
+  routes["/api/investigations"] = {};
+  routes["/api/findings"] = {};
+  await src.listInvestigations();
+  await src.listFindings();
+  assert.equal(src.rejectedEntries(), 0, "a later clean load clears the count");
+});
+
+test("rejected evidence: only list responses count, and an unreadable header is never read as zero", async () => {
+  const health = { "/api/health": { body: { status: "ok" }, headers: { [REJECTED_HEADER]: "9" } } };
+  const a = createHttpSource({ fetchImpl: routedFetch(health) });
+  await a.health();
+  assert.equal(a.rejectedEntries(), 0, "health is not a list");
+  const failing = { "/api/findings": { status: 503, body: { error: { code: "unavailable", message: "x" } }, headers: { [REJECTED_HEADER]: "4" } } };
+  const b = createHttpSource({ fetchImpl: routedFetch(failing) });
+  await assert.rejects(b.listFindings());
+  assert.equal(b.rejectedEntries(), 0, "an error response is not a partial load");
+  const odd = createHttpSource({ fetchImpl: routedFetch({ "/api/findings": { headers: { [REJECTED_HEADER]: "many" } } }) });
+  await odd.listFindings();
+  assert.ok(Number.isNaN(odd.rejectedEntries()));
+});
+
+test("rejected evidence: the store raises a visible warning, and only when files were rejected", async () => {
+  assert.equal(rejectedWarning(0), null);
+  assert.includes(rejectedWarning(1), "1 evidence file was rejected");
+  assert.includes(rejectedWarning(3), "3 evidence files were rejected");
+  assert.includes(rejectedWarning(3), "incomplete");
+  assert.includes(rejectedWarning(NaN), "some evidence files were rejected");
+  const partial = createStore(createHttpSource({ fetchImpl: routedFetch({ "/api/investigations": { headers: { [REJECTED_HEADER]: "1" } }, "/api/findings": { headers: { [REJECTED_HEADER]: "1" } } }) }));
+  const ev = await partial.evidence();
+  assert.equal(ev.rejectedEntries, 1);
+  assert.ok(ev.warnings.some((w) => w.includes("1 evidence file was rejected")));
+  assert.equal(ev.investigations.state, "ready", "the evidence that was served is still shown");
+  const clean = await createStore(createHttpSource({ fetchImpl: routedFetch({}) })).evidence();
+  assert.equal(clean.rejectedEntries, 0);
+  assert.deepEqual(clean.warnings, []);
+});
+
+test("valid, unavailable and fixture evidence stay distinct", async () => {
+  // unavailable (503): an error state with no data and no rejected-files claim
+  const down = { "/api/investigations": { status: 503, body: { error: { code: "unavailable", message: "down" } } }, "/api/findings": { status: 503, body: { error: { code: "unavailable", message: "down" } } } };
+  const ev = await createStore(createHttpSource({ fetchImpl: routedFetch(down) })).evidence();
+  assert.equal(ev.investigations.state, "error");
+  assert.equal(ev.findings.state, "error");
+  assert.equal(ev.rejectedEntries, 0);
+  assert.equal(ev.warnings.length, 0);
+  // empty live evidence: ready with zero items, not an error and not fixtures
+  const empty = await createStore(createHttpSource({ fetchImpl: routedFetch({}) })).evidence();
+  assert.equal(empty.investigations.state, "ready");
+  assert.equal(empty.investigations.data.length, 0);
+  // fixtures never claim a backend rejection
+  const fixtures = createFixtureSource({ baseUrl: EXAMPLES });
+  assert.equal(fixtures.rejectedEntries, undefined);
+  const fx = await createStore(fixtures).evidence();
+  assert.equal(fx.rejectedEntries, 0);
+  assert.ok(!fx.warnings.some((w) => w.includes("rejected")));
+});
+
+test("footer: no hard-coded contract version; it is filled from the single CONTRACT_VERSION", async () => {
+  const html = await (await fetch(new URL("../index.html", import.meta.url))).text();
+  assert.ok(!/Contract v\d/.test(html), "index.html must not hard-code a contract version");
+  assert.includes(html, 'id="footer-contract"');
+  const main = await (await fetch(new URL("../static/js/main.js", import.meta.url))).text();
+  assert.includes(main, "footer-contract");
+  assert.includes(main, "${CONTRACT_VERSION}");
+});
