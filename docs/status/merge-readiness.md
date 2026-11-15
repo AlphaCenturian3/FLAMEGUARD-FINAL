@@ -33,6 +33,8 @@ Nothing here authorizes a merge. Rules used: CONTRIBUTING.md (at least one appro
 | #29 | frontend: contract v0.2.2 compatibility, group by `test_id`, printed test outcome | #21 | a5cc826 / 9655a57 | green (backend jobs only); browser 89/89 locally | none | Member 2 review; Member 5 wording review; #2 and #21 merged first | #2, #21, reviews |
 | #30 | tests: registration-independent derivation tests + registered-state integrity tests (deliberate gate red light) | #24 | see PR | pending | none | #24 merged first; Member 3 review | #24 |
 | #31 | **REGISTRATION CANDIDATE** (3 files: 2 derived files + 2 manifest entries) | #30 | see PR | **red by design** until every gate closes | none | all of steps 1-5 of the integration plan, Members 3 and 5 (and 1) | **gates**, #30 |
+| #32 | **B7**: dashboard served by the backend on one origin; `python -m flameguard serve` | #26 | aa50837 | green | none | independent review (backend, plus Member 2 for the frontend side); #26 chain merged first | #26 chain, review |
+| #33 | preview: registration-aware smoke (empty and registered scenarios) | #19 | 0dcf110 | green | none | review; #19 first | #19 |
 | #21 | frontend: rejected-files warning, footer | #2 | 3c9ce44 | green (backend jobs only) | none | Member 2 review, Member 5 wording review; #2 merged | #2, reviews |
 | #16 | CI frontend browser tests | main | ed4ccaf | green | none | Member 2 approval | review |
 | #8 / #19 | dev preview / B2 preview | main / #8 | 993fdc4 / 2c82959 | green | none | reviews; #19 serves unmerged #18 and #21 (pinned) | not for production |
@@ -53,3 +55,22 @@ Open: PR12, PR17, S10-REGISTRATION, Q3 (Member 5 review of the staged Findings),
 | **Q3** (derived Findings) | **Member 5** | Independent scientific review of the 40 derived Findings, using `~/flameguard-audit/flex_acceptance_report.json` (regenerate with `tools/audit_flex_findings.py`) and the PDF. |
 | **F042-NOTE** | **Member 5** | An explicit **written** approval that records the exact curated note text and the reviewed commit SHA. Until it exists the gate stays open. |
 | G7 condition decisions | an independent scientist (Member 5 or a delegate named by the owner) | Move diluent, fuel and sample-geometry representations from `owner_provisional` to `approved`. Nobody has done this. |
+
+## Shortest dependency-safe merge sequence (2026-11-15)
+Each step needs its listed review and an explicit Command Center authorization; nothing here is approved. Squash merges per CONTRIBUTING.
+
+| Order | PRs | Technically passing today | Independent approval still needed |
+|---|---|---|---|
+| 1 | #9 | yes | none beyond CC authorization (Member 5 approved) |
+| 2 | #10 then #11 | yes | Member 3 (#10); Members 3 and 5 (#11) |
+| 3 | #12 (with #28's wording) then #17 | yes (#28: 279 tests) | Member 3 adopts #28; Member 5 re-review; Members 1+2 re-approve; #17: Members 2, 3, 5 |
+| 4 | #18 then #26 | yes | independent backend review; Member 5 S11 test |
+| 5 | #23 then #25 | yes (PDF-verified) | Member 3 (#23 provenance/code); Members 3 and 5 (#25) |
+| 6 | #2, #21, #29, #16 | yes (89/89 browser) | Member 5 scientific review of #2; Member 2 for #21/#29/#16 |
+| 7 | #32 (B7) | yes (15 mechanics + 7 browser + module crawl; both full-app trees 24/24) | independent review |
+| 8 | #24 then #30 | yes | Members 3 and 5 |
+| 9 | **Science gates** | the audit passes (0 failures, 96/96 quotes) | **Member 5: Q3 review; written F042-NOTE approval with the exact note and reviewed SHA; G7 condition decisions approved by an independent scientist** |
+| 10 | #31 (registration) | **red by design** until step 9 closes every gate | Members 3, 5 and 1 |
+| 11 | #8/#19/#33 re-pinned to merged commits; owner demo docs updated for live evidence | #33: empty 60/60, registered 72/72 | review |
+
+Not on the critical path: #13 (close as superseded after #25 is verified), #14, #15, #20 (Blender), #3, #6.
