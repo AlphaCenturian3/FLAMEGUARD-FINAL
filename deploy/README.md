@@ -35,6 +35,11 @@ docker run --rm -p 8000:8000 flameguard-si          # set -e PORT=... to change 
   use `/api/investigations`.
 - Runs as an unprivileged user. Dependencies are pinned in `deploy/requirements.lock`, and the
   base image is pinned to `python:3.12.10-slim`.
+- The image leaves out `frontend/tests`, `frontend/tools` and `frontend/README.md`, so the public
+  site does not serve the test harness or QA tools.
+- CI (`.github/workflows/docker-preview.yml`) builds the image and checks the running container
+  on every pull request.
+- **Owner deployment steps, validation and rollback:** see `deploy/OWNER_CHECKLIST.md`.
 
 ## Public staging on Render (recommended)
 
@@ -55,4 +60,4 @@ Alternatives that run the same Dockerfile unchanged: Fly.io, Google Cloud Run, R
 - Do not add an AI key. No feature uses one yet.
 - Do not register evidence for deployment's sake. Registration needs its own approvals.
 - Do not remove the preview notice or the fixture banner.
-- Keep `autoDeploy: false` until the branch being deployed has been reviewed.
+- Keep `autoDeployTrigger: "off"` until the branch being deployed has been reviewed.

@@ -16,3 +16,7 @@ tools/*
 !tools/check_data_provenance.py
 data/raw
 data/staging
+# The site serves frontend/ as-is: keep the test harness, QA tools and README out of public view.
+frontend/tests
+frontend/tools
+frontend/README.md
