@@ -1,6 +1,6 @@
 // Flame Lab parameter model (static/js/flame/params.js): pure logic, no WebGL.
 import { assert, test } from "./harness.js";
-import { ASSUMPTIONS, DEFAULTS, DISCLAIMER, FUELS, GRAVITY_PRESETS, KEYMAP, LIMITS, describe, evidenceCta, flameLook, fuelById, keyAction, prefersReducedMotion, presetForGravity, sanitize, sceneMode, webglAvailable } from "../static/js/flame/params.js";
+import { ASSUMPTIONS, DEFAULTS, DISCLAIMER, FUELS, GRAVITY_PRESETS, KEYMAP, LIMITS, describe, evidenceCta, flameLook, fuelById, keyAction, prefersReducedMotion, presetForGravity, sanitize, sceneMode, shouldAnimate, webglAvailable } from "../static/js/flame/params.js";
 
 const NUMERIC = ["lit", "stretch", "lean", "size", "brightness", "luminous", "flicker", "rise", "drift", "smoke"];
 const grid = () => {
@@ -150,4 +150,14 @@ test("flame: the Flame Lab is a first-class route, lazily loads its scene, and t
   const html = await (await fetch(new URL("../index.html", import.meta.url))).text();
   assert.includes(html, '"three": "./static/vendor/three/three.module.min.js"');
   assert.ok(!/https?:\/\/(unpkg|cdn|cdnjs|jsdelivr)/.test(html), "no CDN: the demo must work offline");
+});
+
+test("flame: with reduced motion the scene idles and draws only pending still frames", () => {
+  assert.equal(shouldAnimate({ reducedMotion: false, visible: true, hidden: false }), true);
+  assert.equal(shouldAnimate({ reducedMotion: true, visible: true, hidden: false, pending: false }), false);
+  assert.equal(shouldAnimate({ reducedMotion: true, visible: true, hidden: false, pending: true }), true);
+  for (const reducedMotion of [true, false]) {
+    assert.equal(shouldAnimate({ reducedMotion, visible: false, hidden: false, pending: true }), false);
+    assert.equal(shouldAnimate({ reducedMotion, visible: true, hidden: true, pending: true }), false);
+  }
 });

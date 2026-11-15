@@ -8,7 +8,7 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import { flameLook, keyAction } from "./params.js";
+import { flameLook, keyAction, shouldAnimate } from "./params.js";
 
 const EMBERS = 420;
 const SMOKE = 220;
@@ -296,7 +296,7 @@ export async function createFlameScene(host, opts) {
   // --- controls ------------------------------------------------------------------------------
   const controls = new OrbitControls(camera, canvas);
   controls.target.copy(TARGET);
-  controls.enableDamping = true;
+  controls.enableDamping = !opts.reducedMotion; // damping needs a running loop
   controls.dampingFactor = 0.08;
   controls.enablePan = false;
   controls.minDistance = 0.5;
@@ -385,6 +385,8 @@ export async function createFlameScene(host, opts) {
   const clock = new THREE.Clock();
   let raf = 0;
   let visible = true;
+  let pending = true; // reduced motion: a still frame is waiting to be drawn
+  let requestStill = () => {}; // set once the loop exists
   let frames = 0;
   let fpsWindow = { t: performance.now(), n: 0, fps: 0 };
   const resize = () => {
@@ -396,16 +398,19 @@ export async function createFlameScene(host, opts) {
     // keep the whole flame in frame on tall, narrow screens
     camera.fov = camera.aspect < 0.8 ? 52 : 40;
     camera.updateProjectionMatrix();
+    requestStill();
   };
   const ro = new ResizeObserver(resize);
   ro.observe(host);
   resize();
   const io = new IntersectionObserver((entries) => {
     visible = entries.some((e) => e.isIntersecting);
+    pending = true;
     if (visible && !raf) loop();
   });
   io.observe(host);
   const onVisibility = () => {
+    pending = true;
     if (!document.hidden && visible && !raf) loop();
   };
   document.addEventListener("visibilitychange", onVisibility);
@@ -441,15 +446,24 @@ export async function createFlameScene(host, opts) {
 
   function loop() {
     raf = 0;
-    if (!visible || document.hidden) return;
+    if (!shouldAnimate({ reducedMotion: reduced, visible, hidden: document.hidden, pending })) return;
+    pending = false;
     const dt = Math.min(clock.getDelta(), 0.05);
     step(dt, clock.elapsedTime);
     draw();
     fpsWindow.n += 1;
     const now = performance.now();
     if (now - fpsWindow.t >= 1000) fpsWindow = { t: now, n: 0, fps: (fpsWindow.n * 1000) / (now - fpsWindow.t) };
-    raf = requestAnimationFrame(loop);
+    // reduced motion: one still frame, then idle until something changes (see requestStill)
+    if (!reduced) raf = requestAnimationFrame(loop);
   }
+  /** Reduced motion only: draw one more still frame (camera moved, resized, input changed). */
+  requestStill = () => {
+    if (!reduced) return;
+    pending = true;
+    if (!raf) raf = requestAnimationFrame(loop);
+  };
+  controls.addEventListener("change", requestStill);
   if (reduced) {
     // a still frame: seed a few motes so the picture is not empty, then draw only on change
     shown.lit = target.lit;
@@ -499,14 +513,14 @@ export async function createFlameScene(host, opts) {
       }
       if (!next.lit && target.lit) smokeBurst = 1;
       target = next;
-      if (reduced) {
-        step(0, clock.elapsedTime);
-        draw();
-      }
+      requestStill();
     },
     setReducedMotion(on) {
       reduced = on;
+      controls.enableDamping = !on;
       if (on) controls.autoRotate = false;
+      pending = true;
+      if (!raf) raf = requestAnimationFrame(loop);
       target = { ...target, ...(on ? { flicker: 0, rise: 0, drift: 0 } : {}) };
     },
     resetView() {
@@ -514,7 +528,7 @@ export async function createFlameScene(host, opts) {
       if (reduced) {
         camera.position.copy(HOME);
         controls.update();
-        draw();
+        requestStill();
         return;
       }
       tween = { from: camera.position.clone(), to: HOME.clone(), t: 0 };

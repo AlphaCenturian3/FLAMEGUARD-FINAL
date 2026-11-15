@@ -168,6 +168,15 @@ export function prefersReducedMotion(match = (q) => (typeof matchMedia === "func
   return Boolean(mq && mq.matches);
 }
 
+/**
+ * Whether the render loop should draw a frame now. With reduced motion the scene idles: it draws
+ * only when a still frame is pending (first paint, a control, the camera or the size changed).
+ */
+export function shouldAnimate({ reducedMotion = false, visible = true, hidden = false, pending = false } = {}) {
+  if (!visible || hidden) return false;
+  return reducedMotion ? Boolean(pending) : true;
+}
+
 /** `?scene=off` forces the non-WebGL fallback (for tests and constrained devices). */
 export function sceneMode(href = typeof location === "object" ? location.href : "http://x/") {
   return new URL(href).searchParams.get("scene") === "off" ? "off" : "auto";
