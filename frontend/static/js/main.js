@@ -1,6 +1,6 @@
 // App shell: hash router, navigation, data-source banner, and demo bar.
 
-import { createDataSource, FIXTURE_BANNER, readConfig, urlWithFixtures, versionMismatch } from "./config.js";
+import { CONTRACT_VERSION, createDataSource, FIXTURE_BANNER, readConfig, urlWithFixtures, versionMismatch } from "./config.js";
 import { createDemo } from "./demo.js";
 import { createStore } from "./store.js";
 import { h, mount } from "./ui/dom.js";
@@ -165,6 +165,12 @@ async function checkHealth() {
 }
 
 store.evidence().then((ev) => ev.warnings.forEach((w) => addAlert(w)));
+
+// The footer states the contract version this dashboard implements, from the single constant.
+{
+  const footer = document.getElementById("footer-contract");
+  if (footer) footer.textContent = `Dashboard implements contract v${CONTRACT_VERSION}.`;
+}
 
 // ---- Theme (F8): follows the system unless the viewer picks one. ----
 const THEME_KEY = "flameguard.theme";
