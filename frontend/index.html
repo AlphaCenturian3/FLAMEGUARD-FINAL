@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="FlameGuard-SI: research dashboard for NASA microgravity combustion evidence." />
+    <title>FlameGuard-SI</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3c2 6 8 8 8 16a8 8 0 0 1-16 0c0-5 3-7 4-11 1 3 3 4 4 6 1-4-1-8 0-11z' fill='%23ff8a3d'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="static/css/app.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="topbar">
+      <button id="menu-button" class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">
+        <span aria-hidden="true">☰</span><span class="sr-only">Menu</span>
+      </button>
+      <a class="brand" href="#/">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="18" r="11" fill="none" stroke="currentColor" stroke-opacity=".35" />
+          <path d="M16 3c2 6 8 8 8 16a8 8 0 0 1-16 0c0-5 3-7 4-11 1 3 3 4 4 6 1-4-1-8 0-11z" fill="var(--flame)" />
+        </svg>
+        <span>FlameGuard<span class="brand-si">-SI</span></span>
+      </a>
+      <span class="topbar-tag">Microgravity combustion evidence</span>
+      <div id="health" class="health"></div>
+      <button id="theme-button" class="theme-button" type="button" aria-pressed="false" title="Switch between dark and light theme">
+        <span aria-hidden="true">◐</span> <span class="theme-label">Theme</span><span class="sr-only"> theme (toggle)</span>
+      </button>
+    </header>
+    <div id="source-banner"></div>
+    <div class="layout">
+      <nav id="sidebar" class="sidebar" aria-label="Primary">
+        <div id="nav"></div>
+        <p class="sidebar-foot small muted">
+          Generated text is attributed to FlameGuard-SI, not NASA. <span id="footer-contract"></span>
+        </p>
+      </nav>
+      <main id="main" tabindex="-1"></main>
+    </div>
+    <noscript><p class="banner banner-error">FlameGuard-SI needs JavaScript enabled.</p></noscript>
+    <script type="module" src="static/js/main.js"></script>
+  </body>
+</html>

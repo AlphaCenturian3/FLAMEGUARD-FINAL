@@ -1,0 +1,3 @@
+# Test fixtures
+
+`flex-staged-candidate.json` and `flex-staged-investigation.json` are a copy of the **staged, unregistered** FLEX derivation output (40 Findings, `STAGING ONLY. NOT REGISTERED. NOT EVIDENCE.`) produced by `tools/derive_flex_findings.py` on branch `feat/flex-derivation-scaffold` (PR #24). They exist only so the browser tests can check the dashboard against the real shape of the data it will have to show (grouping, outcome labels, excluded and missing values, provenance). They are **not served by the live API**, are not registered in `data/manifest.json`, and must never be shown or cited as production evidence. In the integration tree a test checks that they are byte-identical to the derivation output.
