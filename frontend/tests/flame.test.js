@@ -1,6 +1,6 @@
 // Flame Lab parameter model (static/js/flame/params.js): pure logic, no WebGL.
 import { assert, test } from "./harness.js";
-import { ASSUMPTIONS, DEFAULTS, DISCLAIMER, FUELS, GRAVITY_PRESETS, KEYMAP, LIMITS, describe, evidenceCta, flameLook, fuelById, keyAction, prefersReducedMotion, presetForGravity, sanitize, sceneMode, shouldAnimate, webglAvailable } from "../static/js/flame/params.js";
+import { ASSUMPTIONS, CONTROL_NOTE, DEFAULTS, DISCLAIMER, FRAME_FILL, FUELS, GRAVITY_PRESETS, KEYMAP, LIMITS, describe, evidenceCta, flameBounds, flameLook, frameFor, fuelById, keyAction, prefersReducedMotion, presetForGravity, sanitize, sceneMode, shouldAnimate, solidFloor, webglAvailable } from "../static/js/flame/params.js";
 
 const NUMERIC = ["lit", "stretch", "lean", "size", "brightness", "luminous", "flicker", "rise", "drift", "smoke"];
 const grid = () => {
@@ -160,4 +160,98 @@ test("flame: with reduced motion the scene idles and draws only pending still fr
     assert.equal(shouldAnimate({ reducedMotion, visible: false, hidden: false, pending: true }), false);
     assert.equal(shouldAnimate({ reducedMotion, visible: true, hidden: true, pending: true }), false);
   }
+});
+
+// --- framing (visual polish): the drawn flame keeps a steady share of the stage ---------------
+
+const VIEWS = [
+  { name: "desktop", fovDeg: 40, aspect: 762 / 558, topReserve: 52 / 558 },
+  { name: "phone", fovDeg: 40, aspect: 358 / 388, topReserve: 65 / 388 },
+  { name: "tall", fovDeg: 52, aspect: 0.6, topReserve: 0.2 },
+];
+const everyLook = function* () {
+  for (const p of GRAVITY_PRESETS) for (const f of FUELS) for (const oxygen of [LIMITS.oxygen.min, 21, LIMITS.oxygen.max]) for (const airflow of [0, 0.5, 1]) yield { gravity: p.g, fuel: f.id, oxygen, airflow, ignited: true };
+};
+/** Where the box lands on the stage: fractions of the stage, y measured from the top. */
+const placed = (b, fr, view) => {
+  const visible = 2 * fr.distance * Math.tan((view.fovDeg * Math.PI) / 360);
+  return {
+    top: 0.5 - (b.maxY - fr.target.y) / visible,
+    bottom: 0.5 - (b.minY - fr.target.y) / visible,
+    left: 0.5 + (b.minX - fr.target.x) / (visible * view.aspect),
+    right: 0.5 + (b.maxX - fr.target.x) / (visible * view.aspect),
+  };
+};
+
+test("flame framing: a still microgravity flame is a centred sphere of the expected size", () => {
+  const look = flameLook(DEFAULTS);
+  const b = flameBounds(look);
+  assert.ok(Math.abs(b.minX + b.maxX) < 1e-9 && Math.abs(b.minY + b.maxY) < 1e-9);
+  assert.ok(Math.abs(b.maxY - b.minY - 2 * 0.15 * look.size) < 1e-9);
+  assert.ok(Math.abs(b.maxX - b.minX - (b.maxY - b.minY)) < 1e-3);
+});
+
+test("flame framing: gravity makes the drawn flame taller, airflow leans it downstream, a solid sample sits on a rounded base", () => {
+  const h = (i) => { const b = flameBounds(flameLook(i)); return b.maxY - b.minY; };
+  const heights = GRAVITY_PRESETS.map((p) => h({ ...DEFAULTS, gravity: p.g }));
+  for (let i = 1; i < heights.length; i++) assert.ok(heights[i] > heights[i - 1]);
+  const still = flameBounds(flameLook({ ...DEFAULTS, gravity: 1 }));
+  const blown = flameBounds(flameLook({ ...DEFAULTS, gravity: 1, airflow: 1 }));
+  assert.ok(blown.maxX > still.maxX + 0.1 && Math.abs(still.minX + still.maxX) < 1e-9);
+  assert.equal(solidFloor(0.4), 0.4);
+  assert.ok(solidFloor(-1) > -0.5 && solidFloor(-1) < solidFloor(-0.6) && solidFloor(-0.6) < -0.3);
+  const solid = flameBounds(flameLook({ ...DEFAULTS, fuel: "solid-sample" }));
+  const liquid = flameBounds(flameLook({ ...DEFAULTS, fuel: "sooty-liquid" }));
+  assert.ok(solid.maxX - solid.minX > 1.5 * (liquid.maxX - liquid.minX));
+});
+
+test("flame framing: with still air every preset and fuel fills about 55 to 60 percent of the stage height", () => {
+  for (const view of VIEWS.slice(0, 2)) {
+    for (const p of GRAVITY_PRESETS) for (const f of FUELS) for (const oxygen of [LIMITS.oxygen.min, 21, LIMITS.oxygen.max]) {
+      const fr = frameFor(flameBounds(flameLook({ gravity: p.g, fuel: f.id, oxygen, airflow: 0, ignited: true })), view);
+      if (f.shape === "solid" && p.g === 0) {
+        // the one exception: a low, wide dome is limited by the stage width, not its height
+        assert.ok(fr.fill > 0.3 && fr.fill < 0.5, `${view.name} ${p.id} ${f.id}: ${fr.fill}`);
+        continue;
+      }
+      assert.ok(fr.fill > 0.5 && fr.fill <= FRAME_FILL + 1e-9, `${view.name} ${p.id} ${f.id} ${oxygen}: ${fr.fill}`);
+    }
+  }
+  assert.ok(FRAME_FILL >= 0.55 && FRAME_FILL <= 0.6);
+});
+
+test("flame framing: no combination of controls reaches the disclaimer stamp, the edges or the camera limits", () => {
+  let n = 0;
+  for (const view of VIEWS) for (const input of everyLook()) {
+    const b = flameBounds(flameLook(input));
+    const fr = frameFor(b, view);
+    const at = placed(b, fr, view);
+    const label = `${view.name} ${JSON.stringify(input)}`;
+    assert.ok(at.top >= view.topReserve - 1e-9, `under the stamp: ${label}`);
+    assert.ok(at.bottom <= 1 - 0.06 + 1e-9, `off the bottom: ${label}`);
+    assert.ok(at.left >= 0.05 && at.right <= 0.95, `off the side: ${label}`);
+    assert.ok(fr.fill > 0.12 && fr.fill <= FRAME_FILL + 1e-9, `fill: ${label} ${fr.fill}`);
+    assert.ok(fr.distance > 0.2 && fr.distance < 6, `camera limit: ${label} ${fr.distance}`);
+    n += 1;
+  }
+  assert.equal(n, 3 * 4 * 3 * 3 * 3);
+});
+
+test("flame framing: an unlit flame is framed like a lit one, and a larger stamp only moves the flame down", () => {
+  const b = flameBounds(flameLook(DEFAULTS));
+  const small = frameFor(b, { ...VIEWS[0], topReserve: 0.05 });
+  const big = frameFor(b, { ...VIEWS[0], topReserve: 0.3 });
+  assert.ok(big.target.y > small.target.y && Math.abs(big.distance - small.distance) < 1e-9);
+  assert.equal(JSON.stringify(flameBounds({ ...flameLook({ ...DEFAULTS, ignited: false }), lit: 1 })), JSON.stringify(flameBounds(flameLook(DEFAULTS))));
+  for (const bad of [NaN, undefined, -1, 5]) assert.ok(Number.isFinite(frameFor(b, { ...VIEWS[0], topReserve: bad }).distance));
+});
+
+test("flame controls: the single panel note keeps every disclosure the per-control hints carried", async () => {
+  for (const phrase of ["Illustrative response: direction only", "reference values", "share of the surrounding gas (your input)", "extinction limits are not modelled", "generic, not real fuels"]) assert.includes(CONTROL_NOTE, phrase);
+  const view = await (await fetch(new URL("../static/js/views/flame.js", import.meta.url))).text();
+  assert.includes(view, 'h("p", { class: "flame-note", role: "note" }, CONTROL_NOTE)');
+  assert.includes(view, "DISCLAIMER");
+  assert.includes(view, "No temperature, burning rate, spread rate, extinction limit, risk or suppression value is calculated or shown.");
+  for (const p of GRAVITY_PRESETS) assert.ok(p.short && p.gShort && p.short.length <= 8, p.id);
+  assert.includes(view, '"aria-label": `${p.label}, ${p.gLabel}`'); // the short button text keeps its full name for assistive technology
 });

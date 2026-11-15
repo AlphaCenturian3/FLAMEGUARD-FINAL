@@ -392,7 +392,7 @@ select { max-width: 100%; }
 }
 .flame-disclaimer strong { color: var(--flame-2); letter-spacing: 0.01em; }
 .flame-layout {
-  display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 1.1rem; align-items: stretch;
+  display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 1.1rem; align-items: stretch;
   /* the lab is always dark, whatever the page theme: the flame needs a dark stage to read */
   color-scheme: dark;
   --bg: #070b14; --bg-2: #0c1322; --panel: #111a2c; --panel-2: #16223a; --line: #22314f; --line-2: #2f4268;
@@ -413,25 +413,26 @@ select { max-width: 100%; }
   background: rgb(8 10 16 / 0.72); border: 1px solid rgb(255 138 61 / 0.5); backdrop-filter: blur(6px); max-width: calc(100% - 1.8rem);
 }
 .flame-status { position: absolute; left: 0.9rem; bottom: 0.7rem; margin: 0; color: var(--muted); background: rgb(8 10 16 / 0.6); padding: 0.2rem 0.55rem; border-radius: 8px; max-width: calc(100% - 1.8rem); }
-.flame-controls { display: grid; gap: 0.85rem; align-content: start; background: linear-gradient(180deg, #16223a, #0c1322); color: var(--text); border-color: var(--line-2); }
-.flame-control { display: grid; gap: 0.45rem; }
+.flame-controls { display: grid; gap: 0.62rem; align-content: start; padding: 0.9rem 1rem; background: linear-gradient(180deg, #16223a, #0c1322); color: var(--text); border-color: var(--line-2); }
+.flame-control { display: grid; gap: 0.3rem; }
 .flame-label { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; color: var(--muted); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.07em; }
 .flame-value { color: var(--text); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 0.86rem; text-align: right; }
-.flame-hint { margin: 0; color: var(--muted); font-size: 0.76rem; }
-.flame-controls input[type="range"] { width: 100%; accent-color: var(--flame); height: 1.6rem; }
-.flame-controls select { width: 100%; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 8px; padding: 0.5rem 0.65rem; font: inherit; }
-.flame-presets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem; }
+.flame-note { margin: 0; color: var(--muted); font-size: 0.74rem; line-height: 1.4; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+.flame-controls input[type="range"] { width: 100%; accent-color: var(--flame); height: 1.35rem; margin: 0; }
+.flame-controls select { width: 100%; background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); border-radius: 8px; padding: 0.4rem 0.6rem; font: inherit; }
+.flame-presets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.35rem; }
 .flame-preset {
-  display: grid; gap: 0.05rem; text-align: left; padding: 0.45rem 0.6rem; border-radius: 9px; cursor: pointer; font: inherit;
+  display: grid; gap: 0.05rem; text-align: center; padding: 0.38rem 0.2rem; border-radius: 9px; cursor: pointer; font: inherit; min-width: 0;
   background: var(--bg-2); color: var(--text); border: 1px solid var(--line-2); transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
 .flame-preset:hover { border-color: var(--accent); }
 .flame-preset[aria-checked="true"] { border-color: var(--flame); background: rgb(255 138 61 / 0.14); box-shadow: inset 0 0 0 1px rgb(255 138 61 / 0.35); }
-.flame-preset-name { font-weight: 700; font-size: 0.9rem; }
-.flame-preset-g { color: var(--muted); font-size: 0.74rem; }
-.flame-ignite { width: 100%; padding: 0.7rem 1rem; font-size: 1rem; }
+.flame-preset-name { font-weight: 700; font-size: 0.82rem; white-space: nowrap; }
+.flame-preset-g { color: var(--muted); font-size: 0.7rem; white-space: nowrap; }
+.flame-ignite { width: 100%; padding: 0.55rem 1rem; font-size: 1rem; }
 .flame-ignite:not(.is-lit) { background: linear-gradient(180deg, #2b3a5c, #1c2740); color: var(--text); border-color: var(--line-2); }
-.flame-actions .btn { flex: 1 1 auto; }
+.flame-actions { flex-wrap: nowrap; gap: 0.4rem; }
+.flame-actions .btn { flex: 1 1 0; padding: 0.42rem 0.3rem; font-size: 0.8rem; white-space: nowrap; min-width: 0; }
 .flame-below { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
 .flame-explain { margin: 0.2rem 0 0.8rem; padding-left: 1.1rem; display: grid; gap: 0.45rem; }
 .flame-evidence-title { font-weight: 700; margin: 0 0 0.2rem; }

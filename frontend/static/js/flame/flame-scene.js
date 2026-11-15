@@ -8,13 +8,13 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import { flameLook, keyAction, shouldAnimate } from "./params.js";
+import { flameBounds, flameLook, frameFor, keyAction, shouldAnimate } from "./params.js";
 
 const EMBERS = 420;
 const SMOKE = 220;
 const SPARKS = 90;
-const HOME = new THREE.Vector3(0.0, 0.2, 1.3);
-const TARGET = new THREE.Vector3(0, 0.14, 0);
+const HOME_DIR = new THREE.Vector3(0, 0.06, 1.16).normalize(); // where the camera sits relative to the flame
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 const NOISE = /* glsl */ `
 float hash(vec3 p) { return fract(sin(dot(p, vec3(12.9898, 78.233, 45.164))) * 43758.5453); }
@@ -39,13 +39,14 @@ function shellMaterial(layer) {
     },
     vertexShader: /* glsl */ `
       uniform float uTime, uStretch, uLean, uFlicker, uSolid, uLayer;
-      varying vec3 vN; varying vec3 vView; varying float vH;
+      varying vec3 vN; varying vec3 vView; varying float vH; varying float vT; varying vec3 vP;
       ${NOISE}
       void main() {
         vec3 p = position;
-        // a solid sample burns from a wider, flatter base
+        vT = position.y;
+        // a solid sample burns from a wider base with a rounded underside (params.js solidFloor)
         p.x *= 1.0 + 0.75 * uSolid;
-        p.y = mix(p.y, max(p.y, -0.35), uSolid);
+        p.y -= min(p.y + 0.3, 0.0) * 0.82 * uSolid;
         float up = max(p.y, 0.0);
         p.y += up * up * uStretch * 1.75;                       // buoyant / flow stretching
         // taper the stretched upper half to a soft point (a sphere when there is no stretch)
@@ -55,32 +56,44 @@ function shellMaterial(layer) {
         float n = noise(p * (1.7 + 0.5 * uLayer) + vec3(uTime * 0.35, -uTime * 2.2, uTime * 0.25));
         p += normal * (n - 0.5) * 0.2 * uFlicker * (0.25 + 0.6 * up) * (1.0 - 0.6 * smoothstep(0.6, 1.0, up));
         vH = p.y;
+        vP = p;
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         vView = normalize(-mv.xyz);
         vN = normalize(normalMatrix * normal);
         gl_Position = projectionMatrix * mv;
       }`,
     fragmentShader: /* glsl */ `
-      uniform float uLum, uBright, uLayer;
-      varying vec3 vN; varying vec3 vView; varying float vH;
+      uniform float uLum, uBright, uLayer, uStretch, uFlicker, uTime;
+      varying vec3 vN; varying vec3 vView; varying float vH; varying float vT; varying vec3 vP;
+      ${NOISE}
       void main() {
         float facing = abs(dot(normalize(vN), normalize(vView)));
         float rim = 1.0 - facing;
-        vec3 blue = vec3(0.22, 0.42, 1.0);
-        vec3 warm = mix(vec3(1.0, 0.24, 0.02), vec3(1.0, 0.52, 0.07), clamp(vH * 0.45 + 0.4, 0.0, 1.0));
+        vec3 blue = vec3(0.18, 0.38, 1.0);
+        vec3 warm = mix(vec3(1.0, 0.3, 0.03), vec3(1.0, 0.62, 0.12), clamp(vT * 0.5 + 0.45, 0.0, 1.0));
+        // Where the drawing is warm. A stretched flame keeps a blue base under a warm body; a round
+        // one is warm inside and blue outside. Mixing by place, not by one global amount, keeps the
+        // colours clean instead of grey.
+        float start = mix(1.25, -1.05, uLum);
+        float byHeight = smoothstep(start, start + 0.85, vT);
+        float byDepth = uLayer > 1.5 ? smoothstep(0.0, 0.5, uLum) : (uLayer > 0.5 ? smoothstep(0.15, 0.7, uLum) : 0.6 * smoothstep(0.5, 1.0, uLum));
+        float warmth = mix(byDepth, byHeight, clamp(uStretch, 0.0, 1.0));
+        // slow rising streaks give the body internal structure; a calm flame has none
+        float streak = noise(vec3(vP.x * 7.0, vP.y * 2.6 - uTime * 1.6, vP.z * 7.0));
+        float detail = 1.0 + (streak - 0.5) * 0.9 * uFlicker * (0.35 + 0.65 * warmth);
         vec3 col; float a;
         if (uLayer > 1.5) {            // inner core: hot, pale
-          col = mix(vec3(0.5, 0.68, 1.0), vec3(1.0, 0.74, 0.28), uLum);
+          col = mix(vec3(0.5, 0.68, 1.0), mix(warm, vec3(1.0, 0.9, 0.68), 0.5), warmth);
           a = pow(facing, 3.0) * 0.7;
         } else if (uLayer > 0.5) {     // middle body
-          col = mix(blue * 1.1, warm, uLum);
+          col = mix(blue * 1.1, warm, warmth);
           a = pow(facing, 1.6) * 0.42;
-        } else {                        // outer envelope: thin blue edge even on sooty flames
-          col = mix(blue, mix(warm, blue, 0.18), uLum);
-          a = pow(rim, 2.0) * 0.9 + 0.05 * facing;
+        } else {                        // outer envelope: a thin edge, feathered so the outline is never a hard step
+          col = mix(blue, mix(warm, blue, 0.15), warmth);
+          a = (pow(rim, 2.0) * 0.9 + 0.05 * facing) * smoothstep(0.0, 0.32, facing);
         }
         // sooty (luminous) flames glow more strongly than blue, soot-free ones
-        gl_FragColor = vec4(col * (0.4 + 0.55 * uBright) * (1.0 + 0.5 * uLum), a * (0.28 + 0.44 * uBright) * (1.0 + 0.25 * uLum));
+        gl_FragColor = vec4(col * detail * (0.4 + 0.55 * uBright) * (1.0 + 0.5 * uLum), a * (0.28 + 0.44 * uBright) * (1.0 + 0.25 * uLum));
       }`,
     transparent: true,
     depthWrite: false,
@@ -187,7 +200,8 @@ function easeInOut(t) {
 
 /**
  * @param {HTMLElement} host
- * @param {{inputs: object, reducedMotion: boolean, label: string, onAction?: (action: string) => void}} opts
+ * @param {{inputs: object, reducedMotion: boolean, label: string, onAction?: (action: string) => void,
+ *   topReserve?: () => number}} opts  topReserve: share of the stage height kept clear at the top
  */
 export async function createFlameScene(host, opts) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -207,7 +221,6 @@ export async function createFlameScene(host, opts) {
   scene.background = new THREE.Color(0x02040a);
   scene.fog = new THREE.FogExp2(0x02040a, 0.1);
   const camera = new THREE.PerspectiveCamera(40, 1, 0.02, 60);
-  camera.position.copy(HOME);
 
   // --- backdrop: a soft vignette dome and slow dust, nothing else ---------------------------
   const dome = new THREE.Mesh(
@@ -255,9 +268,45 @@ export async function createFlameScene(host, opts) {
     new THREE.MeshPhysicalMaterial({ color: 0x9fb9d8, roughness: 0.08, metalness: 0, transmission: 0.6, thickness: 0.05, ior: 1.33 }),
   );
   stage.add(droplet);
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.012, 0.12), new THREE.MeshStandardMaterial({ color: 0x3a3128, roughness: 0.9 }));
-  slab.position.y = -0.02;
-  stage.add(slab);
+  // solid sample: a dark card in a slim metal holder on two posts, with a soft glowing patch where
+  // the drawn flame sits (illustration only)
+  const solidRig = new THREE.Group();
+  stage.add(solidRig);
+  const card = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.01, 0.13), new THREE.MeshStandardMaterial({ color: 0x17120f, roughness: 0.95, metalness: 0 }));
+  card.position.y = -0.03;
+  solidRig.add(card);
+  for (const z of [-0.071, 0.071]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.008, 0.008), metal);
+    rail.position.set(0, -0.03, z);
+    solidRig.add(rail);
+  }
+  for (const x of [-0.205, 0.205]) {
+    const clampBar = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.018, 0.158), metal);
+    clampBar.position.set(x, -0.03, 0);
+    solidRig.add(clampBar);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.006, 0.575, 12), metal);
+    post.position.set(x, -0.3275, 0);
+    solidRig.add(post);
+  }
+  const patchCanvas = document.createElement("canvas");
+  patchCanvas.width = 128;
+  patchCanvas.height = 64;
+  const pc = patchCanvas.getContext("2d");
+  const grad = pc.createRadialGradient(64, 32, 2, 64, 32, 62);
+  grad.addColorStop(0, "rgba(255,170,90,1)");
+  grad.addColorStop(0.35, "rgba(255,90,20,0.55)");
+  grad.addColorStop(1, "rgba(255,60,10,0)");
+  pc.setTransform(1, 0, 0, 0.5, 0, 16);
+  pc.fillStyle = grad;
+  pc.fillRect(0, -32, 128, 128);
+  const patchTex = new THREE.CanvasTexture(patchCanvas);
+  const emberPatch = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.3, 0.11),
+    new THREE.MeshBasicMaterial({ map: patchTex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  emberPatch.rotation.x = -Math.PI / 2;
+  emberPatch.position.y = -0.0245;
+  solidRig.add(emberPatch);
   scene.add(new THREE.HemisphereLight(0x9fb4ff, 0x05070c, 0.35));
   const rimLight = new THREE.DirectionalLight(0x7fa8ff, 0.5);
   rimLight.position.set(-2, 1.5, -1.5);
@@ -286,7 +335,8 @@ export async function createFlameScene(host, opts) {
   }
 
   // --- post-processing: bloom gives the flame its glow ----------------------------------------
-  const composer = new EffectComposer(renderer);
+  // a multisampled target keeps the stage and holder edges smooth through the bloom chain
+  const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(2, 2, { type: THREE.HalfFloatType, samples: 4 }));
   composer.setPixelRatio(pixelRatio);
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.5, 0.55, 0.32);
@@ -295,17 +345,15 @@ export async function createFlameScene(host, opts) {
 
   // --- controls ------------------------------------------------------------------------------
   const controls = new OrbitControls(camera, canvas);
-  controls.target.copy(TARGET);
   controls.enableDamping = !opts.reducedMotion; // damping needs a running loop
   controls.dampingFactor = 0.08;
   controls.enablePan = false;
-  controls.minDistance = 0.5;
-  controls.maxDistance = 4;
+  controls.minDistance = 0.2;
+  controls.maxDistance = 6;
   controls.minPolarAngle = Math.PI * 0.12;
   controls.maxPolarAngle = Math.PI * 0.6;
   controls.autoRotate = !opts.reducedMotion;
   controls.autoRotateSpeed = 0.45;
-  controls.update();
   const stopAuto = () => {
     controls.autoRotate = false;
   };
@@ -325,8 +373,9 @@ export async function createFlameScene(host, opts) {
   const applyLook = (l, elapsed) => {
     const solid = l.shape === "solid" ? 1 : 0;
     droplet.visible = !solid;
-    needle.visible = true;
-    slab.visible = Boolean(solid);
+    needle.visible = !solid;
+    solidRig.visible = Boolean(solid);
+    emberPatch.material.opacity = 0.55 * Math.min(1, l.lit) * (0.5 + 0.5 * l.brightness);
     const overshoot = ignitionT < 1.1 ? 1 + 0.35 * Math.sin(Math.min(1, ignitionT / 1.1) * Math.PI) : 1;
     const lit = l.lit * overshoot;
     shells.forEach((mesh, i) => {
@@ -343,7 +392,8 @@ export async function createFlameScene(host, opts) {
       u.uSolid.value = solid;
     });
     flame.position.set(0, solid ? 0.03 : 0, 0);
-    glow.intensity = lit * (0.25 + 1.1 * l.brightness);
+    glow.position.y = solid ? 0.22 : 0.05; // well above the card, so it is lit softly, not bleached
+    glow.intensity = lit * (0.25 + 1.1 * l.brightness) * (solid ? 0.55 : 1);
     glow.color.setRGB(0.45 + 0.55 * l.luminous, 0.5 + 0.1 * l.luminous, 1.0 - 0.8 * l.luminous);
     embers.mat.uniforms.uWarm.value = l.luminous;
     sparks.mat.uniforms.uWarm.value = 0.9;
@@ -384,6 +434,18 @@ export async function createFlameScene(host, opts) {
   // --- loop ----------------------------------------------------------------------------------
   const clock = new THREE.Clock();
   let raf = 0;
+  // framing: keep the drawn flame at a steady share of the stage, clear of the disclaimer stamp.
+  // `zoom` is the viewer's own zoom on top of that, so wheel, pinch and +/- keep working.
+  const camOffset = new THREE.Vector3().copy(HOME_DIR);
+  let frame = null;
+  let shownFrame = null;
+  let zoom = 1;
+  let lastRadius = 0;
+  const reframe = () => {
+    const reserve = opts.topReserve ? opts.topReserve() : 0.1;
+    frame = frameFor(flameBounds({ ...target, lit: 1 }), { fovDeg: camera.fov, aspect: camera.aspect, topReserve: Number.isFinite(reserve) ? reserve : 0.1 });
+    if (!shownFrame) shownFrame = { x: frame.target.x, y: frame.target.y, d: frame.distance };
+  };
   let visible = true;
   let pending = true; // reduced motion: a still frame is waiting to be drawn
   let requestStill = () => {}; // set once the loop exists
@@ -398,6 +460,7 @@ export async function createFlameScene(host, opts) {
     // keep the whole flame in frame on tall, narrow screens
     camera.fov = camera.aspect < 0.8 ? 52 : 40;
     camera.updateProjectionMatrix();
+    reframe();
     requestStill();
   };
   const ro = new ResizeObserver(resize);
@@ -430,12 +493,25 @@ export async function createFlameScene(host, opts) {
       sparks.update(dt, 0, -0.35 * shown.rise, 1, 0.012, -0.6);
       dust.update(dt, 0, 0, 0.16, 0.007, 0);
     }
+    // camera: read back any zoom the viewer applied, then follow the framing
+    camOffset.copy(camera.position).sub(controls.target);
+    const radius = camOffset.length();
+    if (lastRadius > 0 && Math.abs(radius - lastRadius) > lastRadius * 0.002) zoom = clamp((zoom * radius) / lastRadius, 0.4, 3);
+    camOffset.normalize();
     if (tween) {
       tween.t = Math.min(1, tween.t + dt / 0.9);
-      camera.position.lerpVectors(tween.from, tween.to, easeInOut(tween.t));
+      const k = easeInOut(tween.t);
+      camOffset.copy(tween.from).lerp(HOME_DIR, k).normalize();
+      zoom = tween.zoom + (1 - tween.zoom) * k;
       if (tween.t >= 1) tween = null;
     }
+    shownFrame.x += (frame.target.x - shownFrame.x) * rate;
+    shownFrame.y += (frame.target.y - shownFrame.y) * rate;
+    shownFrame.d += (frame.distance - shownFrame.d) * rate;
+    controls.target.set(shownFrame.x, shownFrame.y, 0);
+    camera.position.copy(controls.target).addScaledVector(camOffset, shownFrame.d * zoom);
     controls.update();
+    lastRadius = camera.position.distanceTo(controls.target);
   }
 
   function draw() {
@@ -464,6 +540,10 @@ export async function createFlameScene(host, opts) {
     if (!raf) raf = requestAnimationFrame(loop);
   };
   controls.addEventListener("change", requestStill);
+  reframe();
+  controls.target.set(shownFrame.x, shownFrame.y, 0);
+  camera.position.copy(controls.target).addScaledVector(HOME_DIR, shownFrame.d);
+  controls.update();
   if (reduced) {
     // a still frame: seed a few motes so the picture is not empty, then draw only on change
     shown.lit = target.lit;
@@ -513,6 +593,7 @@ export async function createFlameScene(host, opts) {
       }
       if (!next.lit && target.lit) smokeBurst = 1;
       target = next;
+      reframe();
       requestStill();
     },
     setReducedMotion(on) {
@@ -526,12 +607,14 @@ export async function createFlameScene(host, opts) {
     resetView() {
       stopAuto();
       if (reduced) {
-        camera.position.copy(HOME);
+        zoom = 1;
+        lastRadius = 0;
+        camera.position.copy(controls.target).addScaledVector(HOME_DIR, shownFrame.d);
         controls.update();
         requestStill();
         return;
       }
-      tween = { from: camera.position.clone(), to: HOME.clone(), t: 0 };
+      tween = { from: camera.position.clone().sub(controls.target).normalize(), zoom, t: 0 };
     },
     stats() {
       return {
@@ -542,6 +625,7 @@ export async function createFlameScene(host, opts) {
         pixelRatio,
         particles: EMBERS + SMOKE + SPARKS + dust.count,
         lit: Number(shown.lit.toFixed(3)),
+        frame: { fill: Number(((frame.fill * frame.distance) / (shownFrame.d * zoom)).toFixed(3)), distance: Number((shownFrame.d * zoom).toFixed(3)), zoom: Number(zoom.toFixed(3)) },
       };
     },
     dispose() {
@@ -558,6 +642,7 @@ export async function createFlameScene(host, opts) {
         const ms = Array.isArray(o.material) ? o.material : o.material ? [o.material] : [];
         ms.forEach((m) => m.dispose());
       });
+      patchTex.dispose();
       composer.dispose();
       renderer.dispose();
       canvas.remove();

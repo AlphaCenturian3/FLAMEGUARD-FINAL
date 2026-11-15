@@ -13,12 +13,16 @@ export const DISCLAIMER = "ILLUSTRATION ONLY. Not a validated combustion simulat
 export const ASSUMPTIONS =
   "Every response to a control is an artistic drawing of the direction of an effect, not a calculation. No chemistry, heat transfer or fluid flow is solved, and nothing shown is a prediction.";
 
+/** One note for the whole control panel: every disclosure the per-control hints used to carry. */
+export const CONTROL_NOTE =
+  "Illustrative response: direction only. Gravity presets are reference values. Oxygen is the share of the surrounding gas (your input); extinction limits are not modelled. Fuel looks are generic, not real fuels.";
+
 /** Gravity presets: standard reference values, as a fraction of Earth gravity. */
 export const GRAVITY_PRESETS = Object.freeze([
-  { id: "microgravity", label: "Microgravity", gLabel: "about 0 g", g: 0 },
-  { id: "moon", label: "Moon", gLabel: "about 0.165 g", g: 0.165 },
-  { id: "mars", label: "Mars", gLabel: "about 0.38 g", g: 0.38 },
-  { id: "earth", label: "Earth", gLabel: "1 g", g: 1 },
+  { id: "microgravity", label: "Microgravity", short: "Micro-g", gLabel: "about 0 g", gShort: "≈ 0 g", g: 0 },
+  { id: "moon", label: "Moon", short: "Moon", gLabel: "about 0.165 g", gShort: "≈ 0.165 g", g: 0.165 },
+  { id: "mars", label: "Mars", short: "Mars", gLabel: "about 0.38 g", gShort: "≈ 0.38 g", g: 0.38 },
+  { id: "earth", label: "Earth", short: "Earth", gLabel: "1 g", gShort: "1 g", g: 1 },
 ]);
 
 /** Generic fuel looks. Deliberately not named after real fuels: no real fuel's behaviour is claimed. */
@@ -84,6 +88,68 @@ export function flameLook(input, { reducedMotion = false } = {}) {
   };
   if (reducedMotion) return { ...look, flicker: 0, rise: 0, drift: 0 };
   return look;
+}
+
+// --- framing ---------------------------------------------------------------------------------
+// The picture's own geometry, so the camera can keep the drawn flame at a steady share of the
+// stage. These mirror the vertex shader in flame-scene.js; they describe the drawing, not a flame.
+
+export const SHELL_RADIUS = 0.15; // outer shell radius at size 1, in scene units
+export const SOLID_LIFT = 0.03; // a solid-sample flame sits this far above the origin
+export const FRAME_FILL = 0.57; // share of the stage height the drawn flame aims for
+
+/** The rounded underside of a solid-sample flame (unit-sphere y in, y out). */
+export function solidFloor(y) {
+  return y < -0.3 ? -0.3 + (y + 0.3) * 0.18 : y;
+}
+
+/** Bounding box of the drawn flame in scene units, for a look from `flameLook`. */
+export function flameBounds(look) {
+  const solid = look.shape === "solid";
+  const s = SHELL_RADIUS * look.size;
+  const taper = clamp(look.stretch, 0, 1);
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (let i = 0; i <= 96; i++) {
+    const y0 = -1 + (2 * i) / 96;
+    const y = solid ? solidFloor(y0) : y0;
+    const up = Math.max(y, 0);
+    const y1 = y + up * up * look.stretch * 1.75;
+    const half = Math.sqrt(Math.max(0, 1 - y0 * y0)) * (solid ? 1.75 : 1) * (1 - taper * 0.94 * up ** 1.35);
+    const h = Math.max(y1 + 1, 0);
+    const shift = look.lean * h * h * 0.22;
+    minX = Math.min(minX, shift - half);
+    maxX = Math.max(maxX, shift + half);
+    minY = Math.min(minY, y1);
+    maxY = Math.max(maxY, y1);
+  }
+  const lift = solid ? SOLID_LIFT : 0;
+  return { minX: minX * s, maxX: maxX * s, minY: minY * s + lift, maxY: maxY * s + lift };
+}
+
+/**
+ * Where to aim and how far to stand so the box fills `fill` of the stage height (less if it is
+ * too wide), centred in the part of the stage that the disclaimer stamp and status line leave free.
+ * Reserves are fractions of the stage height.
+ * @returns {{ target: {x: number, y: number}, distance: number, fill: number }}
+ */
+export function frameFor(bounds, { fovDeg = 40, aspect = 1.4, fill = FRAME_FILL, topReserve = 0.1, bottomReserve = 0.06, maxWidth = 0.84 } = {}) {
+  const tan = Math.tan((fovDeg * Math.PI) / 360);
+  const height = Math.max(bounds.maxY - bounds.minY, 1e-3);
+  const width = Math.max(bounds.maxX - bounds.minX, 1e-3);
+  const top = clamp(num(topReserve, 0.1), 0, 0.4);
+  const bottom = clamp(num(bottomReserve, 0.06), 0, 0.3);
+  const usable = 1 - top - bottom;
+  const share = Math.min(fill, usable * 0.9);
+  const distance = Math.max(height / (share * 2 * tan), width / (maxWidth * 2 * tan * Math.max(aspect, 0.2)));
+  const visible = 2 * distance * tan; // scene units across the stage height at that distance
+  return {
+    target: { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 + ((top - bottom) / 2) * visible },
+    distance,
+    fill: height / visible,
+  };
 }
 
 /**

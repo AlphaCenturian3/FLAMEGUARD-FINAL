@@ -2,7 +2,7 @@
 // wording and the fallbacks; the WebGL scene (flame/flame-scene.js) is loaded lazily and only
 // draws what flame/params.js maps from the inputs. No measurement, prediction or score is shown.
 
-import { ASSUMPTIONS, DEFAULTS, DISCLAIMER, FUELS, GRAVITY_PRESETS, LIMITS, describe, evidenceCta, prefersReducedMotion, presetForGravity, sanitize, sceneMode, webglAvailable } from "../flame/params.js";
+import { ASSUMPTIONS, CONTROL_NOTE, DEFAULTS, DISCLAIMER, FUELS, GRAVITY_PRESETS, LIMITS, describe, evidenceCta, prefersReducedMotion, presetForGravity, sanitize, sceneMode, webglAvailable } from "../flame/params.js";
 import { h, mount } from "../ui/dom.js";
 
 export const title = "Flame Lab";
@@ -16,6 +16,12 @@ export function render(ctx) {
 
   const stage = h("div", { class: "flame-stage", tabindex: "0", "aria-label": "Interactive illustrative flame. Arrow keys orbit, plus and minus zoom, R resets the view, I or Space toggles ignition, 1 to 4 choose gravity." });
   const status = h("p", { class: "flame-status small", role: "status", "aria-live": "polite" }, "Loading the 3D flame…");
+  const stamp = h("p", { class: "flame-stamp", "aria-hidden": "true" }, DISCLAIMER);
+  /** Share of the stage height the disclaimer stamp covers, so the scene keeps the flame below it. */
+  const topReserve = () => {
+    const box = stage.getBoundingClientRect();
+    return box.height > 0 ? (stamp.getBoundingClientRect().bottom - box.top + 10) / box.height : 0.1;
+  };
   const explain = h("ul", { class: "flame-explain", "aria-live": "polite" });
   const cta = h("div", { class: "flame-evidence" });
 
@@ -40,9 +46,9 @@ export function render(ctx) {
   const presetButtons = GRAVITY_PRESETS.map((p) =>
     h(
       "button",
-      { type: "button", class: "flame-preset", role: "radio", "aria-checked": "false", dataset: { preset: p.id }, onclick: () => update({ gravity: p.g }) },
-      h("span", { class: "flame-preset-name" }, p.label),
-      h("span", { class: "flame-preset-g" }, p.gLabel),
+      { type: "button", class: "flame-preset", role: "radio", "aria-checked": "false", "aria-label": `${p.label}, ${p.gLabel}`, dataset: { preset: p.id }, onclick: () => update({ gravity: p.g }) },
+      h("span", { class: "flame-preset-name", "aria-hidden": "true" }, p.short),
+      h("span", { class: "flame-preset-g", "aria-hidden": "true" }, p.gShort),
     ),
   );
   const fuelSelect = h(
@@ -110,6 +116,7 @@ export function render(ctx) {
       scene = await createFlameScene(stage, {
         inputs,
         reducedMotion: reduced,
+        topReserve,
         label: `Illustrative 3D flame. ${DISCLAIMER}`,
         onAction: (action) => {
           if (action === "toggle-ignition") update({ ignited: !inputs.ignited });
@@ -166,40 +173,37 @@ export function render(ctx) {
     h(
       "div",
       { class: "flame-layout" },
-      h("div", { class: "flame-stage-wrap" }, stage, h("p", { class: "flame-stamp", "aria-hidden": "true" }, DISCLAIMER), status),
+      h("div", { class: "flame-stage-wrap" }, stage, stamp, status),
       h(
         "form",
         { class: "flame-controls card", "aria-label": "Flame Lab controls", onsubmit: (e) => e.preventDefault() },
-        h("div", { class: "flame-control" }, h("span", { class: "flame-label" }, "Ignition"), igniteBtn),
+        h("div", { class: "flame-control" }, h("span", { class: "sr-only" }, "Ignition"), igniteBtn),
         h(
           "div",
           { class: "flame-control" },
           h("label", { class: "flame-label", for: "flame-gravity" }, "Gravity", gravityValue),
           h("div", { class: "flame-presets", role: "radiogroup", "aria-label": "Gravity context" }, presetButtons),
           gravityRange,
-          h("p", { class: "flame-hint" }, "Reference gravity values. Illustrative response: direction only."),
         ),
         h(
           "div",
           { class: "flame-control" },
           h("label", { class: "flame-label", for: "flame-oxygen" }, "Oxygen", oxygenValue),
           oxygenRange,
-          h("p", { class: "flame-hint" }, "Share of the surrounding gas (your input). Illustrative response: direction only; extinction limits are not modelled."),
         ),
         h(
           "div",
           { class: "flame-control" },
           h("label", { class: "flame-label", for: "flame-airflow" }, "Forced airflow", airflowValue),
           airflowRange,
-          h("p", { class: "flame-hint" }, "Illustrative response: direction only."),
         ),
         h(
           "div",
           { class: "flame-control" },
           h("label", { class: "flame-label", for: "flame-fuel" }, "Fuel look"),
           fuelSelect,
-          h("p", { class: "flame-hint" }, "Generic looks, not real fuels."),
         ),
+        h("p", { class: "flame-note", role: "note" }, CONTROL_NOTE),
         h(
           "div",
           { class: "row gap wrap flame-actions" },
