@@ -74,6 +74,9 @@ def make_root(tmp_path: Path, *, csv_text=None, flags_text=None, gates=None, out
     if outcomes is not None:
         write_json((root / "contracts/outcomes.json"), outcomes)
     manifest = json.loads((root / "data/manifest.json").read_text(encoding="utf-8"))
+    # Only the two source files are copied. Once the derived files are registered the real manifest
+    # also lists them, and those entries (and files) are not inputs of the derivation.
+    manifest["datasets"] = [e for e in manifest["datasets"] if e["id"] in (dv.CSV_ID, dv.FLAGS_ID)]
     for entry in manifest["datasets"]:
         entry["sha256"] = hashlib.sha256((root / entry["path"]).read_bytes()).hexdigest()
     write_json((root / "data/manifest.json"), manifest)
@@ -431,7 +434,12 @@ def test_staging_changes_nothing_in_the_repository_and_registers_nothing(tmp_pat
     report = dv.stage(tmp_path / "out")
     assert snapshot("data", "contracts", "tools") == before
     manifest = json.loads((ROOT / "data/manifest.json").read_text(encoding="utf-8"))
-    assert [d["id"] for d in manifest["datasets"]] == [dv.CSV_ID, dv.FLAGS_ID]
+    derived = {dv.FINDINGS_ID, dv.INVESTIGATIONS_ID}
+    ids = [d["id"] for d in manifest["datasets"]]
+    assert [i for i in ids if i not in derived] == [dv.CSV_ID, dv.FLAGS_ID], (
+        "no other dataset appears"
+    )
+    assert {i for i in ids if i in derived} in (set(), derived), "never half-registered"
     assert report["registrable"] is False and report["status"].startswith("STAGING ONLY")
     assert (tmp_path / "out" / "NOT_REGISTERED.txt").is_file()
     assert {e["id"] for e in report["proposed_manifest_entries_not_applied"]} == {
