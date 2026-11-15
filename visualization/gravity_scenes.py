@@ -10,11 +10,16 @@ speed of a particle plume. Nothing here is computed from or compared with measur
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 from pathlib import Path
 
 EARTH_G = 9.81
 CAPTION = "ILLUSTRATION ONLY. Not a validated combustion simulation. Not NASA data."
+ASSUMPTIONS = (
+    "Fuel, oxygen fraction, pressure and airflow are not modelled. "
+    "Flame shape is an artistic choice."
+)
 SCENES = {  # name: (label, gravity in m/s^2 as a standard reference value)
     "earth": ("Earth, 1 g", EARTH_G),
     "mars": ("Mars, about 0.38 g", 3.71),
@@ -27,6 +32,24 @@ def buoyancy_scale(gravity: float) -> float:
     return gravity / EARTH_G
 
 
+def _emissive(bpy, name: str, color: tuple, strength: float):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True  # deprecated in Blender 6.0; revisit then
+    nodes, links = mat.node_tree.nodes, mat.node_tree.links
+    emission = nodes.new("ShaderNodeEmission")
+    emission.inputs[0].default_value = (*color, 1.0)
+    emission.inputs[1].default_value = strength
+    links.new(emission.outputs[0], nodes["Material Output"].inputs[0])
+    return mat
+
+
+def _text(bpy, body: str, z: float, size: float, color=(1, 1, 1), strength=1.0) -> None:
+    bpy.ops.object.text_add(location=(0, 0, z), rotation=(math.pi / 2, 0, 0))
+    obj = bpy.context.active_object
+    obj.data.body, obj.data.size, obj.data.align_x = body, size, "CENTER"
+    obj.data.materials.append(_emissive(bpy, "label", color, strength))
+
+
 def build_scene(name: str, out_dir: Path) -> None:
     import bpy  # only available inside Blender
 
@@ -36,34 +59,37 @@ def build_scene(name: str, out_dir: Path) -> None:
     scene = bpy.context.scene
     scene.render.resolution_x, scene.render.resolution_y = 1280, 720
     scene.render.filepath = str(out_dir / f"{name}.png")
+    scene.view_settings.view_transform = "Standard"  # no tone mapping: colours as authored
+    scene.world = bpy.data.worlds.new("bg")
+    scene.world.use_nodes = True
+    scene.world.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.02, 0.04, 1)
 
-    world = bpy.data.worlds.new("bg")
-    world.use_nodes = True
-    world.node_tree.nodes["Background"].inputs[0].default_value = (0.02, 0.02, 0.03, 1)
-    scene.world = world
+    # Identical in every scene: wick, camera, framing, lighting-free emissive materials.
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.08, depth=0.5, location=(0, 0, 0.25))
+    bpy.context.active_object.data.materials.append(_emissive(bpy, "wick", (0.5, 0.5, 0.55), 0.8))
 
-    # The same generic flame body in every scene; only the plume height changes with `scale`.
-    height = 0.4 + 1.6 * scale  # visual design choice, not a model
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=0.35, location=(0, 0, 0.35))
-    body = bpy.context.active_object
-    body.scale = (1.0, 1.0, 0.6 + 0.4 * (height / 2.0) * 2.0)
-    mat = bpy.data.materials.new("flame")
-    mat.use_nodes = True
-    emission = mat.node_tree.nodes.new("ShaderNodeEmission")
-    emission.inputs[0].default_value = (1.0, 0.55, 0.15, 1)
-    emission.inputs[1].default_value = 6.0
-    out = mat.node_tree.nodes["Material Output"]
-    mat.node_tree.links.new(emission.outputs[0], out.inputs[0])
-    body.data.materials.append(mat)
+    # Only the flame's height stretch changes with `scale`: 1.0 (round) at 0 g to 2.6 at 1 g.
+    # This is an artistic mapping, not a model, and says nothing about real flame size.
+    stretch = 1.0 + 1.6 * scale
+    radius = 0.4
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=radius, segments=48, ring_count=24)
+    flame = bpy.context.active_object
+    flame.scale = (1.0, 1.0, stretch)
+    flame.location = (0, 0, 0.5 + radius * stretch)
+    bpy.ops.object.shade_smooth()
+    flame.data.materials.append(_emissive(bpy, "flame", (1.0, 0.3, 0.02), 1.0))
 
-    bpy.ops.object.camera_add(location=(0, -6, 1.4), rotation=(1.5708, 0, 0))
-    scene.camera = bpy.context.active_object
+    bpy.ops.object.camera_add(location=(0, -10, 1.45), rotation=(math.pi / 2, 0, 0))
+    cam = bpy.context.active_object
+    cam.data.type, cam.data.ortho_scale = "ORTHO", 7.0  # same scale in every scene
+    scene.camera = cam
 
-    for text, loc, size in ((label, (-2.8, 0, 3.0), 0.3), (CAPTION, (-2.8, 0, -0.6), 0.16)):
-        bpy.ops.object.text_add(location=loc, rotation=(1.5708, 0, 0))
-        obj = bpy.context.active_object
-        obj.data.body, obj.data.size = text, size
-
+    _text(bpy, label, 3.0, 0.32)
+    _text(bpy, CAPTION, -0.24, 0.14, color=(1.0, 0.85, 0.4))
+    _text(bpy, ASSUMPTIONS, -0.45, 0.095, color=(0.8, 0.8, 0.8))
+    bodies = {o.data.body for o in scene.objects if o.type == "FONT"}
+    if bodies != {label, CAPTION, ASSUMPTIONS}:  # never render an image without its disclaimer
+        raise RuntimeError(f"{name}: caption objects missing or altered: {sorted(bodies)}")
     bpy.ops.render.render(write_still=True)
 
 

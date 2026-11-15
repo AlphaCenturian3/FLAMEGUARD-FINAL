@@ -1,6 +1,6 @@
 # Blender illustrative visualization: plan (P2, not evidence)
 
-**Status:** plan and an UNTESTED scene script. Blender was not installed on the development machine when this was written, so nothing here has been rendered.
+**Status:** the script was run and its output inspected with **Blender 5.2.4 LTS** (official arm64 build from a blender.org-listed mirror, SHA-256 checked against the published file). It renders four 1280x720 images in about 4 seconds. The script refuses to render an image whose title, disclaimer or assumptions line is missing. The images are illustrations only; they have not been reviewed by Member 5.
 
 ## What this is, and is not
 
@@ -19,8 +19,11 @@ Every render carries this caption, baked into the image: **"ILLUSTRATION ONLY. N
 
 Gravity values are standard reference values for the bodies. The buoyancy scale is the ratio of local gravity to Earth gravity and is applied only as a **visual** parameter (plume height and velocity of a particle system). The mapping from that ratio to flame size or shape is a **qualitative design choice, not a measured or computed relationship.**
 
-## Assumptions to state on the image or in the caption
-- Fuel, oxidiser fraction, pressure, ignition source and sample geometry are **not modelled**; the scene shows a generic small flame so it can make no claim about any specific NASA test.
+## Assumptions (also printed on every image)
+- **Fuel, oxygen fraction, pressure, ignition source and sample geometry are not modelled.** The scene shows one generic flame so it makes no claim about any specific NASA test.
+- **Airflow:** none. The scene is a quiescent ambient. Forced flow, which strongly affects real flames, is not shown.
+- **Flame shape:** the height stretch is 1.0 (round) at 0 g rising linearly to 2.6 at 1 g. This is an **artistic mapping, not a model, not validated**, and says nothing about real flame size, spread rate or burning rate.
+- Same camera (orthographic, scale 7.0), wick, colours and background in every scene.
 - Flame colour is decorative.
 - Microgravity flames in real experiments can differ from the round idealisation, depending on flow and conditions. Real behaviour is what the evidence pipeline is for.
 
@@ -31,8 +34,8 @@ When a slide pairs an image with a NASA result, the result is cited from its Fin
 ```bash
 blender --background --python visualization/gravity_scenes.py -- --out visualization/out
 ```
-Output: `earth.png`, `mars.png`, `moon.png`, `microgravity.png` (git-ignored). Needs Blender 3.6 or newer. `--list` prints the scene table without Blender.
+Output: `earth.png`, `mars.png`, `moon.png`, `microgravity.png` (git-ignored). Tested with Blender 5.2.4 LTS. `--list` prints the scene table without Blender.
 
 ## Open items
-1. Install Blender (or `pip install bpy` for Python 3.11) and render; review images with Member 5 for any wording that could read as a prediction.
+1. Review images with Member 5 for any wording that could read as a prediction.
 2. Decide whether the images go in the judge demo, and where the caption sits.
