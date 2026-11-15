@@ -15,6 +15,7 @@
 | `ENVIRONMENT_REFERENCE.md`, `environment_reference.json` | Cited gravity, oxygen and pressure reference per environment; physical conditions separate from design assumptions; unknowns marked (D-01 condition 2). |
 | `WEIGHT_SENSITIVITY.md` | ±0.05 weight-sensitivity method with synthetic worked examples (D-01 condition 3). No NASA data. |
 | `RANKING_METHODOLOGY.md` | How the research-relevance score works, its gates, and what it is not. |
+| `B3_COMPARE_REVIEW.md` | Scientific QA of B3 (PR #37) and the test-selection proposal (PR #38): confirmed defects, limitations, reference correction (D11), differential results, open evidence gates. Not an approval. |
 | `COORDINATION.md` | Roster conflict, GitHub identities and approvals, ownership boundary, decision log D-01 to D-12 (provisional vs approved), CP1 rebase readiness. |
 
 Code: `research/` (non-runtime reference implementation only; production ranking and comparison belong to Member 1). Proposed criteria: `config/research_relevance_criteria_v1.proposed.json`. Tests: `tests/research/`, with fixtures in `tests/fixtures/research/` (`fixture: true`; not NASA data).
