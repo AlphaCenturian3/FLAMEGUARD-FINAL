@@ -178,6 +178,12 @@ def main() -> int:
         help="open the live address in the browser once the server is ready",
     )
     ap.add_argument("--smoke", action="store_true", help="run smoke checks, then stop")
+    ap.add_argument(
+        "--expect",
+        choices=("auto", "empty", "registered"),
+        default="auto",
+        help="with --smoke: expect empty or registered live evidence (default: from the tree)",
+    )
     args = ap.parse_args()
 
     if sys.version_info < (3, 11):  # noqa: UP036 (run.py may be started by an older python)
@@ -220,6 +226,7 @@ def main() -> int:
         wait_ready(url)
         if args.smoke:
             smoke = [sys.executable, str(REPO / "preview" / "smoke.py"), url, str(tree), str(py)]
+            smoke += ["--expect", args.expect]
             return subprocess.run(smoke, check=False).returncode  # noqa: S603
         if args.open:
             webbrowser.open(url)

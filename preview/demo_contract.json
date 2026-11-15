@@ -75,6 +75,22 @@
         "microgravity.png"
       ],
       "banner": "ILLUSTRATION ONLY. Not a validated combustion simulation. Not NASA data."
+    },
+    "live_registered": {
+      "#/": [
+        "Investigations loaded",
+        "Measured findings"
+      ],
+      "#/explorer": [
+        "Test end as printed"
+      ],
+      "#/rank": [
+        "501"
+      ],
+      "#/integrations": [
+        "501",
+        "planned"
+      ]
     }
   },
   "documented_in_every_audience_doc": {
@@ -108,5 +124,6 @@
       "3:40 to 4:00"
     ],
     "max_words": 900
-  }
+  },
+  "_scenarios": "ui.live is the approved empty-evidence state; ui.live_registered is the state once FLEX is registered. preview/smoke.py picks one from the tree (or --expect) and fails on a mismatch."
 }

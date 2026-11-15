@@ -13,6 +13,7 @@ path); the judge-demo check also needs Node 22+. A check that cannot run is repo
 
 from __future__ import annotations
 
+import argparse
 import html as html_lib
 import json
 import os
@@ -30,6 +31,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import doc_check  # noqa: E402
+import evidence_expect as ee  # noqa: E402
 from scenarios import make_scenario  # noqa: E402
 
 DEMO = doc_check.load_contract()
@@ -44,6 +46,7 @@ ROUTES = ["", "explorer", "compare", "rank", "interpret", "integrations"]
 FIXTURE_BANNER = DEMO["ui"]["fixture_banner"]
 CONTRACT = "0.2.0"
 REJECTED_HEADER = "x-flameguard-rejected-entries"
+SCENARIO: dict = {"expect": "empty", "summary": None, "tree": None, "api_version": CONTRACT}
 results: list[tuple[str, str, str]] = []  # (status, name, detail)
 
 
@@ -77,16 +80,33 @@ def err_code(doc: dict) -> str | None:
     return doc.get("error", {}).get("code")
 
 
+def observe_evidence(base: str) -> dict:
+    """What the live API serves right now (lists, statuses, header)."""
+    _, inv, _ = jget(base + "api/investigations")
+    code, fnd, headers = jget(base + "api/findings")
+    items = fnd.get("items", [])
+    by_status: dict[str, int] = {}
+    for f in items:
+        if f.get("evidence_class") == "measured":
+            by_status[f["value_status"]] = by_status.get(f["value_status"], 0) + 1
+    return {
+        "investigations": {"total": inv.get("total"), "items": inv.get("items", [])},
+        "findings": {"total": fnd.get("total"), "items": items},
+        "ids": [f["id"] for f in items],
+        "by_status": by_status,
+        "excluded_values": [f.get("value") for f in items if f.get("value_status") == "excluded"],
+        "rejected_header": headers.get(REJECTED_HEADER),
+    }
+
+
 def api_checks(base: str) -> None:
     code, doc, _ = jget(base + "api/health")
     record(code == 200 and doc.get("status") == "ok", "GET /api/health is 200 ok", f"{code} {doc}")
-    for path, what in (("api/investigations", "investigation"), ("api/findings", "finding")):
-        code, doc, _ = jget(base + path)
-        record(
-            code == 200 and doc.get("items") == [] and doc.get("total") == 0,
-            f"live: no registered evidence -> honest empty {what} list",
-            f"{code} total={doc.get('total')}",
-        )
+    SCENARIO["api_version"] = doc.get("contract_version", CONTRACT)
+    for ok, name, detail in ee.api_verdicts(
+        SCENARIO["expect"], SCENARIO["summary"], observe_evidence(base)
+    ):
+        record(ok, name, detail)
     code, doc, _ = jget(base + "api/investigations/x")
     record(code == 404 and err_code(doc) == "not_found", "unknown investigation is 404", str(code))
     for query, label in (
@@ -163,18 +183,30 @@ def browser_checks(base: str, chrome: str | None) -> None:
                     ok = ok and FIXTURE_BANNER in t
                 else:  # live mode must never show fixtures as data
                     ok = ok and FIXTURE_BANNER not in t and "FIXTURE PLACEHOLDER" not in t
-                    ok = ok and "API · contract 0.2.0" in t
+                    ok = ok and f"API · contract {SCENARIO['api_version']}" in t
                 if route == "rank" and mode == "live":  # no ranking without approved evidence
                     ok = ok and "501" in t
                 if route == "explorer" and mode == "live":
-                    ok = ok and "No investigations available" in t
+                    empty_state = "No investigations available" in t
+                    ok = ok and (empty_state == (SCENARIO["expect"] == "empty"))
                 h1 = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.S)
                 record(ok, f"{mode} mode #/{route or ''}", text_of(h1.group(1)) if h1 else "no h1")
         _, t = page(chrome, f"{base}#/explorer", prof)
+        foot = ee.footer_expectation(SCENARIO["tree"])
+        declared, supported = foot["declared"], foot["supported"]
+        api_v = SCENARIO["api_version"]
+        ok = "Contract v0.1.0" not in t and "may be missing or misread" not in t
+        ok = ok and re.search(r"[Cc]ontract v\d+\.\d+\.\d+", t) is not None
+        if (
+            declared
+        ):  # the footer says what the dashboard itself declares, and tolerates the API's version
+            ok = ok and f"contract v{declared}" in t and api_v in (supported or [])
+        else:
+            ok = ok and f"contract v{api_v}" in t
         record(
-            "Contract v0.1.0" not in t and f"contract v{CONTRACT}" in t,
+            ok,
             "footer states the contract version the API reports",
-            "",
+            f"api {api_v}, dashboard {declared}",
         )
         _, t = page(chrome, f"{base}?api=http://127.0.0.1:1#/explorer", prof)
         record(
@@ -202,7 +234,8 @@ def ui_contract_checks(base: str, chrome: str | None) -> None:
     ui = DEMO["ui"]
     with tempfile.TemporaryDirectory() as prof:
         for mode, query in (("live", ""), ("fixture", "?fixtures=1")):
-            for route, phrases in ui[mode].items():
+            live_key = "live" if SCENARIO["expect"] == "empty" else "live_registered"
+            for route, phrases in ui["fixture" if mode == "fixture" else live_key].items():
                 _, t = page(chrome, f"{base}{query}{route}", prof)
                 missing = [p for p in phrases if p not in t]
                 record(
@@ -216,11 +249,20 @@ def ui_contract_checks(base: str, chrome: str | None) -> None:
             "contract: documented navigation labels exist in the interface",
             "",
         )
-        record(
-            re.search(r"\b0\s+Investigations loaded", t) is not None,
-            "contract: live overview says 0 Investigations loaded",
-            "",
-        )
+        summary = SCENARIO["summary"]
+        if SCENARIO["expect"] == "empty":
+            record(
+                re.search(r"\b0\s+Investigations loaded", t) is not None,
+                "contract: live overview says 0 Investigations loaded",
+                "",
+            )
+        elif summary is not None:
+            record(
+                re.search(rf"\b{summary['investigations']}\s+Investigations loaded", t) is not None
+                and re.search(rf"\b{summary['measured']}\s+Measured findings", t) is not None,
+                "contract: live overview counts equal the registered evidence",
+                f"{summary['investigations']} investigation(s), {summary['measured']} finding(s)",
+            )
         _, t = page(chrome, f"{base}?fixtures=1#/", prof)
         record(
             ui["demo_button"] in t and ui["fixture_banner"] in t,
@@ -261,6 +303,58 @@ def illustration_checks(base: str, chrome: str | None) -> None:
         with tempfile.TemporaryDirectory() as prof:
             _, t = page(chrome, base + "illustrations/", prof)
             record(spec["banner"] in t, "browser: the illustrations page shows the disclaimer", "")
+
+
+def registered_explorer_checks(base: str, chrome: str | None) -> None:
+    """Registered scenario: the live Explorer shows exactly the registered evidence."""
+    summary = SCENARIO["summary"]
+    if SCENARIO["expect"] != "registered":
+        return
+    if not chrome or summary is None:
+        record(None, "registered explorer checks", "needs Chrome and the exported tree")
+        return
+    with tempfile.TemporaryDirectory() as prof:
+        html, t = page(chrome, f"{base}#/explorer", prof)
+        rows = html.count('class="row-group"')
+        record(
+            rows == summary["groups"],
+            "registered: one Explorer row per registered test",
+            f"{rows} vs {summary['groups']}",
+        )
+        for status, n in sorted(summary["by_status"].items()):
+            record(
+                html.count(f'data-value-status="{status}"') == n,
+                f"registered: Explorer shows {n} {status} value(s)",
+                "",
+            )
+        record(
+            all(f"Test end as printed: {o}" in t for o in summary["outcomes"]),
+            "registered: the printed outcome labels appear verbatim",
+            ", ".join(summary["outcomes"]),
+        )
+        record(
+            FIXTURE_BANNER not in t
+            and "FIXTURE PLACEHOLDER" not in t
+            and "may be missing or misread" not in t,
+            "registered: live mode shows no fixture banner and no version warning",
+            "",
+        )
+        for ex in summary["excluded"]:
+            printed = ex["printed"]
+            if printed is None:
+                record(
+                    None,
+                    f"registered: excluded value of {ex['id']} not disclosed",
+                    "source value not found in the tree",
+                )
+                continue
+            bare = printed[1:] if printed.startswith("0.") else printed
+            leaked = any(re.search(rf"(?<![\d.]){re.escape(v)}(?!\d)", t) for v in {printed, bare})
+            record(
+                ex["value"] is None and not leaked,
+                f"registered: excluded value of {ex['id']} is not disclosed",
+                "",
+            )
 
 
 def free_port() -> int:
@@ -407,16 +501,37 @@ def demo_checks(base: str, chrome: str | None) -> None:
         record(ok, f"judge demo ({mode})", " -> ".join(f"{s['title']}@{s['hash']}" for s in steps))
 
 
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    ap.add_argument("base", nargs="?", default="http://127.0.0.1:8790/")
+    ap.add_argument("tree", nargs="?", type=Path)
+    ap.add_argument("py", nargs="?", type=Path)
+    ap.add_argument(
+        "--expect",
+        choices=ee.EXPECTATIONS,
+        default="auto",
+        help="empty: live evidence must be honestly empty; registered: it must equal what the "
+        "tree registers; auto (default): decide from the tree, or the API without a tree",
+    )
+    return ap.parse_args(argv)
+
+
 def main() -> int:
-    base = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8790/").rstrip("/") + "/"
+    args = parse_args(sys.argv[1:])
+    base = args.base.rstrip("/") + "/"
+    _, probe, _ = jget(base + "api/findings")
+    scenario, summary = ee.decide(args.expect, args.tree, probe.get("total"))
+    SCENARIO.update(expect=scenario, summary=summary, tree=args.tree)
+    print(f"evidence scenario: {scenario} (--expect {args.expect})")
     doc_checks()
     api_checks(base)
     chrome = find_chrome()
     browser_checks(base, chrome)
     ui_contract_checks(base, chrome)
+    registered_explorer_checks(base, chrome)
     illustration_checks(base, chrome)
-    if len(sys.argv) > 3:
-        scenario_checks(Path(sys.argv[2]), Path(sys.argv[3]), chrome)
+    if args.tree is not None and args.py is not None:
+        scenario_checks(args.tree, args.py, chrome)
     else:
         record(None, "synthetic scenario checks", "pass EXPORTED_TREE and PREVIEW_PYTHON")
     demo_checks(base, chrome)
