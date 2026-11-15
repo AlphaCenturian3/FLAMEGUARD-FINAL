@@ -65,6 +65,7 @@ export function createDemo(hooks) {
   }
 
   function render() {
+    if (typeof document !== "undefined") document.documentElement.classList.toggle("demo-active", index >= 0);
     if (index < 0) {
       bar.hidden = true;
       return;

@@ -1,6 +1,7 @@
 import { curationNotes, environmentLabel, isFixture } from "../model/evidence.js";
 import { traceSupport } from "../model/trace.js";
 import { evidenceBadge, findingCard, fixtureBadge, provenanceBlock, resourcePanel, statePanel } from "../ui/components.js";
+import { announce } from "../ui/announce.js";
 import { h, mount } from "../ui/dom.js";
 import { contextSelect, getContext } from "./context.js";
 
@@ -101,7 +102,7 @@ function limitationsBlock(f) {
 
 /** @param {import("../main.js").ViewContext} ctx */
 export function render(ctx) {
-  const out = h("div", { "aria-live": "polite" });
+  const out = h("div");
   const explanations = h("div", null);
   const root = h(
     "section",
@@ -147,6 +148,7 @@ export function render(ctx) {
     );
     const excl = classified.filter((c) => c.kind === "exclusion");
     mount(explanations, excl.length ? excl.map((c) => interpretationCard(c.f, ev.findingsById, invOf(c.f))) : h("p", { class: "muted" }, "No interpretation depends on an excluded value."));
+    announce(`${environmentLabel(context)}: ${forContext.length - withheld} insight${forContext.length - withheld === 1 ? "" : "s"}, ${withheld} withheld, ${excl.length} exclusion explanation${excl.length === 1 ? "" : "s"}.`);
   }
 
   draw();
