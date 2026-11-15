@@ -1,4 +1,4 @@
-# Integration contract v0.2.0 (proposed for CP1)
+# Integration contract v0.2.1 (v0.2.0 merged at CP1; v0.2.1 proposes the D5/C4 FLEX quantities)
 
 This is the agreement between Members 1 (backend), 2 (frontend), 3 (data and TARS evidence) and 5 (research), so each can develop independently. The summary is in master spec §5. The change log from v0.1.0 is at the bottom.
 
@@ -75,6 +75,20 @@ These rules span several files or depend on computed values. Each one has a memb
 ## Changing the contract
 
 Follow spec §5.4. The PR touches only `contracts/`, the spec and the version constant. Members 1 and 2 approve it; Members 3 and 5 approve as well when a data, interpretation or ranking rule changes. Bump `CONTRACT_VERSION`, the spec version and `vocabulary_version` together, since a test checks that they match. When you change `vocabulary.json`, update `quantity_rules.schema.json` to match exactly; a test checks this too.
+
+## Changes from v0.2.0 (proposed, D5/C4)
+
+| Change | Why |
+|---|---|
+| Four FLEX quantities added to `vocabulary.json` and `quantity_rules.schema.json`: `initial_droplet_diameter` (mm), `visible_flame_extinction_diameter` (mm), `burning_rate_constant` (mm2/s), `burn_time` (s), each `minimum: 0` | Decision C4 accepted these for the FLEX droplet data (NASA/TP-2015-216046 Table IX). No existing quantity is changed. `flame_spread_rate` (mm/s, flame-front speed over a solid) keeps its meaning and is never a substitute for `burning_rate_constant` (droplet D^2-law constant). The change is additive: every document valid under v0.2.0 is still valid |
+| `CONTRACT_VERSION`, spec version and `vocabulary_version` 0.2.0 -> 0.2.1 | The contract-change rule requires the three to move together. Patch level, because the change is additive (spec 5.4 reserves minor bumps for breaking changes); owner decision O4 |
+
+**Owner decisions for this version:**
+
+- **O1 Unit string** for `burning_rate_constant`: `mm2/s`. Accepted by Members 1 and 2 in their review of `b012645`. Formal approval is given on the PR head.
+- **O2 Outcome and test identity.** No derived FLEX Finding and no FLEX comparison until a structured test identity and outcome is approved. v0.2.1 adds no `test_id` or outcome field and does not change `conditions`. A structured test identity and outcome belong in a separate v0.2.2 contract proposal. Comparability is never inferred from `statement` or `locator` text.
+- **O3 Descriptions and bounds.** All four use `minimum: 0` (non-negative), not `exclusiveMinimum`, so that no reported value is rejected by a tighter bound than the source supports. `visible_flame_extinction_diameter` is present only when the source reports one, and a reported value does not imply the recorded outcome: in NASA/TP-2015-216046 Table IX, FLEX-001 is printed as Disruption with a reported 0.89 mm, and the Figure 5 caption says the droplet "probably disrupted at the end of the test coincident with flame extinction". Accepted by Members 1 and 2 subject to Member 5's scientific review; **Member 5's decision is pending**.
+- **O4 Version level.** 0.2.1 (patch). Accepted by Members 1 and 2 in their review of `b012645`.
 
 ## Changes from v0.1.0
 
