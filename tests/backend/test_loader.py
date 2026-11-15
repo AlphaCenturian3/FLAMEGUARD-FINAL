@@ -526,12 +526,14 @@ def test_nothing_imports_the_loader_from_simulation_code():
             assert "flameguard.data" not in path.read_text(encoding="utf-8"), path
 
 
-def test_existing_endpoints_are_unchanged_by_the_loader():
+def test_unfinished_endpoints_are_unchanged_by_the_loader():
+    """B1 adds no endpoint. B2 (tests/backend/test_explorer.py) serves the explorer endpoints; the
+    others are still planned and stay 501."""
     from fastapi.testclient import TestClient
 
     from flameguard.api.app import app
 
     client = TestClient(app)
     assert client.get("/api/health").status_code == 200
-    for path in ("/api/investigations", "/api/findings", "/api/rankings", "/api/compare"):
+    for path in ("/api/rankings", "/api/compare"):
         assert client.get(path).status_code == 501
