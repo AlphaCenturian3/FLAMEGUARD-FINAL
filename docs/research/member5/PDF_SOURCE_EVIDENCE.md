@@ -97,6 +97,26 @@ Not in the table: the 5 `not_available` flags on unregistered pages (F035–F037
 - From §3: a derived FLEX-006 `visible_flame_extinction_diameter` Finding must carry F022. Any later FLEX row whose caption reports leaving the HiBMs FOV needs a limitation stating that the source may have extrapolated the value.
 - From §1: a derived `burn_time` Finding should state that the source does not define its start and end points.
 
+## 6. Table IX outcome vocabulary (P1 for PR #17, contract v0.2.2)
+
+Decision posted on PR #17 at `9c3d698` ([comment 6886309607](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/17#issuecomment-6886309607)). That comment is not an approval of PR #17.
+
+| Item | Verified result |
+|---|---|
+| Extent | Table IX covers printed pp. 20–28 (PDF pp. 26–34): 276 rows, FLEX-001 to FLEX-280. FLEX-156, 205, 213 and 228 are not printed anywhere in the report |
+| "Test end" values | Exactly three, as printed: `Extinction` 186, `Disruption` 62, `Completion` 28. No other value, blank, dash or footnote marker |
+| Definition | None: A.1 (printed p. 19) does not define "Test end" or "Burn time" |
+| Prose-only terms | "radiative extinction" and "diffusive extinction" (printed p. 2), "disruptive extinction" (printed p. 17). None of these is a table value |
+| Label versus value | The A.1 dash rule disagrees with the label in 66 of 276 rows: 24 Disruption and 15 Completion rows print an extinction diameter; 27 Extinction rows print a dash |
+| Other cells | Burn time printed as `~6` (FLEX-227) and `~9` (FLEX-229): approximate, not exact numbers |
+| Printed test id | `FLEX–001` with an en dash (U+2013). The registered CSV uses ASCII `FLEX-001` |
+
+P1 decision: `["Extinction", "Disruption", "Completion"]`, each meaning only "the label printed in Table IX". The decision has seven conditions; the comment gives them in full. The two that affect implementation:
+- The `test_end` cautions (F004, F005, F026, F032, F038) must attach to every Finding that carries that test's outcome.
+- Every derived FLEX measured Finding must carry a non-null `test_id` and `test_outcome`. A comparison row with neither field still validates as `comparable: true`.
+
+S5 probes against PR #17's schemas, using its real generator in a temporary copy: differing, partial, null, absent, mis-cased, padded, empty and combined outcomes are all rejected for `comparable: true`. With the shipped empty list, no row that carries a `test_id` can be comparable. PR #17's suite: 333 passed at `9c3d698`.
+
 ## Reproduce
 
 ```

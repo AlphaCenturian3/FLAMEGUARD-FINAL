@@ -205,4 +205,14 @@ CP1 rebase readiness (trial merges only, nothing pushed): `29c7078` 191 passed; 
 - **O-2 (information).** `validate_evidence` does not reject `derived_from` on a `measured` record, and the S9 graph follows `derived_from` only from interpretations. The contract schema allows `derived_from` only on interpretations, so contract-valid data cannot reach this path.
 - **O-3 (S10 scope).** The independent S10 test runs on fixtures and the contract examples only. A check against the real FLEX flags is possible only once derived Findings exist (PR #15 design, D4).
 
+**Later Member 5 actions (2026-11-14, after 23:55 UTC), each by SHA:**
+
+| PR | SHA | Action | Link |
+|---|---|---|---|
+| #12 | `1f52b57` | **Changes requested:** the `burning_rate_constant` sign/definition and the extrapolated extinction diameters. Member 3 owns the fix. No new head as of the last check | [review 5907983490](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/12#pullrequestreview-5907983490) |
+| #9 | `bf3c1e4` | **Approved** (configuration and tests) | [review 5907983621](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/9#pullrequestreview-5907983621) |
+| #13 | `51d891f` | Evidence: 24 cautions need registered quoted passages; a quote repeats on three pages, so the check must pin page and caption test id. Not adopted yet | [6886101612](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/13#issuecomment-6886101612), [6886215750](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/13#issuecomment-6886215750) |
+| #15 | `b6b55d3` | Evidence and requests R-1 to R-4, plus FLEX-006 extrapolation and the undefined burn time | [6886101876](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/15#issuecomment-6886101876), [6886216134](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/15#issuecomment-6886216134) |
+| #17 | `9c3d698` | **P1 decision:** outcomes `Extinction`, `Disruption`, `Completion` as printed, with seven conditions. **Not an approval of PR #17** | [6886309607](https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/17#issuecomment-6886309607) |
+
 **Review requests to Member 5 that are open:** PRs #2, #9, #11, #12, #13, #14 and #15. A review by Member 5 is given only from the account holder's own account, at a named SHA.
