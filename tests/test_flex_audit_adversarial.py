@@ -463,3 +463,35 @@ def test_pdf_damage_is_caught_against_the_real_source_too(staged, pdf_pages, tmp
         tmp=tmp_path,
     )
     assert "OUTCOME" in codes(report)
+
+
+# ---------------------------------------------------------------------------------------------
+# Reproducibility and fail-closed command line
+# ---------------------------------------------------------------------------------------------
+
+
+def test_the_acceptance_report_is_byte_identical_across_runs(staged, rows, pages, tmp_path):
+    a = json.dumps(run(staged, rows, pages, tmp=tmp_path / "a"), indent=2, ensure_ascii=False)
+    b = json.dumps(run(staged, rows, pages, tmp=tmp_path / "b"), indent=2, ensure_ascii=False)
+    assert a == b and "\r" not in a
+    assert hashlib.sha256(a.encode()).hexdigest() == hashlib.sha256(b.encode()).hexdigest()
+
+
+def test_the_audit_and_the_staging_report_agree_and_a_pass_is_not_registrability(
+    staged, rows, pages, tmp_path
+):
+    report = run(staged, rows, pages, tmp=tmp_path)
+    staging = json.loads((staged / "STAGING_REPORT.json").read_text(encoding="utf-8"))
+    assert report["passed"] is True and staging["registrable"] is False
+    assert report["summary"]["open_gates"] == staging["open_gates"]
+    assert report["summary"]["by_value_status"] == staging["counts"]["by_value_status"]
+
+
+def test_the_command_line_never_reports_success_without_the_real_pdf(staged, tmp_path, capsys):
+    missing = tmp_path / "missing.pdf"
+    assert au.main(["--staged", str(staged), "--pdf", str(missing)]) == 2
+    assert "NOT AUDITED" in capsys.readouterr().out
+    wrong = tmp_path / "wrong.pdf"
+    wrong.write_bytes(b"%PDF-1.4 not the NASA report")
+    assert au.main(["--staged", str(staged), "--pdf", str(wrong)]) == 2
+    assert "NOT AUDITED" in capsys.readouterr().out
