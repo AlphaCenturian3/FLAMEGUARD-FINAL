@@ -57,7 +57,7 @@ def check(contract: dict | None = None, repo: Path = REPO) -> list[str]:
             problems.append(f"launcher {rel} does not exist")
         if Path(rel).name not in card:
             problems.append(f"the launch card does not name {Path(rel).name}")
-    for key in ("live_url", "fixture_url"):
+    for key in ("live_url", "fixture_url", "illustrations_url"):
         if launch[key] not in card:
             problems.append(f"the launch card is missing the address {launch[key]}")
     if (
@@ -67,6 +67,14 @@ def check(contract: dict | None = None, repo: Path = REPO) -> list[str]:
         problems.append("the launch card does not explain the alternate port")
     if "8790" not in launch["live_url"] or "?fixtures=1" not in launch["fixture_url"]:
         problems.append("contract addresses no longer match the documented defaults")
+
+    shot = launch.get("screenshot")
+    if shot:
+        shot_path = repo / shot
+        if not shot_path.is_file() or shot_path.read_bytes()[:8] != b"\x89PNG\r\n\x1a\n":
+            problems.append(f"screenshot {shot} is missing or not a PNG")
+        if shot not in card:
+            problems.append("the launch card does not reference its screenshot")
 
     flags = run_py_flags(repo)
     for cmd in launch["commands"]:

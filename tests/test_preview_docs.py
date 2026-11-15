@@ -167,3 +167,16 @@ def test_a_contract_command_with_an_unknown_flag_is_reported(repo):
     contract = json.loads((repo / "preview/demo_contract.json").read_text(encoding="utf-8"))
     contract["launch"]["commands"].append("python preview/run.py --bogus")
     assert any("--bogus" in p for p in dc.check(contract, repo))
+
+
+def test_the_launch_card_screenshot_must_exist_be_a_png_and_be_referenced(repo):
+    (repo / "preview/screenshots/fixture-excluded-finding.png").write_bytes(b"not a png")
+    assert any("not a PNG" in p for p in problems(repo))
+    (repo / "preview/screenshots/fixture-excluded-finding.png").unlink()
+    assert any("missing or not a PNG" in p for p in problems(repo))
+    edit(
+        repo,
+        "preview/LAUNCH_CARD.md",
+        lambda t: t.replace("preview/screenshots/fixture-excluded-finding.png", "REMOVED"),
+    )
+    assert any("does not reference its screenshot" in p for p in problems(repo))

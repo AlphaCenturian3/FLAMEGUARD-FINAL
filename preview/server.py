@@ -4,6 +4,7 @@
 planned endpoint still returns its HTTP 501. Everything else is static files:
 
 - `/contracts/examples/*` -> the contract fixtures (the frontend labels them "not NASA data")
+- `/illustrations/*`      -> the four Blender illustrations (labelled not NASA data)
 - `/*`                    -> the frontend
 
 This module adds no routes, scores, data or fallbacks, and nothing in `backend/` imports it.
@@ -27,6 +28,10 @@ static_app = Starlette(
         Mount(
             "/contracts/examples",
             app=StaticFiles(directory=ROOT / "contracts" / "examples"),
+        ),
+        Mount(
+            "/illustrations",
+            app=StaticFiles(directory=ROOT / "visualization" / "renders", html=True),
         ),
         Mount("/", app=StaticFiles(directory=ROOT / "frontend", html=True)),
     ]

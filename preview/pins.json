@@ -1,5 +1,18 @@
 {
   "_note": "Components the preview serves, pinned by commit. Update deliberately; `run.py --latest` uses the branch tips instead.",
-  "backend": {"ref": "origin/feat/backend-b2-explorer", "pr": 18, "sha": "5e579f3609c9120bcc8d5f1fcdf6ccde6b83aaf9"},
-  "frontend": {"ref": "origin/fix/frontend-transparency", "pr": 21, "sha": "3c9ce4482f9fe9c49885f767772e569e369080d6"}
+  "backend": {
+    "ref": "origin/feat/backend-b2-explorer",
+    "pr": 18,
+    "sha": "5e579f3609c9120bcc8d5f1fcdf6ccde6b83aaf9"
+  },
+  "frontend": {
+    "ref": "origin/fix/frontend-transparency",
+    "pr": 21,
+    "sha": "3c9ce4482f9fe9c49885f767772e569e369080d6"
+  },
+  "illustrations": {
+    "ref": "origin/viz/blender-illustrative",
+    "pr": 20,
+    "sha": "cdf4b941e99d694aee60a910c71fb83f5786b2f2"
+  }
 }

@@ -240,6 +240,29 @@ def ui_contract_checks(base: str, chrome: str | None) -> None:
     )
 
 
+def illustration_checks(base: str, chrome: str | None) -> None:
+    """The Blender images are served, labelled, and never presented as NASA data."""
+    spec = DEMO["ui"]["illustrations"]
+    code, body, _ = http("GET", base + "illustrations/")
+    text = body.decode("utf-8", "replace")
+    record(
+        code == 200 and spec["banner"] in text,
+        "illustrations page is served with the exact disclaimer",
+        str(code),
+    )
+    for name in spec["images"]:
+        code, body, _ = http("GET", base + "illustrations/" + name)
+        record(
+            code == 200 and body[:8] == b"\x89PNG\r\n\x1a\n" and name in text,
+            f"illustration {name} is a PNG referenced by the labelled page",
+            str(code),
+        )
+    if chrome:
+        with tempfile.TemporaryDirectory() as prof:
+            _, t = page(chrome, base + "illustrations/", prof)
+            record(spec["banner"] in t, "browser: the illustrations page shows the disclaimer", "")
+
+
 def free_port() -> int:
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
@@ -391,6 +414,7 @@ def main() -> int:
     chrome = find_chrome()
     browser_checks(base, chrome)
     ui_contract_checks(base, chrome)
+    illustration_checks(base, chrome)
     if len(sys.argv) > 3:
         scenario_checks(Path(sys.argv[2]), Path(sys.argv[3]), chrome)
     else:

@@ -1,35 +1,91 @@
 {
   "_note": "The critical behaviours the demo documents rely on. preview/doc_check.py checks that the documents mention them and that the launch instructions are real; preview/smoke.py checks that the running UI still shows them. Change this file only together with the UI or the documents.",
-  "docs": ["preview/LAUNCH_CARD.md", "preview/PRESENTATION_SCRIPT.md", "preview/DEMO.md"],
+  "docs": [
+    "preview/LAUNCH_CARD.md",
+    "preview/PRESENTATION_SCRIPT.md",
+    "preview/DEMO.md"
+  ],
   "launch": {
     "live_url": "http://127.0.0.1:8790/",
     "fixture_url": "http://127.0.0.1:8790/?fixtures=1",
     "alternate_port": 8791,
-    "launchers": ["preview/Start-Preview-Mac.command", "preview/Start-Preview-Windows.bat"],
-    "commands": ["python preview/run.py", "python preview/run.py --port 8791", "python preview/run.py --port 8791 --smoke"]
+    "launchers": [
+      "preview/Start-Preview-Mac.command",
+      "preview/Start-Preview-Windows.bat"
+    ],
+    "commands": [
+      "python preview/run.py",
+      "python preview/run.py --port 8791",
+      "python preview/run.py --port 8791 --smoke",
+      "python preview/run.py --auto-port --open"
+    ],
+    "launcher_command": "preview/run.py --auto-port --open",
+    "illustrations_url": "http://127.0.0.1:8790/illustrations/",
+    "screenshot": "preview/screenshots/fixture-excluded-finding.png"
   },
   "ui": {
     "fixture_banner": "FIXTURE DATA. NOT NASA DATA.",
-    "nav_labels": ["Overview", "Evidence Explorer", "Compare", "Rank", "Interpret & Insight"],
+    "nav_labels": [
+      "Overview",
+      "Evidence Explorer",
+      "Compare",
+      "Rank",
+      "Interpret & Insight"
+    ],
     "demo_button": "Start 90-second demo",
-    "demo_steps": ["Discover", "Compare", "Rank", "Interpret", "Safety Insight"],
+    "demo_steps": [
+      "Discover",
+      "Compare",
+      "Rank",
+      "Interpret",
+      "Safety Insight"
+    ],
     "live": {
-      "#/": ["Investigations loaded"],
-      "#/explorer": ["No investigations available"],
-      "#/rank": ["501"],
-      "#/integrations": ["501", "planned"]
+      "#/": [
+        "Investigations loaded"
+      ],
+      "#/explorer": [
+        "No investigations available"
+      ],
+      "#/rank": [
+        "501"
+      ],
+      "#/integrations": [
+        "501",
+        "planned"
+      ]
     },
     "fixture": {
-      "#/explorer": ["Excluded by FlameGuard-SI", "value not shown"],
-      "#/rank": ["Fixture"]
+      "#/explorer": [
+        "Excluded by FlameGuard-SI",
+        "value not shown"
+      ],
+      "#/rank": [
+        "Fixture"
+      ]
     },
     "withheld": {
       "fixture_excluded_value_never_shown": true
+    },
+    "illustrations": {
+      "images": [
+        "earth.png",
+        "mars.png",
+        "moon.png",
+        "microgravity.png"
+      ],
+      "banner": "ILLUSTRATION ONLY. Not a validated combustion simulation. Not NASA data."
     }
   },
   "documented_in_every_audience_doc": {
-    "docs": ["preview/LAUNCH_CARD.md", "preview/PRESENTATION_SCRIPT.md"],
-    "must_contain": ["Never", "ILLUSTRATION ONLY. Not a validated combustion simulation. Not NASA data."]
+    "docs": [
+      "preview/LAUNCH_CARD.md",
+      "preview/PRESENTATION_SCRIPT.md"
+    ],
+    "must_contain": [
+      "Never",
+      "ILLUSTRATION ONLY. Not a validated combustion simulation. Not NASA data."
+    ]
   },
   "documented_somewhere": [
     "FIXTURE DATA. NOT NASA DATA.",
@@ -43,7 +99,14 @@
     "Safety Insight"
   ],
   "script": {
-    "segments": ["0:00 to 0:30", "0:30 to 1:15", "1:15 to 2:15", "2:15 to 3:00", "3:00 to 3:40", "3:40 to 4:00"],
+    "segments": [
+      "0:00 to 0:30",
+      "0:30 to 1:15",
+      "1:15 to 2:15",
+      "2:15 to 3:00",
+      "3:00 to 3:40",
+      "3:40 to 4:00"
+    ],
     "max_words": 900
   }
 }

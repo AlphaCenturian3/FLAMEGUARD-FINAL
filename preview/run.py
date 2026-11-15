@@ -29,6 +29,7 @@ import tarfile
 import time
 import urllib.request
 import venv
+import webbrowser
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -53,14 +54,22 @@ def export(sha: str, paths: list[str], dest: Path) -> None:
         tar.extractall(dest, filter="data")
 
 
-def build(backend_sha: str, frontend_sha: str) -> Path:
-    dest = WORK / f"build-{backend_sha[:12]}-{frontend_sha[:12]}"
+GALLERY = REPO / "preview" / "gallery.html"  # the labelled image page served at /illustrations/
+
+
+def build(backend_sha: str, frontend_sha: str, illustrations_sha: str) -> Path:
+    dest = WORK / f"build-{backend_sha[:12]}-{frontend_sha[:12]}-{illustrations_sha[:12]}"
     if not (dest / ".complete").exists():
         dest.mkdir(parents=True, exist_ok=True)
         paths = ["backend", "contracts", "data", "tools", "pyproject.toml", "README.md"]
         export(backend_sha, paths, dest)
         export(frontend_sha, ["frontend"], dest)
-        (dest / ".complete").write_text(f"{backend_sha}\n{frontend_sha}\n", encoding="utf-8")
+        export(illustrations_sha, ["visualization/renders"], dest)
+        (dest / "visualization" / "renders" / "index.html").write_text(
+            GALLERY.read_text(encoding="utf-8"), encoding="utf-8"
+        )
+        marker = f"{backend_sha}\n{frontend_sha}\n{illustrations_sha}\n"
+        (dest / ".complete").write_text(marker, encoding="utf-8")
     return dest
 
 
@@ -81,7 +90,7 @@ def install(py: Path, tree: Path) -> None:
     stamp.write_text(str(tree), encoding="utf-8")
 
 
-def write_versions(py: Path, tree: Path, backend: str, frontend: str) -> None:
+def write_versions(py: Path, tree: Path, backend: str, frontend: str, images: str) -> None:
     """Record exactly what this preview runs, so a demo can be reproduced and audited."""
     freeze = subprocess.run(  # noqa: S603
         [str(py), "-m", "pip", "freeze", "--disable-pip-version-check"],
@@ -92,6 +101,7 @@ def write_versions(py: Path, tree: Path, backend: str, frontend: str) -> None:
     lines = [
         f"backend_commit {backend}",
         f"frontend_commit {frontend}",
+        f"illustrations_commit {images}",
         f"python {sys.version.split()[0]}",
         "--- installed packages ---",
         freeze.strip(),
@@ -119,6 +129,19 @@ def require_free_port(port: int) -> None:
             )
 
 
+def port_is_free(port: int) -> bool:
+    with socket.socket() as sock:
+        return sock.connect_ex(("127.0.0.1", port)) != 0
+
+
+def pick_port(start: int, tries: int = 10) -> int:
+    """The first free port from `start` upward (for double-click launchers that cannot ask)."""
+    for port in range(start, start + tries):
+        if port_is_free(port):
+            return port
+    raise SystemExit(f"No free port between {start} and {start + tries - 1}. Close old previews.")
+
+
 def wait_ready(url: str, seconds: float = 30) -> None:
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
@@ -144,28 +167,48 @@ def main() -> int:
         choices=sorted(SCENARIOS),
         help="serve SYNTHETIC evidence for manual inspection (never NASA data)",
     )
+    ap.add_argument(
+        "--auto-port",
+        action="store_true",
+        help="if --port is busy, use the next free port (used by the double-click launchers)",
+    )
+    ap.add_argument(
+        "--open",
+        action="store_true",
+        help="open the live address in the browser once the server is ready",
+    )
     ap.add_argument("--smoke", action="store_true", help="run smoke checks, then stop")
     args = ap.parse_args()
 
     if sys.version_info < (3, 11):  # noqa: UP036 (run.py may be started by an older python)
         raise SystemExit("Python 3.11+ is required")
     if not args.no_fetch:
-        subprocess.run(["git", "fetch", "--quiet", "origin"], cwd=REPO, check=True)  # noqa: S603, S607
+        fetched = subprocess.run(["git", "fetch", "--quiet", "origin"], cwd=REPO, check=False)  # noqa: S603, S607
+        if fetched.returncode != 0:  # e.g. no network at the venue: the pinned commits may be local
+            print("Could not reach GitHub; using the commits already on this computer.")
+    if args.auto_port:
+        chosen = pick_port(args.port)
+        if chosen != args.port:
+            print(f"Port {args.port} is busy (an older preview?); using {chosen} instead.")
+        args.port = chosen
     require_free_port(args.port)
     pin = "ref" if args.latest else "sha"
     backend_ref = args.backend_ref or PINS["backend"][pin]
     frontend_ref = args.frontend_ref or PINS["frontend"][pin]
-    b, f = resolve(backend_ref), resolve(frontend_ref)
-    tree = build(b, f)
+    illustrations_ref = PINS["illustrations"][pin]
+    b, f, i = resolve(backend_ref), resolve(frontend_ref), resolve(illustrations_ref)
+    tree = build(b, f, i)
     py = venv_python()
     install(py, tree)
     url = f"http://127.0.0.1:{args.port}/"
     print("FlameGuard-SI DEVELOPMENT PREVIEW (not production; unfinished endpoints return 501)")
     print(f"  backend  {backend_ref} @ {b[:12]}")
     print(f"  frontend {frontend_ref} @ {f[:12]}")
-    write_versions(py, tree, b, f)
+    print(f"  images   {illustrations_ref} @ {i[:12]}")
+    write_versions(py, tree, b, f, i)
     print(f"  live API mode : {url}")
     print(f"  fixture mode  : {url}?fixtures=1   (placeholder data, labelled not NASA data)")
+    print(f"  illustrations : {url}illustrations/   (Blender images, labelled not NASA data)")
     data_root = None
     if args.scenario:
         data_root = WORK / f"scenario-{args.scenario}"
@@ -178,6 +221,9 @@ def main() -> int:
         if args.smoke:
             smoke = [sys.executable, str(REPO / "preview" / "smoke.py"), url, str(tree), str(py)]
             return subprocess.run(smoke, check=False).returncode  # noqa: S603
+        if args.open:
+            webbrowser.open(url)
+        print(f"OPEN THIS ADDRESS: {url}   (fixture mode: {url}?fixtures=1)")
         print("Press Ctrl+C to stop.")
         return proc.wait()
     except KeyboardInterrupt:

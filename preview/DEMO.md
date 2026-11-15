@@ -24,7 +24,7 @@ Written for the project owner. This is a **development preview**: unfinished par
 | 3. Safeguards | In Evidence Explorer (fixture mode) open the excluded finding: "Excluded by FlameGuard-SI, value not shown", with the reason and the recorded source quote. | "When a source value conflicts with its own caption we exclude it, say why, and never display the number." |
 | 4. Guided tour | On the overview click **Start 90-second demo** (fixture mode). Five steps: Discover, Compare, Rank, Interpret, Safety Insight. | "Same flow a researcher would follow, on placeholder data." |
 | 5. Be careful with Rank | In fixture mode the Rank page shows a ranking with "Fixture · not NASA data" badges. | "That ranking is a fixture. No real ranking exists: the live backend returns 501 for rankings until approved evidence exists." |
-| 6. Illustrations (optional) | Show the four images in `visualization/renders/` (earth, mars, moon, microgravity; on the Blender branch, PR #20). | "Illustration only. Not a validated combustion simulation. Not NASA data." The words are inside each image; read them out. |
+| 6. Illustrations (optional) | Open `/illustrations/` (earth, mars, moon, microgravity; served from the Blender branch, PR #20). | "Illustration only. Not a validated combustion simulation. Not NASA data." The words are inside each image; read them out. |
 
 ## 4. Never say
 - "NASA data shows..." or any FLEX number: no FLEX finding is loaded or approved.
