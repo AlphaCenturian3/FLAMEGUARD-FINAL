@@ -16,6 +16,12 @@ $browsers = @(
 $browser = $browsers | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
 if (-not $browser) { Write-Error "Chrome or Edge not found."; exit 2 }
 
+# Refuse a port that already answers: a stale server (for example from another
+# checkout) would otherwise be tested instead of this tree, and its results reported.
+$busy = $false
+try { Invoke-WebRequest -UseBasicParsing "http://localhost:$Port/" -TimeoutSec 2 | Out-Null; $busy = $true } catch { if ($_.Exception.Response) { $busy = $true } }
+if ($busy) { Write-Error "Port $Port is already in use by another server; stop it or pass -Port <free port>."; exit 1 }
+
 $server = Start-Process powershell -PassThru -WindowStyle Hidden -ArgumentList @(
   "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Join-Path $PSScriptRoot "serve.ps1"), "-Port", $Port
 )
@@ -24,6 +30,7 @@ try {
   for ($i = 0; $i -lt 40; $i++) {
     try { Invoke-WebRequest -UseBasicParsing $url -TimeoutSec 2 | Out-Null; break } catch { Start-Sleep -Milliseconds 250 }
   }
+  if ($server.HasExited) { Write-Error "The test server did not start (exit $($server.ExitCode))."; exit 1 }
   $profileDir = Join-Path ([IO.Path]::GetTempPath()) "flameguard-test-profile"
   $dom = & $browser --headless=new --disable-gpu --no-first-run "--user-data-dir=$profileDir" --virtual-time-budget=60000 --dump-dom $url | Out-String
   $pre = [regex]::Match($dom, '<pre id="results">([\s\S]*?)</pre>').Groups[1].Value
