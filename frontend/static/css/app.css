@@ -402,6 +402,10 @@ html.demo-active { scroll-padding-bottom: 11rem; }
 .picker-list .check > span:not(.badge) { flex: 1 1 8rem; } /* keep the name beside its checkbox; only the badge wraps */
 /* 1.4.10 Reflow at 320 px: the health badge may shrink instead of pushing the theme button off-screen. */
 .health { min-width: 0; }
+/* Phones: a three-line badge made the top bar taller than the sidebar offset (53 px). */
+@media (max-width: 480px) { .health-detail { display: none; } }
+/* Overview stat cards: let the status badge wrap instead of overflowing its card. */
+.stat .badge { white-space: normal; max-width: 100%; }
 /* Visible, non-colour error state for form fields. */
 [aria-invalid="true"] { border-color: var(--err) !important; border-width: 2px; }
 .field-error { color: var(--err-text); font-weight: 600; margin: 0.3rem 0 0; }

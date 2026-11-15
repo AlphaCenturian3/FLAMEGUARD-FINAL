@@ -143,7 +143,9 @@ async function checkHealth() {
       h(
         "span",
         { class: `badge ${mismatch ? "err" : source.kind === "fixtures" ? "fixture" : "ok"}`, title: source.description },
-        `${source.kind === "fixtures" ? "Fixtures" : "API"} · contract ${res.contract_version}`,
+        source.kind === "fixtures" ? "Fixtures" : "API",
+        // Hidden below 480 px (the version is also in the sidebar footer and on the Overview).
+        h("span", { class: "health-detail" }, ` · contract ${res.contract_version}`),
       ),
     );
     if (mismatch) addAlert(mismatch, "error");
