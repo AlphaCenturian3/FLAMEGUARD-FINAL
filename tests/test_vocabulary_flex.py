@@ -101,3 +101,27 @@ def test_readme_blocks_flex_findings_and_comparison_until_structured_outcome():
     )
     assert "exists only for Extinction tests" not in readme
     assert "test_id" not in json.dumps(VOCAB) and "test_outcome" not in json.dumps(VOCAB)
+
+
+def test_burning_rate_constant_wording_fixes_sign_and_states_it_is_an_average():
+    """Member 5's correction 1 (PR #12 review): K is non-negative and an average fit."""
+    desc = Q["burning_rate_constant"]["description"]
+    assert "slope of D^2 versus t)" not in desc, "the contradictory parenthesis must stay gone"
+    assert "K = -d(D^2)/dt" in desc and "non-negative" in desc
+    assert "average K from a linear fit" in desc
+    assert (
+        "Not a flame spread rate" in desc and "never interchangeable with flame_spread_rate" in desc
+    )
+
+
+def test_extinction_diameter_wording_flags_extrapolation_and_absence():
+    """Member 5's correction 2 (PR #12 review), in both directions."""
+    desc = Q["visible_flame_extinction_diameter"]["description"]
+    assert "may be a source estimate rather than a direct observation" in desc
+    assert "extrapolated the burning history" in desc
+    assert "does not mark which values were extrapolated" in desc
+    assert "an absent value does not imply that extinction did not occur" in desc
+    assert "FLEX-010 is printed as Extinction with a dash" in desc
+    assert (
+        "does not imply the test's recorded outcome" in desc and "ended in extinction" not in desc
+    )
