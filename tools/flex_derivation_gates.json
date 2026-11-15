@@ -1,0 +1,185 @@
+{
+  "_note": "Owner-maintained. `registrable` in STAGING_REPORT.json is true only when every gate is closed and every condition decision is approved. Closing a gate means its owners approved it in the named PR; nothing here is closed by this file's author.",
+  "gates": [
+    {
+      "id": "PR12",
+      "what": "D5 vocabulary quantities merged, with Member 5's description corrections applied (burning_rate_constant, visible_flame_extinction_diameter, burn_time)",
+      "owners": [
+        "Member 3",
+        "Member 5",
+        "Member 1",
+        "Member 2"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "PR17",
+      "what": "Contract v0.2.2 test identity and outcome (S11) approved and merged",
+      "owners": [
+        "Member 2",
+        "Member 3",
+        "Member 5"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "S10-REGISTRATION",
+      "what": "S10 source-registration decision (PR #13 options A-D) implemented, so every note passage is a registered Source; today 14 of 17 passages are not exactly registered",
+      "owners": [
+        "Member 1",
+        "Member 3",
+        "Member 5"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "S10-TITLES",
+      "what": "Source titles for the two section-text passages (printed p. 16 and p. 17) supplied by a person; they have no figure caption to derive a title from",
+      "owners": [
+        "Member 3",
+        "Member 5"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "G7",
+      "what": "Conditions representation approved: diluent format, fuel_or_material normalisation, sample_geometry label",
+      "owners": [
+        "Member 1",
+        "Member 2"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "Q3",
+      "what": "Member 5 independent scientific review of the staged Findings and quote audit against the PDF",
+      "owners": [
+        "Member 5"
+      ],
+      "status": "open"
+    },
+    {
+      "id": "B1-S11",
+      "what": "B1 loader enforces S11 (test identity all-or-nothing) after PR #11 merges",
+      "owners": [
+        "Member 1"
+      ],
+      "status": "open"
+    }
+  ],
+  "conditions": {
+    "diluent": {
+      "status": "unapproved",
+      "use": "proposed",
+      "proposal": "non-zero gases from the printed fractions, alphabetical by symbol, fractions as printed: e.g. 'N2 0.79' or 'CO2 0.7; N2 0.09'"
+    },
+    "fuel_or_material": {
+      "status": "unapproved",
+      "use": "as_printed",
+      "proposal": "the printed fuel word ('Methanol', 'Heptane'); not rewritten to 'n-heptane'"
+    },
+    "sample_geometry": {
+      "status": "unapproved",
+      "use": "null",
+      "proposal": "null until an owner approves a source-grounded label for a free-floating droplet"
+    }
+  },
+  "proposed_note_sources": {
+    "29|The droplet probably disrupted at the end of the test coincident with flame extinction.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "29",
+      "quote": "The droplet probably disrupted at the end of the test coincident with flame extinction.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "29|so the droplet diameter could not be measured accurately.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "29",
+      "quote": "so the droplet diameter could not be measured accurately.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "30|Because this was a calibration run": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 6 caption (Test FLEX-002)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "30",
+      "quote": "Because this was a calibration run",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "31|Because this was a calibration run": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 7 caption (Test FLEX-003)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "31",
+      "quote": "Because this was a calibration run",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "32|This was a calibration test point.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "32",
+      "quote": "This was a calibration test point.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "33|Because this was a calibration run": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 9 caption (Test FLEX-005)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "33",
+      "quote": "Because this was a calibration run",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "34|The droplet drifted out of the High-Bit-Depth Multispectral (HiBMs) field of view (FOV) and then drifted back in the FOV.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "34",
+      "quote": "The droplet drifted out of the High-Bit-Depth Multispectral (HiBMs) field of view (FOV) and then drifted back in the FOV.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "34|This was a calibration test.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "34",
+      "quote": "This was a calibration test.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "35|The last part of the droplet history was obscured by the luminous flame.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 11 caption (Test FLEX-007)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "35",
+      "quote": "The last part of the droplet history was obscured by the luminous flame.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "36|There is a lot of noise in the droplet diameter data because of the soot": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 12 caption (Test FLEX-008)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "36",
+      "quote": "There is a lot of noise in the droplet diameter data because of the soot",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "38|The HiBMs produced a saturated image that influenced the droplet size measurement.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "38",
+      "quote": "The HiBMs produced a saturated image that influenced the droplet size measurement.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    },
+    "38|quickly moved west out of the fields of view (FOVs) of the High-Bit-Depth Multispectral (HiBMs), Low Light Level Ultra-Violet (LLUV), and color camera.": {
+      "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+      "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+      "page": "38",
+      "quote": "quickly moved west out of the fields of view (FOVs) of the High-Bit-Depth Multispectral (HiBMs), Low Light Level Ultra-Violet (LLUV), and color camera.",
+      "retrieved": "2026-11-14",
+      "archive_id": "NTRS 20150023456"
+    }
+  }
+}
