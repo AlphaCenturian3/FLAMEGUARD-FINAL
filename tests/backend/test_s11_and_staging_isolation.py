@@ -195,6 +195,8 @@ def registered_ids(kind):
     ids = set()
     for entry in manifest["datasets"]:
         path = entry["path"]
+        if not path.endswith(".json"):
+            continue  # registered source and quality files are not Finding JSON
         is_inv = path == "data/curated/investigations.json"
         is_finding = path.startswith(("data/curated/findings/", "data/curated/interpretations/"))
         if (kind == "investigations" and is_inv) or (kind == "findings" and is_finding):
