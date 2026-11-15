@@ -52,6 +52,7 @@ FINDINGS_ID = "nasa-tp-2015-216046.flex.findings"  # proposed manifest id; not r
 INVESTIGATIONS_ID = "nasa-tp-2015-216046.flex.investigations"
 INVESTIGATION_ID = "flex"
 GATES_PATH = ROOT / "tools" / "flex_derivation_gates.json"
+CURATED_NOTES_PATH = ROOT / "tools" / "flex_curated_notes.json"
 OUTCOMES_PATH = ROOT / "contracts" / "outcomes.json"
 VOCABULARY_PATH = ROOT / "contracts" / "vocabulary.json"
 
@@ -97,6 +98,10 @@ EXPECTED_TESTS = [f"FLEX-{n:03d}" for n in range(1, 11)]
 OUTCOME_FIELD = "test_end"
 METADATA_FIELDS = {"test_time_gmt"}
 GAS_ORDER = [("CO2", "co2_mole_fraction"), ("He", "he_mole_fraction"), ("N2", "n2_mole_fraction")]
+# Printed mole fractions carry two decimals, so four of them can differ from 1 by at most 0.02.
+COMPOSITION_TOLERANCE = Decimal("0.02")
+# A number as written in prose, with an attached unit allowed (same rule as the S9 test oracle).
+_PROSE_NUMBER = re.compile(r"(?<![\w.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?!\d|\.\d)")
 
 
 class DerivationError(ValueError):
@@ -205,6 +210,21 @@ def registrable(gates: dict) -> bool:
 # --- conditions --------------------------------------------------------------------------------
 
 
+def check_composition(row: dict[str, str]) -> None:
+    """The printed fractions must be in [0, 1] and add up to 1 within two-decimal rounding."""
+    t = row["flex_test"]
+    columns = ["o2_mole_fraction"] + [c for _, c in GAS_ORDER]
+    total = Decimal(0)
+    for column in columns:
+        number(row[column], f"{t}.{column}")
+        d = Decimal(row[column])
+        if not Decimal(0) <= d <= Decimal(1):
+            raise DerivationError(f"{t}.{column}: mole fraction {row[column]!r} is outside 0..1")
+        total += d
+    if abs(total - 1) > COMPOSITION_TOLERANCE:
+        raise DerivationError(f"{t}: printed mole fractions add up to {total}, not 1")
+
+
 def diluent_text(row: dict[str, str]) -> str | None:
     """Proposed (G7, unapproved) format: non-zero gases from the printed fractions, as printed."""
     parts = []
@@ -223,6 +243,9 @@ def conditions(row: dict[str, str], gates: dict) -> dict:
             "gates file must decide exactly diluent, fuel_or_material, sample_geometry"
         )
     fuel = row["fuel"].strip()
+    if not fuel:
+        raise DerivationError(f"{t}: the printed fuel name is missing")
+    check_composition(row)
     return {
         "gravity_environment": "microgravity",  # ISS experiment; not partial gravity
         "oxygen_mole_fraction": number(row["o2_mole_fraction"], f"{t}.o2_mole_fraction"),
@@ -276,10 +299,37 @@ def note_source(flag: dict, sources: list[dict], proposals: dict) -> tuple[dict 
     return None, "unavailable"
 
 
-def make_note(flag: dict, source: dict, kinds: dict[str, str]) -> dict:
+def load_curated_notes(path: Path = CURATED_NOTES_PATH) -> dict[str, dict]:
+    return json.loads(path.read_text(encoding="utf-8")).get("notes", {})
+
+
+def note_text(flag: dict, curated: dict[str, dict]) -> str:
+    """The audited reason, or its reviewed number-free replacement (traceable by flag_ref)."""
+    override = curated.get(flag["flag_id"])
+    if override is None:
+        return flag["reason"]
+    audited = hashlib.sha256(flag["reason"].encode("utf-8")).hexdigest()
+    if audited != override["original_reason_sha256"]:
+        raise DerivationError(
+            f"{flag['flag_id']}: the audited reason changed; the curated note must be re-reviewed"
+        )
+    return override["note"]
+
+
+def numbers_in(text: str) -> set[Decimal]:
+    out = set()
+    for token in _PROSE_NUMBER.findall(text):
+        try:
+            out.add(Decimal(token))
+        except InvalidOperation:
+            continue
+    return out
+
+
+def make_note(flag: dict, source: dict, kinds: dict[str, str], curated: dict[str, dict]) -> dict:
     return {
         "kind": kinds[flag["ranking_use"]],
-        "note": flag["reason"],
+        "note": note_text(flag, curated),
         "generated_by": "FlameGuard-SI",
         "flag_ref": {"manifest_id": FLAGS_ID, "flag_id": flag["flag_id"]},
         "source": source,
@@ -320,6 +370,7 @@ def derive(root: Path = ROOT) -> dict:
     if len(numeric_sources) != 1:
         raise DerivationError("expected exactly one numeric (Table IX) source")
 
+    curated = load_curated_notes(root / "tools" / "flex_curated_notes.json")
     kinds = s10.note_kinds(root / "contracts" / "schemas" / "common.schema.json")
     passages = s10.passages(flags, kinds)
     status_by_key = s10.coverage(passages, sources)
@@ -379,7 +430,11 @@ def derive(root: Path = ROOT) -> dict:
                     missing.append(f["flag_id"])
                     continue
                 note_status[st] += 1
-                notes.append(make_note(f, src, kinds))
+                notes.append(make_note(f, src, kinds, curated))
+                if value_status == "excluded" and Decimal(cell) in numbers_in(notes[-1]["note"]):
+                    raise DerivationError(
+                        f"{test}.{field}: a note of an excluded Finding states the excluded value"
+                    )
             fid = f"{INVESTIGATION_ID}.{test.lower()}.{quantity}"
             if missing:
                 withheld.append(
@@ -405,7 +460,8 @@ def derive(root: Path = ROOT) -> dict:
                     "manifest_id": FINDINGS_ID,
                     "locator": (
                         f"NASA/TP-2015-216046, Table IX, printed p. 20 (PDF p. 26), {test}, "
-                        f"field {field}, CSV line {line}"
+                        f"field {field}, CSV line {line}; ambient pressure as printed: "
+                        f"{row['ambient_pressure_mmhg']} mmHg"
                     ),
                     "sources": [dict(numeric_sources[0])],
                 },
@@ -438,6 +494,14 @@ def derive(root: Path = ROOT) -> dict:
         "investigation": investigation,
         "findings": findings,
         "withheld": withheld,
+        "curated_notes_applied": [
+            {
+                "flag_id": fid,
+                "original_reason_sha256": c["original_reason_sha256"],
+                "curated_note_sha256": hashlib.sha256(c["note"].encode("utf-8")).hexdigest(),
+            }
+            for fid, c in sorted(curated.items())
+        ],
         "note_sources": {
             "registered": note_status["registered"],
             "proposed_unregistered": note_status["proposed_unregistered"],
@@ -513,6 +577,7 @@ def stage(out_dir: Path, root: Path = ROOT) -> dict:
             "by_value_status": count_status(result["findings"]),
         },
         "withheld": result["withheld"],
+        "curated_notes_applied": result["curated_notes_applied"],
         "note_sources": result["note_sources"],
         "inputs_sha256": result["inputs"],
         "outputs_sha256": {

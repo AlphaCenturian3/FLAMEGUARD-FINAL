@@ -60,6 +60,7 @@ def make_root(tmp_path: Path, *, csv_text=None, flags_text=None, gates=None, out
         "contracts/outcomes.json",
         "contracts/vocabulary.json",
         "tools/flex_derivation_gates.json",
+        "tools/flex_curated_notes.json",
     ):
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / rel, root / rel)
@@ -84,22 +85,31 @@ def real_gates():
 
 
 def complete_gates():
-    """SYNTHETIC titles for the two section-text passages, only so a complete run can be counted."""
-    gates = real_gates()
+    return real_gates()
+
+
+def drop_note_sources(root: Path) -> None:
+    """Keep only the Table IX numeric Source (as if S10 registration had not happened)."""
+    path = root / "data/manifest.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    entry = manifest["datasets"][0]
+    entry["sources"] = [x for x in entry["sources"] if str(x["page"]) == "20"]
+    write_json(path, manifest)
+
+
+def synthetic_proposals():
+    """SYNTHETIC unregistered Sources for every passage, only to exercise the proposal path."""
+    out = {}
     for p in s10.passages(s10.load_flags()):
-        if (
-            p.page in (16, 17)
-            and s10.coverage([p], s10.load_measured_sources())[p.key] == "page_only"
-        ):
-            gates["proposed_note_sources"][f"{p.page}|{s10.normalize_text(p.quote)}"] = {
-                "title": "SYNTHETIC TITLE (test only)",
-                "url": s10.REPORT_URL,
-                "page": str(p.page),
-                "quote": p.quote,
-                "retrieved": "2026-11-14",
-                "archive_id": s10.ARCHIVE_ID,
-            }
-    return gates
+        out[f"{p.page}|{s10.normalize_text(p.quote)}"] = {
+            "title": "SYNTHETIC TITLE (test only)",
+            "url": s10.REPORT_URL,
+            "page": str(p.page),
+            "quote": p.quote,
+            "retrieved": "2026-11-14",
+            "archive_id": s10.ARCHIVE_ID,
+        }
+    return out
 
 
 def csv_rows_text():
@@ -116,8 +126,8 @@ def real():
 
 
 @pytest.fixture(scope="module")
-def complete(tmp_path_factory):
-    return dv.derive(make_root(tmp_path_factory.mktemp("complete"), gates=complete_gates()))
+def complete(real):
+    return real
 
 
 @pytest.fixture(scope="module")
@@ -139,39 +149,40 @@ def by_id(findings):
 # ---------------------------------------------------------------------------------------------
 
 
-def test_the_real_run_stages_22_and_withholds_18_because_two_titles_need_a_person(real):
-    assert len(real["findings"]) == 22
-    assert len(real["withheld"]) == 18
-    assert {w["reason"] for w in real["withheld"]} == {
-        "a required note has no verifiable source passage"
-    }
-    assert sorted(p["page"] for p in real["note_sources"]["unproposable"]) == [16, 17]
-    staged = {f["id"] for f in real["findings"]}
-    assert not staged & {w["id"] for w in real["withheld"]}, (
-        "no Finding is both emitted and withheld"
-    )
-    assert len(staged) + len(real["withheld"]) == 40
+def test_the_real_run_stages_all_40_findings_and_withholds_none(real):
+    assert len(real["findings"]) == 40 and real["withheld"] == []
+    assert real["note_sources"]["unproposable"] == []
+    assert len({f["id"] for f in real["findings"]}) == 40
 
 
-def test_a_withheld_finding_is_never_emitted_without_the_note_it_needs(real):
-    flags_by_id = {f["flag_id"]: f for f in s10.load_flags()}
-    for w in real["withheld"]:
-        assert w["flags"], "a withheld Finding names the flags that block it"
-        for fid in w["flags"]:
-            page = int(flags_by_id[fid]["source_printed_page"])
-            assert page in (16, 17)
+def test_without_registered_note_sources_findings_are_withheld_never_weakened(tmp_path):
+    """Fail closed: a Finding whose caution has no registered passage is withheld."""
+    root = make_root(tmp_path)
+    drop_note_sources(root)
+    result = dv.derive(root)
+    assert result["findings"] == [] and len(result["withheld"]) == 40
+    assert all(w["flags"] and w["reason"].startswith("a required note") for w in result["withheld"])
+    assert result["note_sources"]["registered"] == 0
+    assert result["note_sources"]["proposed_unregistered"] == 0
 
 
 def test_nothing_is_registrable_today(real):
     assert dv.registrable(real["gates"]) is False
-    assert {g["status"] for g in real["gates"]["gates"]} == {"open"}
-    assert {c["status"] for c in real["gates"]["conditions"].values()} == {"unapproved"}
+    by_status = {g["id"]: g["status"] for g in real["gates"]["gates"]}
+    assert by_status["S10-TITLES"] == "closed" and by_status["PR12"] == "open"
+    open_ids = {k for k, v in by_status.items() if v == "open"}
+    assert {"PR12", "PR17", "S10-REGISTRATION", "G7", "Q3", "B1-S11", "F042-NOTE"} <= open_ids
+    decisions = real["gates"]["conditions"]
+    assert {c["status"] for c in decisions.values()} == {"owner_provisional"}
+    assert all(
+        "not an independent scientific approval" in c["decided_by"] for c in decisions.values()
+    )
 
 
-def test_every_note_source_is_registered_or_a_labelled_proposal(real):
+def test_every_note_source_is_registered_after_s10_registration(real):
     counts = real["note_sources"]
-    assert counts["registered"] > 0 and counts["proposed_unregistered"] > 0
-    assert len(counts["proposed"]) == 12
+    assert counts["registered"] == 96 and counts["proposed_unregistered"] == 0
+    assert counts["proposed"] == [] and counts["unproposable"] == []
 
 
 # ---------------------------------------------------------------------------------------------
@@ -277,42 +288,11 @@ def test_flex_001_keeps_its_printed_disruption_and_its_extinction_diameter(compl
 
 
 PRINTED_VALUE = re.compile(r"(?<![\d.])0?\.37(?!\d)")
-
-
-def test_flex_010_burning_rate_is_excluded_and_the_derivation_never_states_its_number(
-    complete, tmp_path
-):
-    f = by_id(complete["findings"])["flex.flex-010.burning_rate_constant"]
-    assert f["value"] is None and f["value_status"] == "excluded"
-    kinds = {n["flag_ref"]["flag_id"]: n["kind"] for n in f["curation_notes"]}
-    assert kinds["F042"] == "exclusion" and kinds["F041"] == "caution"
-    # everything the derivation itself writes, except the curator's note text (see the xfail below)
-    root = make_root(tmp_path, gates=complete_gates())
-    dv.stage(tmp_path / "out", root)
-    own = {k: v for k, v in f.items() if k != "curation_notes"}
-    assert not PRINTED_VALUE.search(json.dumps(own)), "the excluded value leaked into the Finding"
-    assert not PRINTED_VALUE.search(
-        json.dumps([n for n in f["curation_notes"] if n["flag_ref"]["flag_id"] != "F042"])
-    )
-    report = (tmp_path / "out" / "STAGING_REPORT.json").read_text(encoding="utf-8")
-    assert not PRINTED_VALUE.search(report)
-    others = [x for x in complete["findings"] if x["id"] != f["id"]]
-    assert not PRINTED_VALUE.search(json.dumps(others)), "no other Finding states it either"
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "KNOWN CONFLICT, needs a decision: the reviewed F042 flag reason itself prints '.37'. The "
-        "exclusion note copies the reason (S10), S9 then requires dependents and TARS answers to "
-        "quote the exact exclusion note, and S9 also forbids stating the excluded value. The flags "
-        "file is Member 3's; this derivation does not rewrite it."
-    ),
+CURATED_F042 = (
+    "Table IX reports a burning-rate constant for FLEX-010, but Figure 14 states that no "
+    "burning-rate constant is reported. The disputed measurement is excluded from quantitative "
+    "use pending reconciliation with PSI data."
 )
-def test_the_exclusion_note_text_does_not_state_the_excluded_value(complete):
-    f = by_id(complete["findings"])["flex.flex-010.burning_rate_constant"]
-    note = next(n for n in f["curation_notes"] if n["flag_ref"]["flag_id"] == "F042")
-    assert not PRINTED_VALUE.search(note["note"])
 
 
 def test_flex_010_diameter_and_burn_time_keep_their_values_with_separate_cautions(complete):
@@ -359,6 +339,7 @@ def test_dashes_become_not_reported_and_never_a_note(complete, flags):
 
 def test_notes_resolve_to_their_flag_with_matching_kind_page_and_quote(complete, flags):
     by_flag = {fl["flag_id"]: fl for fl in flags}
+    curated = dv.load_curated_notes()
     kinds = {"caution": "caution", "exclude": "exclusion"}
     for f in complete["findings"]:
         for n in f.get("curation_notes", []):
@@ -366,28 +347,24 @@ def test_notes_resolve_to_their_flag_with_matching_kind_page_and_quote(complete,
             assert n["flag_ref"]["manifest_id"] == dv.FLAGS_ID
             assert fl["flex_test"] == f["test_id"]
             assert n["kind"] == kinds[fl["ranking_use"]] and n["generated_by"] == "FlameGuard-SI"
-            assert n["note"] == fl["reason"]
-            assert (
-                n["source"]["quote"] == fl["source_quote"]
-                and str(n["source"]["page"]) == fl["source_printed_page"]
-            )
+            expected = curated[fl["flag_id"]]["note"] if fl["flag_id"] in curated else fl["reason"]
+            assert n["note"] == expected
+            assert n["source"]["quote"] == fl["source_quote"]
+            assert str(n["source"]["page"]) == fl["source_printed_page"]
 
 
-def test_every_note_quote_is_on_a_known_page_and_proposed_sources_come_only_from_the_gates_file(
-    real,
-):
-    gate_quotes = {(s["page"], s["quote"]) for s in real["gates"]["proposed_note_sources"].values()}
-    registered = {(str(s["page"]), s.get("quote")) for s in s10.load_measured_sources()}
+def test_every_note_rests_on_a_registered_source_with_its_own_quote(real):
+    registered = s10.load_measured_sources()
     for f in real["findings"]:
         for n in f.get("curation_notes", []):
             src = n["source"]
-            ok = (str(src["page"]), src["quote"]) in gate_quotes or any(
-                p == str(src["page"])
-                and q
-                and s10.normalize_text(src["quote"]) in s10.normalize_text(q)
-                for p, q in registered
-            )
-            assert ok, f"{f['id']}: {n['flag_ref']['flag_id']} rests on an unknown source"
+            assert any(
+                str(r["page"]) == str(src["page"])
+                and r.get("quote")
+                and s10.normalize_text(src["quote"]) in s10.normalize_text(r["quote"])
+                and r["title"] == src["title"]
+                for r in registered
+            ), f"{f['id']}: {n['flag_ref']['flag_id']} rests on an unregistered source"
 
 
 def test_numeric_provenance_and_caution_sources_are_never_mixed(real):
@@ -519,25 +496,29 @@ def test_registrable_needs_every_gate_closed_and_every_decision_approved():
 
 
 def test_closed_gates_alone_do_not_make_proposed_sources_registered(tmp_path):
-    gates = complete_gates()
+    gates = real_gates()
+    gates["proposed_note_sources"] = synthetic_proposals()
     for g in gates["gates"]:
         g["status"] = "closed"
     for c in gates["conditions"].values():
         c["status"] = "approved"
-    report = dv.stage(tmp_path / "out", make_root(tmp_path, gates=gates))
+    root = make_root(tmp_path, gates=gates)
+    drop_note_sources(root)
+    report = dv.stage(tmp_path / "out", root)
     assert report["note_sources"]["proposed_unregistered"] > 0
     assert report["registrable"] is False, "unregistered note sources still block registration"
+    clean = dv.stage(tmp_path / "clean", make_root(tmp_path / "c", gates=gates))
+    assert clean["registrable"] is True, "all closed, approved, registered: the only way to True"
 
 
-def test_removing_the_proposed_sources_withholds_more_never_invents(tmp_path):
-    gates = real_gates()
-    gates["proposed_note_sources"] = {}
-    result = dv.derive(make_root(tmp_path, gates=gates))
-    assert len(result["findings"]) < 22 and len(result["findings"]) + len(result["withheld"]) == 40
+def test_a_note_never_takes_an_unknown_source_title(tmp_path):
+    root = make_root(tmp_path)
+    drop_note_sources(root)
+    result = dv.derive(root)
     for f in result["findings"]:
         for n in f.get("curation_notes", []):
-            assert n["source"]["title"] != "" and n["source"]["page"]
-            assert not n["source"]["title"].startswith("SYNTHETIC")
+            assert n["source"]["title"] and not n["source"]["title"].startswith("SYNTHETIC")
+    assert not result["findings"]
 
 
 # ---------------------------------------------------------------------------------------------
@@ -717,26 +698,272 @@ def test_the_command_line_refuses_and_exits_nonzero_inside_data(capsys):
 
 
 # ---------------------------------------------------------------------------------------------
-# The proposed sources match the PDF (local only)
+# Decision 1: the number-free curated F042 exclusion note (S9)
+# ---------------------------------------------------------------------------------------------
+
+ex = _load("exclusion_oracle", "tests/test_exclusion_dependency.py")
+FLEX10 = "flex.flex-010.burning_rate_constant"
+PRINTED_VALUES = {FLEX10: "0.37"}
+
+
+def f042(findings):
+    f = by_id(findings)[FLEX10]
+    return f, next(n for n in f["curation_notes"] if n["flag_ref"]["flag_id"] == "F042")
+
+
+def explanation(note: str, fid="flex.explain-flex-010", parents=None):
+    doc = copy.deepcopy(ex.INTERP)
+    doc.update(id=fid, investigation_id="flex", statement="SYNTHETIC explanation of an exclusion.")
+    doc["provenance"] = {**doc["provenance"], "derived_from": parents or [FLEX10]}
+    doc.pop("relevant_environments", None)
+    doc.update(quantity=None, value=None, unit=None, value_status="not_applicable")
+    doc["limitations"] = [f"Explains why a value was excluded: {note}"]
+    return doc
+
+
+def test_the_original_printed_value_stays_in_the_raw_source_and_the_audited_flag(rows, flags):
+    assert rows["FLEX-010"]["burning_rate_constant_mm2_per_s"] == "0.37"
+    f42_row = next(f for f in flags if f["flag_id"] == "F042")
+    assert ".37" in f42_row["reason"], "the audited reason is untouched"
+    manifest = json.loads((ROOT / "data/manifest.json").read_text(encoding="utf-8"))
+    for entry in manifest["datasets"]:
+        assert hashlib.sha256((ROOT / entry["path"]).read_bytes()).hexdigest() == entry["sha256"]
+    # the derivation accepts these registered bytes, so it read them unchanged
+    assert dv.derive(ROOT)["inputs"][dv.CSV_ID] == manifest["datasets"][0]["sha256"]
+
+
+def test_the_derived_finding_is_excluded_with_a_null_value(complete):
+    f, _ = f042(complete["findings"])
+    assert f["value"] is None and f["value_status"] == "excluded"
+    assert "0.37" not in json.dumps({k: v for k, v in f.items() if k != "curation_notes"})
+
+
+def test_the_curated_note_is_exactly_the_reviewed_text_and_number_free(complete):
+    _, note = f042(complete["findings"])
+    assert note["kind"] == "exclusion" and note["note"] == CURATED_F042
+    assert Decimal("0.37") not in dv.numbers_in(note["note"])
+    assert not PRINTED_VALUE.search(note["note"])
+    assert dv.load_curated_notes()["F042"]["note"] == CURATED_F042
+
+
+def test_nothing_the_derivation_writes_states_the_excluded_number(complete, tmp_path):
+    dv.stage(tmp_path / "out", make_root(tmp_path))
+    text = "".join(
+        p.read_text(encoding="utf-8") for p in (tmp_path / "out").rglob("*") if p.is_file()
+    )
+    assert not PRINTED_VALUE.search(text), (
+        "the excluded printed value leaked into the staging output"
+    )
+    assert not PRINTED_VALUE.search(json.dumps(complete["findings"]))
+
+
+def test_the_curated_note_stays_traceable_to_f042_its_audited_reason_and_its_quotation(
+    complete, flags, tmp_path
+):
+    _, note = f042(complete["findings"])
+    f042_row = next(f for f in flags if f["flag_id"] == "F042")
+    assert note["flag_ref"] == {"manifest_id": dv.FLAGS_ID, "flag_id": "F042"}
+    assert note["source"]["quote"] == f042_row["source_quote"]
+    assert str(note["source"]["page"]) == f042_row["source_printed_page"] == "38"
+    entry = dv.load_curated_notes()["F042"]
+    assert entry["original_reason"] == f042_row["reason"]
+    assert (
+        entry["original_reason_sha256"] == hashlib.sha256(f042_row["reason"].encode()).hexdigest()
+    )
+    report = dv.stage(tmp_path / "out", make_root(tmp_path))
+    applied = report["curated_notes_applied"]
+    assert [a["flag_id"] for a in applied] == ["F042"]
+    assert applied[0]["original_reason_sha256"] == entry["original_reason_sha256"]
+    assert applied[0]["curated_note_sha256"] == hashlib.sha256(CURATED_F042.encode()).hexdigest()
+
+
+def test_a_changed_audited_reason_makes_the_curated_note_stale_and_is_refused(tmp_path):
+    text = flags_text().replace("Table IX prints .37 but", "Table IX prints .38 but")
+    assert text != flags_text()
+    with pytest.raises(dv.DerivationError, match="audited reason changed"):
+        dv.derive(make_root(tmp_path, flags_text=text))
+
+
+def test_without_a_curated_note_an_exclusion_that_states_the_value_is_refused(tmp_path):
+    root = make_root(tmp_path)
+    write_json(root / "tools/flex_curated_notes.json", {"notes": {}})
+    with pytest.raises(dv.DerivationError, match="states the excluded value"):
+        dv.derive(root)
+
+
+def test_interpretations_and_answers_can_quote_the_exact_curated_note_under_s9(complete):
+    finding, note = f042(complete["findings"])
+    interp = explanation(note["note"])
+    chain = [finding, interp, explanation(note["note"], "flex.explain-2", [interp["id"]])]
+    answer = ex._answer(f"The value was excluded. {note['note']}", [], [interp["id"]])
+    assert ex.exclusion_violations(chain, answer=answer, printed_values=PRINTED_VALUES) == []
+
+
+def test_s9_still_catches_the_original_reason_or_the_number_in_downstream_text(complete):
+    finding, note = f042(complete["findings"])
+    original = dv.load_curated_notes()["F042"]["original_reason"]
+    bad = explanation(note["note"])
+    bad["limitations"].append(original)  # the audited reason states .37
+    assert any(
+        "states printed value" in v
+        for v in ex.exclusion_violations([finding, bad], printed_values=PRINTED_VALUES)
+    )
+    interp = explanation(note["note"])
+    answer = ex._answer(f"{note['note']} It was 0.37.", [], [interp["id"]])
+    violations = ex.exclusion_violations(
+        [finding, interp], answer=answer, printed_values=PRINTED_VALUES
+    )
+    assert any("states printed value" in v for v in violations)
+
+
+def test_an_interpretation_must_still_quote_the_exact_curated_note(complete):
+    finding, _ = f042(complete["findings"])
+    vague = explanation("An excluded value.")
+    assert any(
+        "do not quote the exclusion note" in v
+        for v in ex.exclusion_violations([finding, vague], printed_values=PRINTED_VALUES)
+    )
+
+
+def test_no_ranking_comparison_or_answer_may_use_the_excluded_measurement(complete):
+    finding, note = f042(complete["findings"])
+    ranking = copy.deepcopy(ex._load("ranking.example.json"))
+    ranking["items"][0]["criterion_scores"][0]["inputs"] = [
+        {"finding_id": FLEX10, "evidence_class": "measured"}
+    ]
+    assert any(
+        "ranking input" in v
+        for v in ex.exclusion_violations([finding], ranking=ranking, printed_values=PRINTED_VALUES)
+    )
+    comparison = copy.deepcopy(ex._load("comparison.example.json"))
+    comparison["comparable"] = True
+    comparison["rows"][0]["finding_id"] = FLEX10
+    assert any(
+        "comparable row" in v
+        for v in ex.exclusion_violations(
+            [finding], comparison=comparison, printed_values=PRINTED_VALUES
+        )
+    )
+    answer = ex._answer("FLEX-010 shows a clear burning rate.", [], [FLEX10])
+    answer["citations"][0]["evidence_class"] = "measured"
+    assert any(
+        "does not give its exclusion reason" in v
+        for v in ex.exclusion_violations([finding], answer=answer, printed_values=PRINTED_VALUES)
+    )
+
+
+def test_the_derivation_produces_no_ranking_comparison_or_answer_documents(tmp_path):
+    dv.stage(tmp_path / "out", make_root(tmp_path))
+    names = sorted(
+        str(p.relative_to(tmp_path / "out")) for p in (tmp_path / "out").rglob("*") if p.is_file()
+    )
+    assert names == [
+        "NOT_REGISTERED.txt",
+        "STAGING_REPORT.json",
+        "findings/flex.json",
+        "investigations.json",
+    ]
+
+
+# ---------------------------------------------------------------------------------------------
+# Decision 3: provisional G7 representation (project-owner decision, not scientific approval)
 # ---------------------------------------------------------------------------------------------
 
 
-def test_pdf_the_gates_file_proposals_are_exactly_what_the_pdf_supports():
-    if not s10.DEFAULT_PDF.is_file():
-        pytest.skip("NOT VERIFIED: data/raw/NASA-TP-2015-216046_FLEX.pdf is not present")
-    pymupdf = pytest.importorskip("pymupdf", reason="NOT VERIFIED: PyMuPDF is not installed")
-    doc = pymupdf.open(s10.DEFAULT_PDF)
+def row_with(rows, **changes):
+    row = dict(rows["FLEX-001"])
+    row.update(changes)
+    return row
 
-    def page_text(printed):
-        return doc[printed + s10.PRINTED_TO_PDF_PAGE_OFFSET - 1].get_text()
 
-    found = s10.passages(s10.load_flags())
-    sources = s10.load_measured_sources()
-    props, _ = s10.propose_sources(
-        found, s10.coverage(found, sources), page_text, s10._numeric_retrieved(sources)
+def test_diluent_is_the_printed_nonzero_fractions_with_species_in_a_fixed_order(rows):
+    assert dv.diluent_text(rows["FLEX-001"]) == "N2 0.79"
+    assert dv.diluent_text(rows["FLEX-010"]) == "CO2 0.7; N2 0.09"
+    mixed = row_with(
+        rows, n2_mole_fraction="0.10", co2_mole_fraction="0.5", he_mole_fraction="0.19"
     )
-    expected = {f"{p['page']}|{s10.normalize_text(p['quote'])}": p for p in props}
-    assert real_gates()["proposed_note_sources"] == expected
+    assert dv.diluent_text(mixed) == "CO2 0.5; He 0.19; N2 0.10", (
+        "alphabetical, fractions as printed"
+    )
+    assert dv.diluent_text(row_with(rows, o2_mole_fraction="1", n2_mole_fraction="0")) is None
+
+
+def test_diluent_order_does_not_depend_on_column_order(rows):
+    row = row_with(rows, n2_mole_fraction="0.3", co2_mole_fraction="0.4", he_mole_fraction="0.09")
+    shuffled = dict(reversed(list(row.items())))
+    assert dv.diluent_text(row) == dv.diluent_text(shuffled) == "CO2 0.4; He 0.09; N2 0.3"
+
+
+def test_different_mixtures_never_collide_and_swapped_species_stay_distinct(rows):
+    grid = ["0", "0.1", "0.2"]
+    seen = {}
+    for n2 in grid:
+        for co2 in grid:
+            for he in grid:
+                text = dv.diluent_text(
+                    row_with(rows, n2_mole_fraction=n2, co2_mole_fraction=co2, he_mole_fraction=he)
+                )
+                key = (Decimal(n2), Decimal(co2), Decimal(he))
+                assert seen.setdefault(text, key) == key, f"{text!r} is ambiguous"
+    a = dv.diluent_text(row_with(rows, n2_mole_fraction="0.5", co2_mole_fraction="0"))
+    b = dv.diluent_text(row_with(rows, n2_mole_fraction="0", co2_mole_fraction="0.5"))
+    assert a != b and "N2" in a and "CO2" in b
+
+
+def test_printed_spelling_of_a_fraction_is_never_reformatted(rows):
+    assert dv.diluent_text(row_with(rows, n2_mole_fraction="0.70")) == "N2 0.70"
+    assert dv.diluent_text(row_with(rows, n2_mole_fraction="0.7")) == "N2 0.7"
+
+
+def test_mole_fractions_must_be_in_range_and_add_up(rows):
+    for column, bad in (
+        ("n2_mole_fraction", "0.5"),
+        ("co2_mole_fraction", "-0.1"),
+        ("he_mole_fraction", "1.2"),
+    ):
+        with pytest.raises(dv.DerivationError):
+            dv.check_composition(row_with(rows, **{column: bad}))
+    dv.check_composition(rows["FLEX-010"])  # 0.21 + 0.09 + 0.7 = 1.00
+    dv.check_composition(row_with(rows, n2_mole_fraction="0.80"))  # within two-decimal rounding
+    with pytest.raises(dv.DerivationError, match="add up"):
+        dv.check_composition(row_with(rows, n2_mole_fraction="0.85"))
+
+
+def test_the_fuel_name_is_preserved_exactly_and_a_missing_fuel_is_refused(rows):
+    gates = real_gates()
+    for fuel in ("Methanol", "Heptane", "heptane", "n-Heptane"):
+        assert dv.conditions(row_with(rows, fuel=fuel), gates)["fuel_or_material"] == fuel
+    assert dv.conditions(row_with(rows, fuel=" Heptane "), gates)["fuel_or_material"] == "Heptane"
+    with pytest.raises(dv.DerivationError, match="fuel name is missing"):
+        dv.conditions(row_with(rows, fuel="  "), gates)
+    assert len({"Methanol", "methanol", "METHANOL"}) == 3, "case differences are not merged"
+
+
+def test_sample_geometry_is_null_unless_a_source_supports_it(complete):
+    assert {f["conditions"]["sample_geometry"] for f in complete["findings"]} == {None}
+    assert real_gates()["conditions"]["sample_geometry"]["use"] == "null"
+
+
+def test_pressure_is_exact_never_rounded_and_the_printed_mmhg_is_kept(complete, rows):
+    for f in complete["findings"]:
+        mmhg = rows[f["test_id"]]["ambient_pressure_mmhg"]
+        exact = Decimal(mmhg) * dv.KPA_PER_MMHG
+        assert Decimal(repr(f["conditions"]["pressure_kpa"])) == exact, "no rounding in the data"
+        assert f"ambient pressure as printed: {mmhg} mmHg" in f["provenance"]["locator"]
+    f = by_id(complete["findings"])["flex.flex-001.initial_droplet_diameter"]
+    assert f["conditions"]["pressure_kpa"] == float(Decimal("757.7") * Decimal("0.133322387415"))
+    assert len(repr(f["conditions"]["pressure_kpa"]).split(".")[1]) > 6, (
+        "full precision, not display rounding"
+    )
+
+
+def test_g7_decisions_are_recorded_as_owner_decisions_not_approvals():
+    gates = real_gates()
+    for name, c in gates["conditions"].items():
+        assert c["status"] == "owner_provisional", name
+        assert "not an independent scientific approval" in c["decided_by"]
+    assert "not an independent scientific approval" in gates["pressure"]["decided_by"]
+    assert dv.registrable(gates) is False
 
 
 def test_a_dash_that_is_also_excluded_is_refused(tmp_path):
@@ -753,10 +980,20 @@ def test_exactly_one_numeric_table_source_is_required(tmp_path):
         root = make_root(tmp_path / str(n))
         manifest = json.loads((root / "data/manifest.json").read_text(encoding="utf-8"))
         entry = manifest["datasets"][0]
-        table = [s for s in entry["sources"] if str(s["page"]) == "20"][0]
+        table = next(s for s in entry["sources"] if str(s["page"]) == "20")
         entry["sources"] = [s for s in entry["sources"] if s is not table]
         if edit == "duplicate":
             entry["sources"] += [table, copy.deepcopy(table)]
         write_json(root / "data/manifest.json", manifest)
         with pytest.raises(dv.DerivationError, match="exactly one numeric"):
             dv.derive(root)
+
+
+def test_an_out_of_range_fraction_is_refused_even_when_the_total_is_one(rows):
+    cases = [
+        {"co2_mole_fraction": "-0.1", "n2_mole_fraction": "0.89"},  # sums to 1.00
+        {"he_mole_fraction": "1.05", "n2_mole_fraction": "-0.26"},  # sums to 1.00
+    ]
+    for change in cases:
+        with pytest.raises(dv.DerivationError, match="outside 0..1"):
+            dv.check_composition(row_with(rows, **change))

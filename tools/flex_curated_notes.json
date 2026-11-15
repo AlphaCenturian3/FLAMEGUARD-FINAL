@@ -1,0 +1,12 @@
+{
+  "_note": "Reviewed, deterministic, NUMBER-FREE exclusion-note texts. A curated note replaces only the note TEXT of its flag; the note keeps its flag_ref and the flag's verified source quotation. The audited flag row stays unchanged in the flags CSV; its SHA-256 below must still match, or the derivation refuses (the audited reason changed and the curated text must be re-reviewed).",
+  "notes": {
+    "F042": {
+      "note": "Table IX reports a burning-rate constant for FLEX-010, but Figure 14 states that no burning-rate constant is reported. The disputed measurement is excluded from quantitative use pending reconciliation with PSI data.",
+      "original_reason": "Table IX prints .37 but the Figure 14 caption says no burning rate constant is reported. Value kept as printed; do not use in rankings or comparisons until resolved against PSI electronic data.",
+      "original_reason_sha256": "644ede52cc23a4e6e6e86b20996c3be7e652691e5431e299934b727345021c78",
+      "why": "The audited reason prints the excluded value (.37). The exclusion note is quoted by dependent interpretations and answers (S9), which must never state it.",
+      "decided_by": "project owner (Command Center), 2026-11-15; a project decision, not an independent scientific approval"
+    }
+  }
+}
