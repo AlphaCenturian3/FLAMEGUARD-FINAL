@@ -15,8 +15,8 @@ Nothing here authorizes a merge. Rules used: CONTRIBUTING.md (at least one appro
 
 | PR | What | Base (depends on) | Head | CI | Approvals now | Still required before merge | Blocker |
 |---|---|---|---|---|---|---|---|
-| #9 | pytest pythonpath | main | bf3c1e4 | green | Member 5 | Command Center authorization | none technical |
-| #10 | jsonschema runtime dep | main | 849fb8a | green | none | Member 3 review; CC authorization | review |
+| #9 | pytest pythonpath | main | bf3c1e4 | green | Member 5 (on bf3c1e4) | — | **MERGED** (squash) as `db916a1` on 2026-11-15; post-merge CI on main green (3.11, 3.12, secrets-and-raw-data) |
+| #10 | jsonschema runtime dep | main | 849fb8a | green | none (Member 3 review requested earlier, pending) | Member 3 approval on 849fb8a; CC authorization | **review only**: merges cleanly onto `db916a1`, 265 passed, ruff clean |
 | #11 | B1 strict loader | #10 | e6f51f8 | green | none | Members 3 and 5; #10 merged first | review, #10 |
 | #12 | D5 FLEX vocabulary (v0.2.1) | main | 1f52b57 | green | Members 1, 2 | Member 3 adopts Member 5's two corrections (prepared in draft **#28**, commit 23cd7ad, text only, 279 tests; cherry-pick instructions in its description), then Member 5 re-review and Members 1 and 2 re-approve on the new SHA | Member 5 changes requested |
 | #17 | contract v0.2.2 test identity and outcome | #12 | c289e74 | green | none | Members 2, 3, 5 (contract rule: 1 and 2, plus 3 and 5); rebase on corrected #12 | #12, reviews |
@@ -61,7 +61,7 @@ Each step needs its listed review and an explicit Command Center authorization; 
 
 | Order | PRs | Technically passing today | Independent approval still needed |
 |---|---|---|---|
-| 1 | #9 | yes | none beyond CC authorization (Member 5 approved) |
+| 1 | #9 | **merged** `db916a1`, main CI green | — |
 | 2 | #10 then #11 | yes | Member 3 (#10); Members 3 and 5 (#11) |
 | 3 | #12 (with #28's wording) then #17 | yes (#28: 279 tests) | Member 3 adopts #28; Member 5 re-review; Members 1+2 re-approve; #17: Members 2, 3, 5 |
 | 4 | #18 then #26 | yes | independent backend review; Member 5 S11 test |
@@ -74,3 +74,8 @@ Each step needs its listed review and an explicit Command Center authorization; 
 | 11 | #8/#19/#33 re-pinned to merged commits; owner demo docs updated for live evidence | #33: empty 60/60, registered 72/72 | review |
 
 Not on the critical path: #13 (close as superseded after #25 is verified), #14, #15, #20 (Blender), #3, #6.
+
+## State after the #9 merge (2026-11-15)
+- `main` = `db916a1` (#9 squash). Post-merge CI green.
+- Every branch based on `main` still merges cleanly onto it (checked with `git merge-tree`, nothing modified): #10, #23, #20, #16, #8, #12, #2, #13, #15, #14.
+- **#10 review summary (for Member 3, when available):** two files. `pyproject.toml` moves `jsonschema>=4.23` from the `dev` extra to the runtime `dependencies` (the B1 loader in #11 validates every evidence file against the contract schemas at runtime, so a production install without it would fail). `tests/test_dependencies.py` pins that it is a runtime dependency and declared only once. No code change, no data change. Verified: CI green on 3.11 and 3.12; merged onto `db916a1` locally 265 passed, ruff clean. Reviewer to confirm: the dependency belongs at runtime, and the version floor `>=4.23` (Draft 2020-12 + `referencing`) is acceptable.
