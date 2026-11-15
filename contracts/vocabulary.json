@@ -1,5 +1,5 @@
 {
-  "vocabulary_version": "0.2.1",
+  "vocabulary_version": "0.2.2",
   "note": "Quantity keys, units and physical bounds. quantity_rules.schema.json enforces exactly these; a test keeps the two identical. Extend only through a contract PR. Unit '1' means dimensionless.",
   "quantities": {
     "flame_spread_rate": {

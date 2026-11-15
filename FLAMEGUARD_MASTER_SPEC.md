@@ -1,6 +1,6 @@
 # FlameGuard-SI Master Specification
 
-**Spec version:** 0.2.1 (CP1 contract v0.2.0 merged 2026-11-14; 0.2.1 adds the D5/C4 FLEX vocabulary quantities, **proposed in a draft PR, member approvals pending**)
+**Spec version:** 0.2.2 (CP1 contract v0.2.0 merged 2026-11-14; 0.2.1 adds the D5/C4 FLEX vocabulary quantities and 0.2.2 adds structured test identity and outcome; **both proposed in draft PRs, member approvals pending**)
 **Status:** Scaffold only. Nothing beyond `GET /api/health` and the data-provenance checker exists yet. Workstream tasks and acceptance criteria are in [`docs/CP1_WORKSTREAMS.md`](docs/CP1_WORKSTREAMS.md).
 **Rule:** This file is the single source of truth. If code, a README, or a PR description disagrees with it, this file wins until someone changes it through a reviewed PR.
 
@@ -168,7 +168,7 @@ Rules that keep the branches from conflicting:
 - Only Member 1 edits `.github/workflows/`. Anyone who needs a CI step asks Member 1, and a second member reviews the change.
 - All text file I/O names `encoding="utf-8"`, because the team works on both Windows and Linux. `tests/test_portability.py` enforces it.
 
-## 5. Integration contract (v0.2.1)
+## 5. Integration contract (v0.2.2)
 
 Full details are in [`contracts/README.md`](contracts/README.md). The schemas are in `contracts/schemas/`, the quantity vocabulary is in `contracts/vocabulary.json`, and CI validates the examples in `contracts/examples/` against the schemas.
 
