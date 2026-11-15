@@ -37,16 +37,17 @@ jobs:
 
   frontend:
     # Runs the frontend's in-browser test harness (frontend/tests/index.html) in headless
-    # Chrome, which GitHub's ubuntu runners include. No extra dependency. Until the
-    # frontend lands on main the script reports "SKIPPED (not verified)", never a pass.
+    # Chrome, which GitHub's ubuntu runners include. No extra dependency. While there is no
+    # frontend/ directory the script reports "SKIPPED (not verified)", never a pass. Once
+    # frontend/ exists, a missing harness or fewer than 65 tests is a failure.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - name: Frontend browser tests (headless Chrome)
-        run: python .github/scripts/run_frontend_tests.py
+      - name: Frontend browser tests (headless Chrome; skipped while there is no frontend/)
+        run: python .github/scripts/run_frontend_tests.py --min-tests 65
 
   secrets-and-raw-data:
     runs-on: ubuntu-latest

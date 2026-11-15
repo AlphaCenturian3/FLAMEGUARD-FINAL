@@ -9,9 +9,13 @@ dependency: it needs only Python's standard library and a Chrome or Chromium bin
 (GitHub's ubuntu-latest runners include google-chrome).
 
 Fail closed: no Chrome, an unreadable page, a missing result or zero tests is a failure,
-never a pass. The one exception is a repository that has no frontend harness yet: the
-script then prints "SKIPPED (not verified)" and exits 0, unless --require is given (use it
-once frontend/tests/index.html exists on main, so the harness can never silently vanish).
+never a pass. `--min-tests N` also fails a run in which fewer than N tests ran, so a harness
+that silently shrinks (a test file dropped from its imports) cannot report a green PASS.
+
+The one exception is a repository with no frontend at all: if the `frontend/` directory does
+not exist the script prints "SKIPPED (not verified)" and exits 0 (unless --require is given).
+As soon as `frontend/` exists, a missing harness is a FAILURE, so the harness can never be
+deleted or renamed back into a silent skip, and no follow-up workflow change is needed.
 """
 
 from __future__ import annotations
@@ -41,6 +45,7 @@ class Outcome:
     ok: bool
     summary: str
     failures: tuple[str, ...] = ()
+    total: int = 0  # tests the harness ran, when it reported
 
 
 def parse_dom(dom: str) -> Outcome:
@@ -55,10 +60,10 @@ def parse_dom(dom: str) -> Outcome:
     if total == 0:
         return Outcome(False, "the harness ran 0 tests")
     if verdict == "FAIL" or failures:
-        return Outcome(False, f"FAIL {first or len(failures)}/{total}", failures)
+        return Outcome(False, f"FAIL {first or len(failures)}/{total}", failures, total)
     if first != total:
-        return Outcome(False, f"PASS {first}/{total}: not every test passed")
-    return Outcome(True, f"PASS {first}/{total}")
+        return Outcome(False, f"PASS {first}/{total}: not every test passed", (), total)
+    return Outcome(True, f"PASS {first}/{total}", (), total)
 
 
 def find_chrome(explicit: str | None) -> str | None:
@@ -71,6 +76,17 @@ def find_chrome(explicit: str | None) -> str | None:
     mac = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
     candidates = [*(shutil.which(n) for n in names), mac]
     return next((c for c in candidates if c and Path(c).exists()), None)
+
+
+def browser_version(chrome: str) -> str:
+    """The browser build used, for traceability: runner images change under us."""
+    try:
+        done = subprocess.run(  # noqa: S603
+            [chrome, "--version"], capture_output=True, text=True, timeout=30, check=False
+        )
+        return (done.stdout or done.stderr).strip() or "unknown version"
+    except (OSError, subprocess.TimeoutExpired):
+        return "unknown version"
 
 
 class _Quiet(http.server.SimpleHTTPRequestHandler):
@@ -108,11 +124,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--root", type=Path, default=ROOT)
     ap.add_argument("--chrome")
     ap.add_argument("--timeout", type=int, default=180)
-    ap.add_argument("--require", action="store_true", help="a missing harness is a failure")
+    ap.add_argument("--require", action="store_true", help="a missing frontend is a failure")
+    ap.add_argument("--min-tests", type=int, default=0, help="fail if fewer tests ran")
     args = ap.parse_args(argv)
 
     if not (args.root / HARNESS).is_file():
-        msg = f"{HARNESS} not found: frontend browser tests not run"
+        if (args.root / "frontend").is_dir():
+            print(f"FAIL: frontend/ exists but {HARNESS} is missing: the harness was removed")
+            return 1
+        msg = "no frontend/ directory: frontend browser tests not run"
         if args.require:
             print(f"FAIL: {msg} (--require)")
             return 1
@@ -123,7 +143,16 @@ def main(argv: list[str] | None = None) -> int:
     if not chrome:
         print("FAIL: no Chrome or Chromium found (set CHROME or pass --chrome)")
         return 1
+    print(f"browser: {browser_version(chrome)}")
     outcome = run(args.root, chrome, args.timeout)
+    if outcome.ok and outcome.total < args.min_tests:
+        outcome = Outcome(
+            False,
+            f"only {outcome.total} tests ran; at least {args.min_tests} are required "
+            "(a test file may have been dropped from the harness)",
+            (),
+            outcome.total,
+        )
     for line in outcome.failures:
         print(f"  {line}")
     print(f"{'OK' if outcome.ok else 'FAIL'}: frontend browser tests: {outcome.summary}")

@@ -86,3 +86,61 @@ def test_run_reports_a_chrome_crash_as_failure(tmp_path, monkeypatch):
     fake.chmod(0o755)
     outcome = runner.run(tmp_path, str(fake), timeout=20)
     assert not outcome.ok and "Chrome exited 3" in outcome.summary
+
+
+# --- Member 2's review findings on PR #16 (skip rule, shrinking harness, browser version) ---
+
+
+def _fake_chrome(tmp_path, title):
+    """A stand-in browser: prints a version for --version, otherwise a harness page."""
+    script = tmp_path / "fake-chrome"
+    dom = f'<html><head><title>{title}</title></head><body><pre id="results"></pre></body></html>'
+    check = 'if [ "$a" = "--version" ]; then echo "FakeChrome 1.2.3"; exit 0; fi'
+    script.write_text(
+        f"#!/bin/sh\nfor a in \"$@\"; do\n  {check}\ndone\necho '{dom}'\n", encoding="utf-8"
+    )
+    script.chmod(0o755)
+    return str(script)
+
+
+def test_frontend_dir_without_a_harness_fails_even_without_require(tmp_path, capsys):
+    (tmp_path / "frontend").mkdir()
+    assert runner.main(["--root", str(tmp_path)]) == 1
+    assert "harness was removed" in capsys.readouterr().out
+
+
+def test_no_frontend_dir_is_still_skipped(tmp_path, capsys):
+    assert runner.main(["--root", str(tmp_path)]) == 0
+    assert "SKIPPED (not verified)" in capsys.readouterr().out
+
+
+def test_a_shrinking_harness_cannot_pass(tmp_path, capsys):
+    _with_harness(tmp_path)
+    chrome = _fake_chrome(tmp_path, "PASS 40/40")
+    assert runner.main(["--root", str(tmp_path), "--chrome", chrome, "--min-tests", "65"]) == 1
+    out = capsys.readouterr().out
+    assert "only 40 tests ran" in out and "at least 65" in out
+
+
+def test_enough_tests_pass(tmp_path, capsys):
+    _with_harness(tmp_path)
+    chrome = _fake_chrome(tmp_path, "PASS 65/65")
+    assert runner.main(["--root", str(tmp_path), "--chrome", chrome, "--min-tests", "65"]) == 0
+    assert "OK: frontend browser tests: PASS 65/65" in capsys.readouterr().out
+
+
+def test_min_tests_does_not_rescue_a_failing_run(tmp_path):
+    _with_harness(tmp_path)
+    chrome = _fake_chrome(tmp_path, "FAIL 2/70")
+    assert runner.main(["--root", str(tmp_path), "--chrome", chrome, "--min-tests", "65"]) == 1
+
+
+def test_the_browser_version_is_printed_for_traceability(tmp_path, capsys):
+    _with_harness(tmp_path)
+    chrome = _fake_chrome(tmp_path, "PASS 3/3")
+    runner.main(["--root", str(tmp_path), "--chrome", chrome])
+    assert "browser: FakeChrome 1.2.3" in capsys.readouterr().out
+
+
+def test_browser_version_falls_back_when_the_browser_cannot_run(tmp_path):
+    assert runner.browser_version(str(tmp_path / "missing")) == "unknown version"
