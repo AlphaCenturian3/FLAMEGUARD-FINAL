@@ -101,6 +101,7 @@ class Scenario:
 
     def write(self) -> Path:
         shutil.copytree(REPO / "contracts" / "schemas", self.root / "contracts" / "schemas")
+        shutil.copy(REPO / "contracts" / "vocabulary.json", self.root / "contracts")
         (self.root / "tools").mkdir()
         shutil.copy(REPO / "tools" / "check_data_provenance.py", self.root / "tools")
         entries = []

@@ -16,7 +16,7 @@ def test_health_matches_contract(validator_for):
 
 @pytest.mark.parametrize(("method", "path"), PLANNED_ENDPOINTS)
 def test_planned_endpoints_return_501(validator_for, method, path):
-    concrete = path.replace("{investigation_id}", "x").replace("{simulation_id}", "x")
+    concrete = path.replace("{simulation_id}", "x")
     r = client.request(method, concrete)
     assert r.status_code == 501
     validator_for("error.schema.json").validate(r.json())
