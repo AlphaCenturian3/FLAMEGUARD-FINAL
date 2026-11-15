@@ -8,8 +8,15 @@
 import { createFixtureSource } from "./api/fixtures.js";
 import { createHttpSource } from "./api/http.js";
 
-/** Contract version this dashboard implements. */
-export const CONTRACT_VERSION = "0.2.0";
+/** Newest contract version this dashboard implements (adds test_id and test_outcome, v0.2.2). */
+export const CONTRACT_VERSION = "0.2.2";
+/**
+ * Contract versions accepted without a warning. 0.2.1 only adds FLEX quantities and 0.2.2 only adds
+ * the optional test_id / test_outcome fields, so documents valid under 0.2.0 stay valid. A version is
+ * added here only after the dashboard is tested with a response of that version
+ * (frontend/tests/flex.test.js) and its schema change is confirmed additive. Anything else warns.
+ */
+export const SUPPORTED_CONTRACT_VERSIONS = Object.freeze(["0.2.0", "0.2.1", "0.2.2"]);
 export const FIXTURE_BANNER = "FIXTURE DATA. NOT NASA DATA.";
 
 /** @param {string} [href] */
@@ -38,6 +45,6 @@ export function urlWithFixtures(on, href = window.location.href) {
 
 /** Warning text when an API response names a different contract version, else null. */
 export function versionMismatch(reported) {
-  if (typeof reported !== "string" || reported === CONTRACT_VERSION) return null;
-  return `The API reports contract ${reported}; this dashboard implements ${CONTRACT_VERSION}. Some fields may be missing or misread.`;
+  if (typeof reported !== "string" || SUPPORTED_CONTRACT_VERSIONS.includes(reported)) return null;
+  return `The API reports contract ${reported}; this dashboard supports ${SUPPORTED_CONTRACT_VERSIONS.join(", ")}. Some fields may be missing or misread.`;
 }

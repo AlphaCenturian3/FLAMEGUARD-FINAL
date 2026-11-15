@@ -111,7 +111,7 @@ export function findingsSection(findings, findingsById) {
   return h(
     "div",
     { class: "findings grouped" },
-    h("p", { class: "small muted" }, `${groups.length} test rows. Each row lists its own findings; conditions are shown once per row when every finding in it shares them.`),
+    h("p", { class: "small muted" }, `${groups.length} test rows${groups.every((g) => g.testId) ? " (grouped by the source's test identifier)" : ""}. Each row lists its own findings; conditions are shown once per row when every finding in it shares them.`),
     groups.map((g, i) => {
       const counts = {};
       for (const f of g.findings) counts[f.value_status] = (counts[f.value_status] || 0) + 1;
@@ -122,11 +122,13 @@ export function findingsSection(findings, findingsById) {
           "summary",
           null,
           h("span", { class: "row-label" }, g.label),
+          g.testId ? h("span", { class: "chip test-outcome", title: "The label the source prints for this test. Not a FlameGuard-SI classification of what happened." }, `Test end as printed: ${g.outcomeConflict ? "CONFLICT" : g.outcome || "Not reported"}`) : null,
+          g.outcomeConflict ? h("span", { class: "badge vs vs-excluded", role: "alert" }, "Findings of this test report different outcomes") : null,
           h("span", { class: "muted small" }, ` · ${g.findings.length} finding${g.findings.length === 1 ? "" : "s"}`),
           Object.entries(counts).map(([k, n]) => h("span", { class: `badge vs vs-${k}` }, `${n} ${(VALUE_STATUS[k] || { label: k }).label.toLowerCase()}`)),
         ),
         g.sharedConditions ? h("div", { class: "row-conditions" }, h("p", { class: "small" }, h("strong", null, "Conditions for this row")), conditionsBlock(g.sharedConditions)) : null,
-        h("div", { class: "findings" }, g.findings.map((f) => findingCard(f, findingsById, { hideConditions: Boolean(g.sharedConditions) }))),
+        h("div", { class: "findings" }, g.findings.map((f) => findingCard(f, findingsById, { hideConditions: Boolean(g.sharedConditions), hideTestIdentity: Boolean(g.testId) && !g.outcomeConflict }))),
       );
     }),
     interp,
