@@ -28,20 +28,23 @@ docker run --rm -p 8000:8000 flameguard-si          # set -e PORT=... to change 
 ```
 
 - Listens on `0.0.0.0:$PORT` (default 8000), which is how cloud hosts route traffic.
-- Health check: `GET /api/health` returns 200 `{"status":"ok",...}`. The image has a
-  `HEALTHCHECK`, and the host should also use this path.
+- Health check: `GET /api/investigations`. It returns 200 only when the registered evidence
+  loaded, and 503 when the loader fails closed. `GET /api/health` is liveness only: it says 200
+  even when no evidence can be served. A build missing `tools/check_data_provenance.py` once
+  passed `/api/health` while serving nothing. The image's `HEALTHCHECK` and `render.yaml`
+  use `/api/investigations`.
 - Runs as an unprivileged user. Dependencies are pinned in `deploy/requirements.lock`, and the
   base image is pinned to `python:3.12.10-slim`.
 
 ## Public staging on Render (recommended)
 
 Render's free web service builds this Dockerfile, gives one HTTPS URL, health-checks
-`/api/health` and restarts the service on failure. `render.yaml` describes it.
+`/api/investigations` and restarts the service on failure. `render.yaml` describes it.
 
 1. A repository owner signs in at render.com with GitHub and grants access to this repository.
 2. Choose **New > Blueprint** and select the repository. Render reads `render.yaml`.
 3. Deploy. Render prints the URL, such as `https://flameguard-si-preview.onrender.com`.
-4. Check it: `/api/health` returns 200, every page shows the preview notice, and `/?fixtures=1`
+4. Check it: `/api/health` and `/api/investigations` return 200, every page shows the preview notice, and `/?fixtures=1`
    shows the fixture banner.
 
 Free instances sleep after inactivity, so the first request can take about a minute.

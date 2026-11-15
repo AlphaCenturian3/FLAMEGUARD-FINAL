@@ -11,6 +11,8 @@
 venv
 tests
 docs
-tools
+# the loader needs the provenance checker (B1 loads it from tools/)
+tools/*
+!tools/check_data_provenance.py
 data/raw
 data/staging

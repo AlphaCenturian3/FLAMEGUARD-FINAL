@@ -129,9 +129,13 @@ def run(s: Session, t: Tally, base: str, excluded_value: str | None) -> None:
     status, health = http_json(base + "api/health")
     t.check("GET /api/health is 200 with status ok", status == 200 and health.get("status") == "ok", str(health))
     status, invs = http_json(base + "api/investigations")
-    t.check("GET /api/investigations is 200 with total == len(items)", status == 200 and invs["total"] == len(invs["items"]))
+    t.check("GET /api/investigations is 200 with total == len(items)", status == 200 and invs.get("total") == len(invs.get("items", [])), str(invs)[:200])
+    if status != 200:
+        return
     status, finds = http_json(base + "api/findings")
-    t.check("GET /api/findings is 200 with total == len(items)", status == 200 and finds["total"] == len(finds["items"]))
+    t.check("GET /api/findings is 200 with total == len(items)", status == 200 and finds.get("total") == len(finds.get("items", [])), str(finds)[:200])
+    if status != 200:
+        return
     for path in ("api/compare?quantity=burn_time", "api/rankings"):
         status, body = http_json(base + path)
         t.check(f"GET /{path} is a truthful 501", status == 501 and body["error"]["code"] == "not_implemented")

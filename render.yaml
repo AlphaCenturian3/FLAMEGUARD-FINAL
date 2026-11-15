@@ -8,7 +8,7 @@ services:
     plan: free
     branch: integration/website-preview   # change to main once the integrated work is reviewed and merged
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /api/health
+    healthCheckPath: /api/investigations  # 503 if evidence cannot be loaded; /api/health is liveness only
     autoDeploy: false                     # deploy deliberately, after review
     envVars:
       - key: FLAMEGUARD_AI_API_KEY        # no AI is called; kept empty on purpose
