@@ -59,6 +59,14 @@ _vft = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_vft)
 normalize_text = _vft.normalize_text  # one definition of "verbatim up to dashes and quote marks"
 
+# Curator-assigned DESCRIPTIVE titles for section-text passages that have no figure caption
+# (project-owner decision, Command Center, 2026-11-15). They name the page only: no document
+# heading is invented. Any other page without a caption is still refused.
+SECTION_TEXT_TITLES = {
+    16: "NASA/TP-2015-216046, section-text passage (printed page 16)",
+    17: "NASA/TP-2015-216046, section-text passage (printed page 17)",
+}
+
 _CAPTION = re.compile(r"Figure\s+(\d+)\s*\.\s*[—–−-]\s*Test\s+(FLEX[–−-]\d{3})")
 
 
@@ -274,16 +282,20 @@ def propose_sources(
         if status[p.key] == "registered_quote":
             continue
         caption = caption_of(page_text_for(p.page))
-        if caption is None:
+        if caption is None and p.page in SECTION_TEXT_TITLES:
+            title = SECTION_TEXT_TITLES[p.page]
+        elif caption is not None:
+            figure, test = caption
+            title = f"{REPORT_TITLE}, Appendix B, {figure} caption (Test {test})"
+        else:
             unproposable.append(
                 f"p. {p.page} ({', '.join(p.flag_ids)}): no single figure caption on the page; "
                 "a person must supply the Source title"
             )
             continue
-        figure, test = caption
         proposals.append(
             {
-                "title": f"{REPORT_TITLE}, Appendix B, {figure} caption (Test {test})",
+                "title": title,
                 "url": REPORT_URL,
                 "page": str(p.page),
                 "quote": p.quote,
@@ -301,6 +313,11 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--pdf", type=Path, default=DEFAULT_PDF)
     ap.add_argument("--propose", action="store_true", help="print the proposed Source entries")
+    ap.add_argument(
+        "--write-manifest",
+        action="store_true",
+        help="append the missing Sources to the measured manifest entry (needs a clean PDF check)",
+    )
     args = ap.parse_args(argv)
 
     flags, sources = load_flags(), load_measured_sources()
@@ -336,6 +353,17 @@ def main(argv: list[str] | None = None) -> int:
             f"PDF not found at {args.pdf}: structure checked, quotes NOT VERIFIED against the PDF."
         )
 
+    if args.write_manifest:
+        if page_text is None or errors:
+            errors.append("--write-manifest needs the PDF and a clean check; nothing written")
+        else:
+            proposals, unproposable = propose_sources(
+                found, status, page_text, _numeric_retrieved(sources)
+            )
+            errors += unproposable
+            if not unproposable:
+                added = write_manifest(proposals)
+                print(f"registered {added} Source entries in {MANIFEST_PATH}")
     if args.propose:
         if page_text is None:
             errors.append("--propose needs the PDF (titles come from its figure captions)")
@@ -353,6 +381,18 @@ def main(argv: list[str] | None = None) -> int:
         "S10 source validation passed" + ("" if page_text else " (structure only; PDF not checked)")
     )
     return 0
+
+
+def write_manifest(proposals: list[dict], manifest_path: Path = MANIFEST_PATH) -> int:
+    """Append proposals to the measured entry's sources. Idempotent; touches nothing else."""
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    entry = next(d for d in manifest["datasets"] if d["id"] == MEASURED_ID)
+    have = {(str(s["page"]), normalize_text(s.get("quote") or "")) for s in entry["sources"]}
+    new = [p for p in proposals if (p["page"], normalize_text(p["quote"])) not in have]
+    entry["sources"].extend(new)
+    text = json.dumps(manifest, indent=2, ensure_ascii=True) + "\n"
+    manifest_path.write_text(text, encoding="utf-8", newline="\n")
+    return len(new)
 
 
 def _numeric_retrieved(sources: list[dict]) -> str:

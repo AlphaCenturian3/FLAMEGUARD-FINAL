@@ -11,6 +11,8 @@ from __future__ import annotations
 import copy
 import hashlib
 import importlib.util
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -105,19 +107,13 @@ def test_distinct_passages_are_distinct_pages_and_quotes(found):
     assert shared.flag_ids == ("F029", "F031"), "one quote on one page serves both flags"
 
 
-def test_registration_coverage_as_it_stands_on_main(found, sources):
-    """Pinned to the current manifest. When the registration decision (PR #13, Option A) lands
-    this test must change with it; that is the point: the gap is measured, not assumed."""
+def test_every_passage_is_exactly_registered_after_this_pr(found, sources):
+    """17 of 17: one registered Source per distinct (printed page, exact quote)."""
     status = s10.coverage(found, sources)
-    counts = {}
-    for st in status.values():
-        counts[st] = counts.get(st, 0) + 1
-    assert counts == {"registered_quote": 3, "page_only": 5, "unregistered_page": 9}
-    registered_pages = {int(s["page"]) for s in sources}
-    for p in found:  # independent oracle: unregistered exactly when no Source is on its page
-        assert (status[p.key] == "unregistered_page") == (p.page not in registered_pages)
-    unregistered = sorted({p.page for p in found if status[p.key] == "unregistered_page"})
-    assert unregistered == [29, 30, 31, 33, 34, 35, 36]
+    assert set(status.values()) == {"registered_quote"} and len(status) == 17
+    assert len(sources) == 21  # 7 before + 14 added; the Table IX numeric Source is unchanged
+    keys = [(int(x["page"]), s10.normalize_text(x["quote"])) for x in sources]
+    assert len(keys) == len(set(keys)), "no (page, quote) is registered twice"
 
 
 def test_caution_passages_are_separate_from_numeric_provenance(found, sources):
@@ -424,17 +420,76 @@ def test_pdf_every_caption_names_the_flags_test(found, page_text):
     assert sorted({p.page for p in captioned}) == [29, 30, 31, 32, 33, 34, 35, 36, 38]
 
 
-def test_pdf_the_proposal_covers_all_but_two_section_passages(found, sources, page_text):
-    status = s10.coverage(found, sources)
-    props, unprop = s10.propose_sources(found, status, page_text, "2026-11-14")
-    assert len(props) == 12 and len(unprop) == 2
-    assert {(p["page"], p["quote"]) for p in props} == {
-        (str(p.page), p.quote) for p in found if status[p.key] != "registered_quote" and p.page > 17
+def test_pdf_registered_sources_are_exactly_what_the_pdf_supports(found, sources, page_text):
+    numeric, _ = s10.split_sources(sources)
+    bare = s10.coverage(found, numeric)  # as if nothing but Table IX were registered
+    props, unprop = s10.propose_sources(found, bare, page_text, numeric[0]["retrieved"])
+    assert unprop == [] and len(props) == 17
+    exact = [pr for pr in props if pr in sources]
+    assert len(exact) >= 14, "the 14 added Sources are exactly the PDF-supported proposals"
+    for pr in props:  # and every passage's quote sits inside a registered Source on its page
+        assert any(
+            str(x["page"]) == pr["page"]
+            and s10.normalize_text(pr["quote"]) in s10.normalize_text(x["quote"] or "")
+            for x in sources
+        )
+    for x in exact:  # titles come from the page caption or the two owner-assigned descriptions
+        cap = s10.caption_of(page_text(int(x["page"])))
+        if cap:
+            assert x["title"].endswith(f"{cap[0]} caption (Test {cap[1]})")
+        else:
+            assert x["title"] == s10.SECTION_TEXT_TITLES[int(x["page"])]
+
+
+def test_section_text_titles_are_the_owner_assigned_descriptions_only():
+    assert s10.SECTION_TEXT_TITLES == {
+        16: "NASA/TP-2015-216046, section-text passage (printed page 16)",
+        17: "NASA/TP-2015-216046, section-text passage (printed page 17)",
     }
-    assert sorted(u.split(" (")[0] for u in unprop) == ["p. 16", "p. 17"]
-    for pr in props:  # nothing invented: the title's figure and test come from the page itself
-        figure, test = s10.caption_of(page_text(int(pr["page"])))
-        assert f"{figure} caption (Test {test})" in pr["title"]
+    for title in s10.SECTION_TEXT_TITLES.values():
+        assert not re.search(r"\b\d\.\d\b|Section \d|Observations|Contamination", title)
+
+
+def test_owner_titles_apply_to_pages_16_and_17_only():
+    fl = [
+        flag("A", page="16", quote="q16"),
+        flag("B", page="17", quote="q17"),
+        flag("C", page="40"),
+    ]
+    found_ = s10.passages(fl)
+    status_ = s10.coverage(found_, [])
+    props, unprop = s10.propose_sources(found_, status_, pages({16: "x", 17: "x", 40: "x"}), "d")
+    assert [p["title"] for p in props] == list(s10.SECTION_TEXT_TITLES.values())
+    assert len(unprop) == 1 and "p. 40" in unprop[0], (
+        "any other uncaptioned page still needs a person"
+    )
+
+
+def test_write_manifest_only_appends_and_is_idempotent(tmp_path):
+    src = json.loads((ROOT / "data/manifest.json").read_text(encoding="utf-8"))
+    path = tmp_path / "manifest.json"
+    text = json.dumps(src, indent=2)
+    path.write_text(text, encoding="utf-8")
+    new = {
+        "title": "SYNTHETIC",
+        "url": s10.REPORT_URL,
+        "page": "99",
+        "quote": "synthetic",
+        "retrieved": "2026-01-01",
+        "archive_id": "x",
+    }
+    assert s10.write_manifest([new], path) == 1
+    assert s10.write_manifest([new], path) == 0
+    after = json.loads(path.read_text(encoding="utf-8"))
+    before_entry = next(d for d in src["datasets"] if d["id"] == s10.MEASURED_ID)
+    after_entry = next(d for d in after["datasets"] if d["id"] == s10.MEASURED_ID)
+    assert after_entry["sources"] == before_entry["sources"] + [new]
+    for key in before_entry:
+        if key != "sources":
+            assert after_entry[key] == before_entry[key]
+    assert [d for d in after["datasets"] if d["id"] != s10.MEASURED_ID] == [
+        d for d in src["datasets"] if d["id"] != s10.MEASURED_ID
+    ]
 
 
 def test_the_proposed_quote_is_the_flags_quote_byte_for_byte():
