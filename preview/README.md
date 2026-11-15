@@ -4,10 +4,12 @@ A local, one-command preview of the FlameGuard-SI dashboard running against the 
 backend. It **merges nothing and changes no branch**. It exports two git refs into `.preview/`
 (git-ignored) and serves them together:
 
-| Part | Default ref | Exported paths |
+| Part | Pinned in `preview/pins.json` | Exported paths |
 |---|---|---|
-| Backend, contract, data manifest | `origin/feat/backend-b2-explorer` (PR #18, draft, stacked on B1) | `backend/`, `contracts/`, `data/`, `tools/`, `pyproject.toml`, `README.md` |
-| Frontend | `origin/feat/frontend-dashboard` (PR #2) | `frontend/` only |
+| Backend, contract, data manifest | PR #18 `origin/feat/backend-b2-explorer` (draft, stacked on B1) | `backend/`, `contracts/`, `data/`, `tools/`, `pyproject.toml`, `README.md` |
+| Frontend | PR #21 `origin/fix/frontend-transparency` (draft, stacked on PR #2) | `frontend/` only |
+
+**Pinned by commit**, so a demo is reproducible. `python preview/run.py` prints the commits it serves and writes them, with Python and every installed package version, to `.preview/versions.txt`. `--latest` uses the branch tips instead; edit `pins.json` to move a pin deliberately. Nothing here is on `main`; production `main` is untouched.
 
 ## For the project owner: start it (no coding)
 
@@ -41,7 +43,7 @@ python preview/run.py --scenario synthetic   # manual inspection of SYNTHETIC ev
 
 Requirements: Git, Python 3.11+, network the first time. Browser checks need Chrome, Chromium or Edge (set `CHROME` to override). The judge-demo check needs Node 22+. A check that cannot run is reported **SKIPPED (not verified)**, never passed.
 
-Options: `--backend-ref`, `--frontend-ref`, `--port` (default 8790; the launcher refuses a port already in use), `--no-fetch`.
+Options: `--latest`, `--backend-ref`, `--frontend-ref`, `--port` (default 8790; the launcher refuses a port already in use), `--no-fetch`.
 
 ### What `--smoke` checks
 
@@ -64,6 +66,5 @@ Options: `--backend-ref`, `--frontend-ref`, `--port` (default 8790; the launcher
 
 ## Known limits
 
-- The frontend at PR #2 still prints "Contract v0.1.0" in its footer while the API badge says 0.2.0 (a Member 2 wording item; the version-mismatch warning itself is correct).
-- The frontend does not read the `X-FlameGuard-Rejected-Entries` header, so a partial load is visible only in the server log and the header, not on the page. Reported to Command Center as a decision.
+- PR #21 (footer version, rejected-files warning) is a draft awaiting Member 2's review. With Member 2's own branch (`--frontend-ref origin/feat/frontend-dashboard`) the footer still says v0.1.0 and a rejected file is visible only in the header and server log; the smoke test then reports the rejected-count check as SKIPPED.
 - No real NASA evidence is registered, so no real comparison, ranking, interpretation or TARS answer exists.

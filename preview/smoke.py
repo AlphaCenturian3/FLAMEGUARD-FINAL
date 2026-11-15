@@ -38,6 +38,7 @@ PLANNED = [
 ]
 ROUTES = ["", "explorer", "compare", "rank", "interpret", "integrations"]
 FIXTURE_BANNER = "FIXTURE DATA. NOT NASA DATA."
+CONTRACT = "0.2.0"
 REJECTED_HEADER = "x-flameguard-rejected-entries"
 results: list[tuple[str, str, str]] = []  # (status, name, detail)
 
@@ -165,6 +166,12 @@ def browser_checks(base: str, chrome: str | None) -> None:
                     ok = ok and "No investigations available" in t
                 h1 = re.search(r"<h1[^>]*>(.*?)</h1>", html, re.S)
                 record(ok, f"{mode} mode #/{route or ''}", text_of(h1.group(1)) if h1 else "no h1")
+        _, t = page(chrome, f"{base}#/explorer", prof)
+        record(
+            "Contract v0.1.0" not in t and f"contract v{CONTRACT}" in t,
+            "footer states the contract version the API reports",
+            "",
+        )
         _, t = page(chrome, f"{base}?api=http://127.0.0.1:1#/explorer", prof)
         record(
             "could not be reached" in t and FIXTURE_BANNER not in t and "SYNTHETIC" not in t,
@@ -260,6 +267,21 @@ def scenario_checks(tree: Path, py: Path, chrome: str | None) -> None:
                 "browser, rejected file: remaining evidence still renders",
                 "",
             )
+            _, main_js, _ = http("GET", urls["rejected"] + "static/js/main.js")
+            if b"footer-contract" in main_js:  # frontend with the transparency fixes (PR #21)
+                record(
+                    "1 evidence file was rejected" in t and "incomplete" in t,
+                    "browser, rejected file: the page says evidence was rejected and is incomplete",
+                    "",
+                )
+                _, t = page(chrome, urls["synthetic"] + "#/explorer", prof)
+                record(
+                    "rejected by the backend" not in t,
+                    "browser, nothing rejected: no rejected-files warning",
+                    "",
+                )
+            else:
+                record(None, "rejected-count display", "frontend predates PR #21")
             _, t = page(chrome, urls["broken"] + "#/explorer", prof)
             record(
                 "HTTP 503" in t and "SYNTHETIC" not in t,

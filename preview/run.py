@@ -7,8 +7,8 @@ It exports two git refs (nothing is merged and no branch is changed) into `.prev
 (git-ignored), installs that backend into `.preview/venv`, and serves it with
 `preview/server.py`:
 
-- backend + contracts from --backend-ref   (default origin/feat/backend-b2-explorer, PR #18)
-- frontend/ only from --frontend-ref       (default origin/feat/frontend-dashboard, PR #2)
+- backend + contracts from --backend-ref   (pinned in preview/pins.json: PR #18)
+- frontend/ only from --frontend-ref       (pinned in preview/pins.json: PR #21, on top of PR #2)
 
 Safety: the AI key is forced blank, the server binds to 127.0.0.1, and unfinished endpoints
 keep returning 501. Fixture data is shown only at `?fixtures=1` and is labelled there. The live
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import io
+import json
 import os
 import socket
 import subprocess
@@ -35,8 +36,7 @@ from scenarios import SCENARIOS, make_scenario  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
 WORK = REPO / ".preview"
-DEFAULT_BACKEND = "origin/feat/backend-b2-explorer"
-DEFAULT_FRONTEND = "origin/feat/frontend-dashboard"
+PINS = json.loads((Path(__file__).resolve().parent / "pins.json").read_text(encoding="utf-8"))
 
 
 def git(*args: str) -> bytes:
@@ -81,6 +81,25 @@ def install(py: Path, tree: Path) -> None:
     stamp.write_text(str(tree), encoding="utf-8")
 
 
+def write_versions(py: Path, tree: Path, backend: str, frontend: str) -> None:
+    """Record exactly what this preview runs, so a demo can be reproduced and audited."""
+    freeze = subprocess.run(  # noqa: S603
+        [str(py), "-m", "pip", "freeze", "--disable-pip-version-check"],
+        capture_output=True,
+        text=True,
+        check=False,
+    ).stdout
+    lines = [
+        f"backend_commit {backend}",
+        f"frontend_commit {frontend}",
+        f"python {sys.version.split()[0]}",
+        "--- installed packages ---",
+        freeze.strip(),
+    ]
+    (WORK / "versions.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"  versions recorded in {WORK / 'versions.txt'}")
+
+
 def serve(py: Path, tree: Path, port: int, data_root: Path | None = None) -> subprocess.Popen:
     env = {**os.environ, "FLAMEGUARD_PREVIEW_ROOT": str(tree), "FLAMEGUARD_AI_API_KEY": ""}
     # The backend is pip-installed, so its default data root would be inside site-packages.
@@ -115,8 +134,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--backend-ref", default=DEFAULT_BACKEND)
-    ap.add_argument("--frontend-ref", default=DEFAULT_FRONTEND)
+    ap.add_argument("--backend-ref", help="default: the commit pinned in preview/pins.json")
+    ap.add_argument("--frontend-ref", help="default: the commit pinned in preview/pins.json")
+    ap.add_argument("--latest", action="store_true", help="use the branch tips, not the pins")
     ap.add_argument("--port", type=int, default=8790)
     ap.add_argument("--no-fetch", action="store_true", help="use refs as they are locally")
     ap.add_argument(
@@ -132,14 +152,18 @@ def main() -> int:
     if not args.no_fetch:
         subprocess.run(["git", "fetch", "--quiet", "origin"], cwd=REPO, check=True)  # noqa: S603, S607
     require_free_port(args.port)
-    b, f = resolve(args.backend_ref), resolve(args.frontend_ref)
+    pin = "ref" if args.latest else "sha"
+    backend_ref = args.backend_ref or PINS["backend"][pin]
+    frontend_ref = args.frontend_ref or PINS["frontend"][pin]
+    b, f = resolve(backend_ref), resolve(frontend_ref)
     tree = build(b, f)
     py = venv_python()
     install(py, tree)
     url = f"http://127.0.0.1:{args.port}/"
     print("FlameGuard-SI DEVELOPMENT PREVIEW (not production; unfinished endpoints return 501)")
-    print(f"  backend  {args.backend_ref} @ {b[:12]}")
-    print(f"  frontend {args.frontend_ref} @ {f[:12]}")
+    print(f"  backend  {backend_ref} @ {b[:12]}")
+    print(f"  frontend {frontend_ref} @ {f[:12]}")
+    write_versions(py, tree, b, f)
     print(f"  live API mode : {url}")
     print(f"  fixture mode  : {url}?fixtures=1   (placeholder data, labelled not NASA data)")
     data_root = None
