@@ -1,0 +1,23 @@
+[
+  {
+    "id": "flex",
+    "name": "Flame Extinguishment Experiment (FLEX)",
+    "acronym": "FLEX",
+    "platform": "ISS Combustion Integrated Rack / MDCA",
+    "objectives": [],
+    "relevant_environments": [],
+    "datasets": [
+      "nasa-tp-2015-216046.flex.findings"
+    ],
+    "sources": [
+      {
+        "title": "Detailed Results from the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011, NASA/TP-2015-216046 (Dietrich, Ferkul, Bryg, Nayagam, Hicks, Williams, Dryer, Shaw, Choi, Avedisian; NASA Glenn Research Center, 2015). NTRS distribution: Public; copyright: Public Use Permitted.",
+        "url": "https://ntrs.nasa.gov/citations/20150023456",
+        "page": "20",
+        "quote": "TABLE IX.—RESULTS BY TEST NUMBER AND FLEX IDENTIFIER",
+        "retrieved": "2026-11-14",
+        "archive_id": "NTRS 20150023456"
+      }
+    ]
+  }
+]
