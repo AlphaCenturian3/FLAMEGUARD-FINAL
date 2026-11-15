@@ -40,3 +40,6 @@ node_modules/
 .idea/
 .vscode/
 *.swp
+
+# Development preview build output (preview/run.py)
+.preview/
