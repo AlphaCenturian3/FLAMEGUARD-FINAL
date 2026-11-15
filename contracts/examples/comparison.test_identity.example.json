@@ -1,0 +1,50 @@
+{
+  "fixture": true,
+  "contract_version": "0.2.2",
+  "quantity": "flame_spread_rate",
+  "unit": "mm/s",
+  "rows": [
+    {
+      "investigation_id": "fixture-investigation-1",
+      "finding_id": "fixture-finding-measured-test-identity-1",
+      "evidence_class": "measured",
+      "value": 1.0,
+      "value_status": "reported",
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "test_id": "FIXTURE-TEST-1",
+      "test_outcome": null
+    },
+    {
+      "investigation_id": "fixture-investigation-2",
+      "finding_id": "fixture-finding-measured-test-identity-2",
+      "evidence_class": "measured",
+      "value": 2.0,
+      "value_status": "reported",
+      "conditions": {
+        "gravity_environment": "microgravity",
+        "oxygen_mole_fraction": null,
+        "pressure_kpa": null,
+        "flow_velocity_mm_s": null,
+        "flow_configuration": null,
+        "diluent": null,
+        "fuel_or_material": null,
+        "sample_geometry": null
+      },
+      "test_id": "FIXTURE-TEST-2",
+      "test_outcome": null
+    }
+  ],
+  "comparable": false,
+  "non_comparable_reasons": [
+    "FIXTURE: both rows carry a test_id but report no test_outcome, so they are not comparable (S5)"
+  ]
+}

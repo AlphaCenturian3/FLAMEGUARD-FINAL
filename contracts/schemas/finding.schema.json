@@ -106,6 +106,12 @@
         "$ref": "common.schema.json#/$defs/curation_note"
       },
       "description": "Measured findings only. FlameGuard-SI cautions and exclusions, each attributed and, for exclusions, traced to a quality flag."
+    },
+    "test_id": {
+      "$ref": "common.schema.json#/$defs/test_id"
+    },
+    "test_outcome": {
+      "$ref": "common.schema.json#/$defs/test_outcome"
     }
   },
   "allOf": [
@@ -218,8 +224,22 @@
           "limitations"
         ],
         "not": {
-          "required": [
-            "curation_notes"
+          "anyOf": [
+            {
+              "required": [
+                "curation_notes"
+              ]
+            },
+            {
+              "required": [
+                "test_id"
+              ]
+            },
+            {
+              "required": [
+                "test_outcome"
+              ]
+            }
           ]
         }
       }
@@ -286,6 +306,29 @@
         "properties": {
           "value_status": {
             "const": "excluded"
+          }
+        }
+      }
+    },
+    {
+      "description": "A reported test_outcome belongs to an identified test: it needs a non-null test_id.",
+      "if": {
+        "required": [
+          "test_outcome"
+        ],
+        "properties": {
+          "test_outcome": {
+            "type": "string"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "test_id"
+        ],
+        "properties": {
+          "test_id": {
+            "type": "string"
           }
         }
       }

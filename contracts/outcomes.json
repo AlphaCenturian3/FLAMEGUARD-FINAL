@@ -1,0 +1,23 @@
+{
+  "outcomes_version": "0.2.2",
+  "status": "CONFIRMED",
+  "confirmed_by": "Member 5 (16trtuoiloz-ducdo), decision P1: https://github.com/AlphaCenturian3/FLAMEGUARD-FINAL/pull/17#issuecomment-6886309607",
+  "confirmed_on": "2026-11-14",
+  "source": "NASA/TP-2015-216046, Table IX, column 'Test end' (printed pp. 20-28; PDF SHA-256 b4f6ca983e2792c33a0b92220a791a818f426bb635b94f7fd33dc8c9c471e79d)",
+  "meaning": "Each value means only: the label printed in the 'Test end' column of Table IX of NASA/TP-2015-216046. It is not a FlameGuard-SI classification of combustion behaviour.",
+  "evidence": "Member 5 parsed all 276 printed rows (FLEX-001 to FLEX-280; 156, 205, 213 and 228 are not printed): Extinction 186, Disruption 62, Completion 28. No other value, blank, dash or footnote marker appears in the column.",
+  "conditions_of_use": [
+    "1. The source does not define 'Test end' (Appendix A.1, printed p. 19, defines other columns but not this one, nor 'Burn time').",
+    "2. No subdivision, merging or inference: 'radiative', 'diffusive' and 'disruptive' extinction appear in the report's prose but are not Table IX values and must never become outcomes.",
+    "3. FLEX-001 stays Disruption although it prints an extinction diameter of 0.89 mm; caution F005 carries the ambiguity.",
+    "4. The outcome is never inferred from other values: in 66 of 276 rows the A.1 dash rule disagrees with the printed label.",
+    "5. The same outcome is necessary, not sufficient, for comparing visible_flame_extinction_diameter; compare it only between Extinction rows, or require a caution on such Findings (recommendation for B3).",
+    "6. Flags on the field test_end (F004, F005, F026, F032, F038) must be attached as caution notes to every Finding that carries that test's outcome.",
+    "7. Every derived Finding of a source that prints per-test outcomes must carry a non-null test_id and test_outcome (rule S11, enforced by the derivation acceptance tests and, as proposed, by the B1 loader)."
+  ],
+  "outcomes": [
+    "Extinction",
+    "Disruption",
+    "Completion"
+  ]
+}
