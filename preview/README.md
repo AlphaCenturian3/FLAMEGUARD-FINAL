@@ -1,5 +1,7 @@
 # Development preview (not production)
 
+**For the demo:** `LAUNCH_CARD.md` (one page), `PRESENTATION_SCRIPT.md` (four minutes), `DEMO.md` (notes and recovery).
+
 A local, one-command preview of the FlameGuard-SI dashboard running against the B2 evidence
 backend. It **merges nothing and changes no branch**. It exports two git refs into `.preview/`
 (git-ignored) and serves them together:
@@ -51,6 +53,7 @@ Options: `--latest`, `--backend-ref`, `--frontend-ref`, `--port` (default 8790; 
 2. **Browser, every route, live and `?fixtures=1`:** live never shows the fixture banner or fixture text; fixture mode always shows the banner; live Explorer says no investigations; live Rank says 501; an unreachable API is reported as such and **never** falls back to fixtures silently.
 3. **Synthetic scenarios (throwaway ports, `preview/scenarios.py`):** an excluded value is `null` and "value not shown"; a missing value stays `not_reported`; a file with a wrong checksum is withheld, the rest is served, and `X-FlameGuard-Rejected-Entries: 1` is sent; an unreadable manifest gives 503 on every evidence endpoint and the page shows the error and no data.
 4. **Judge-demo walkthrough** (5 steps) in both modes.
+5. **Demo documents vs the interface** (`preview/demo_contract.json`, `preview/doc_check.py`): the launch card, script and notes name real launchers, addresses, flags and interface labels; the live empty state, fixture banner, withheld excluded value, 501 planned endpoints and the documented navigation labels are still on screen. These check critical behaviour, not exact wording.
 
 ### Separation of fixtures, synthetic data and NASA evidence
 

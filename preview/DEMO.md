@@ -1,5 +1,7 @@
 # Demo workflow (development preview)
 
+One-page version: `LAUNCH_CARD.md`. Timed script: `PRESENTATION_SCRIPT.md`.
+
 Written for the project owner. This is a **development preview**: unfinished parts say so on screen, and nothing is invented to fill the gaps. Everything below was checked against the running preview (42/42 smoke checks).
 
 ## 1. Start it (5 minutes before)

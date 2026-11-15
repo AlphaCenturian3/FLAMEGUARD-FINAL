@@ -13,6 +13,7 @@ path); the judge-demo check also needs Node 22+. A check that cannot run is repo
 
 from __future__ import annotations
 
+import html as html_lib
 import json
 import os
 import re
@@ -28,7 +29,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import doc_check  # noqa: E402
 from scenarios import make_scenario  # noqa: E402
+
+DEMO = doc_check.load_contract()
 
 PLANNED = [
     ("GET", "api/compare?quantity=flame_spread_rate"),
@@ -37,7 +41,7 @@ PLANNED = [
     ("GET", "api/simulations/x"),
 ]
 ROUTES = ["", "explorer", "compare", "rank", "interpret", "integrations"]
-FIXTURE_BANNER = "FIXTURE DATA. NOT NASA DATA."
+FIXTURE_BANNER = DEMO["ui"]["fixture_banner"]
 CONTRACT = "0.2.0"
 REJECTED_HEADER = "x-flameguard-rejected-entries"
 results: list[tuple[str, str, str]] = []  # (status, name, detail)
@@ -138,7 +142,7 @@ def dump(chrome: str, url: str, profile: str) -> str:
 
 def text_of(html: str) -> str:
     html = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", html, flags=re.S)
-    return " ".join(re.sub(r"<[^>]+>", " ", html).split())
+    return " ".join(html_lib.unescape(re.sub(r"<[^>]+>", " ", html)).split())
 
 
 def page(chrome: str, url: str, prof: str) -> tuple[str, str]:
@@ -178,6 +182,62 @@ def browser_checks(base: str, chrome: str | None) -> None:
             "unreachable API: says so, never silently switches to fixtures",
             "",
         )
+
+
+def doc_checks() -> None:
+    """The demo documents must match the launcher and the demo contract (no browser needed)."""
+    problems = doc_check.check(DEMO)
+    record(
+        not problems,
+        "demo documents match the launcher and the demo contract",
+        "; ".join(problems[:3]),
+    )
+
+
+def ui_contract_checks(base: str, chrome: str | None) -> None:
+    """The running interface must still show the critical things the documents promise."""
+    if not chrome:
+        record(None, "demo contract against the interface", "no Chrome/Chromium found (set CHROME)")
+        return
+    ui = DEMO["ui"]
+    with tempfile.TemporaryDirectory() as prof:
+        for mode, query in (("live", ""), ("fixture", "?fixtures=1")):
+            for route, phrases in ui[mode].items():
+                _, t = page(chrome, f"{base}{query}{route}", prof)
+                missing = [p for p in phrases if p not in t]
+                record(
+                    not missing,
+                    f"contract, {mode} {route}: {', '.join(phrases)}",
+                    f"missing {missing}" if missing else "",
+                )
+        _, t = page(chrome, f"{base}#/", prof)
+        record(
+            all(label in t for label in ui["nav_labels"]),
+            "contract: documented navigation labels exist in the interface",
+            "",
+        )
+        record(
+            re.search(r"\b0\s+Investigations loaded", t) is not None,
+            "contract: live overview says 0 Investigations loaded",
+            "",
+        )
+        _, t = page(chrome, f"{base}?fixtures=1#/", prof)
+        record(
+            ui["demo_button"] in t and ui["fixture_banner"] in t,
+            "contract: fixture overview shows the banner and the documented demo button",
+            "",
+        )
+        _, t = page(chrome, f"{base}?fixtures=1#/explorer", prof)
+        withheld = re.search(r"Excluded by FlameGuard-SI\s*[\u2014-]\s*value not shown", t)
+        record(
+            withheld is not None, "contract: a fixture excluded value is withheld, not shown", ""
+        )
+    code, body, _ = http("GET", base + "contracts/examples/finding.measured_excluded.example.json")
+    record(
+        code == 200 and json.loads(body).get("value") is None,
+        "contract: the excluded fixture carries a null value",
+        "",
+    )
 
 
 def free_port() -> int:
@@ -313,7 +373,7 @@ def demo_checks(base: str, chrome: str | None) -> None:
             record(False, f"judge demo ({mode})", (proc.stderr or proc.stdout)[-300:])
             continue
         titles = [s["title"] for s in steps]
-        expected = ["Discover", "Compare", "Rank", "Interpret", "Safety Insight"]
+        expected = DEMO["ui"]["demo_steps"]
         rank = next((s for s in steps if s["title"] == "Rank"), {})
         ok = titles == expected
         if mode == "fixture":  # the ranking shown here is a labelled contract example
@@ -326,9 +386,11 @@ def demo_checks(base: str, chrome: str | None) -> None:
 
 def main() -> int:
     base = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8790/").rstrip("/") + "/"
+    doc_checks()
     api_checks(base)
     chrome = find_chrome()
     browser_checks(base, chrome)
+    ui_contract_checks(base, chrome)
     if len(sys.argv) > 3:
         scenario_checks(Path(sys.argv[2]), Path(sys.argv[3]), chrome)
     else:
