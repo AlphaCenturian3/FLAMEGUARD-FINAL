@@ -82,7 +82,12 @@ def browser_version(chrome: str) -> str:
     """The browser build used, for traceability: runner images change under us."""
     try:
         done = subprocess.run(  # noqa: S603
-            [chrome, "--version"], capture_output=True, text=True, timeout=30, check=False
+            [chrome, "--version"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=30,
+            check=False,
         )
         return (done.stdout or done.stderr).strip() or "unknown version"
     except (OSError, subprocess.TimeoutExpired):
@@ -108,7 +113,12 @@ def run(root: Path, chrome: str, timeout: int) -> Outcome:
             cmd += [f"--user-data-dir={profile}", "--virtual-time-budget=60000", "--dump-dom", url]
             try:
                 done = subprocess.run(  # noqa: S603
-                    cmd, capture_output=True, text=True, timeout=timeout, check=False
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    timeout=timeout,
+                    check=False,
                 )
             except subprocess.TimeoutExpired:
                 return Outcome(False, f"Chrome did not finish within {timeout}s")

@@ -1,6 +1,7 @@
 """The frontend CI runner must fail closed: only a clean PASS n/n with n > 0 is a pass."""
 
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -144,3 +145,14 @@ def test_the_browser_version_is_printed_for_traceability(tmp_path, capsys):
 
 def test_browser_version_falls_back_when_the_browser_cannot_run(tmp_path):
     assert runner.browser_version(str(tmp_path / "missing")) == "unknown version"
+
+
+def test_chrome_output_is_decoded_as_utf8_whatever_the_locale():
+    """Failure lists contain test names with characters such as '—'; a C or cp1252 locale must not
+    crash or garble them (found in the db916a1 integration run)."""
+    src = (ROOT / ".github" / "scripts" / "run_frontend_tests.py").read_text(encoding="utf-8")
+    calls = re.findall(r"subprocess\.run\((?:[^()]|\([^()]*\))*\)", src, re.S)
+    assert calls, "the runner starts Chrome"
+    for call in calls:
+        if "text=True" in call:
+            assert 'encoding="utf-8"' in call, call.splitlines()[0]
