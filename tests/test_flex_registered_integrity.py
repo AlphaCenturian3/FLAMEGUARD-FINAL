@@ -85,7 +85,15 @@ def test_registration_is_all_or_nothing_and_only_these_paths():
     curated = {
         p.relative_to(ROOT).as_posix() for p in (ROOT / "data/curated").rglob("*") if p.is_file()
     }
-    assert FINDINGS_REL in curated and INVESTIGATIONS_REL in curated
+    allowed = {
+        ENTRIES[dv.CSV_ID]["path"],
+        ENTRIES[dv.FLAGS_ID]["path"],
+        FINDINGS_REL,
+        INVESTIGATIONS_REL,
+    }
+    assert curated - {"data/curated/.gitkeep"} == allowed, (
+        "only the two sources and the two derived files"
+    )
 
 
 @needs_registration
