@@ -3,7 +3,7 @@ import { byId, excluded, interpretation, measured, stubFetch } from "./samples.j
 import { ApiError, isNotImplemented } from "../static/js/api/errors.js";
 import { createHttpSource, parseRejectedHeader, REJECTED_HEADER } from "../static/js/api/http.js";
 import { createFixtureSource } from "../static/js/api/fixtures.js";
-import { CONTRACT_VERSION, FIXTURE_BANNER, readConfig, urlWithFixtures, versionMismatch } from "../static/js/config.js";
+import { CONTRACT_VERSION, FIXTURE_BANNER, SUPPORTED_CONTRACT_VERSIONS, readConfig, urlWithFixtures, versionMismatch } from "../static/js/config.js";
 import { createStore, listWarnings, rejectedWarning } from "../static/js/store.js";
 import { answerView, reviewAnswer } from "../static/js/integrations/assistant.js";
 import { reviewSimulation } from "../static/js/integrations/simulation.js";
@@ -85,10 +85,10 @@ test("store: 501 on lists yields not_implemented state, not empty data", async (
 });
 
 // ---------- Fixture adapter against the merged v0.2.0 examples ----------
-test("fixtures: every v0.2.0 example loads, every record is a fixture, list totals hold", async () => {
+test("fixtures: every contract example loads, every record is a fixture, list totals hold", async () => {
   const src = createFixtureSource({ baseUrl: EXAMPLES });
   const invs = await src.listInvestigations();
-  assert.equal(invs.contract_version, "0.2.0");
+  assert.ok(SUPPORTED_CONTRACT_VERSIONS.includes(invs.contract_version), `examples are contract ${invs.contract_version}`);
   assert.equal(invs.total, invs.items.length);
   assert.ok(invs.items.every((i) => i.fixture === true));
   const fl = await src.listFindings();
