@@ -157,7 +157,7 @@ def scatter(root: Path) -> None:
         path = root / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         text = json.dumps(staged_lookalike())
-        path.write_text(text, encoding="utf-8")
+        path.write_text(text, encoding="utf-8", newline="\n")
     (root / "staging" / "STAGING_REPORT.json").write_text(
         '{"registrable": false}', encoding="utf-8"
     )
@@ -245,14 +245,14 @@ def test_a_registered_file_in_the_staging_folder_is_still_checked_like_any_evide
     bad = [finding("s1", test_id="T-9"), finding("s2")]
     path = root / "data/curated/findings/inv-a.json"
     bad_text = json.dumps(bad)
-    path.write_text(bad_text, encoding="utf-8")
+    path.write_text(bad_text, encoding="utf-8", newline="\n")
     manifest_path = root / "data/manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     for e in manifest["datasets"]:
         if e["path"].endswith("inv-a.json"):
             e["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
     manifest_text = json.dumps(manifest)
-    manifest_path.write_text(manifest_text, encoding="utf-8")
+    manifest_path.write_text(manifest_text, encoding="utf-8", newline="\n")
     result = load_evidence(root)
     assert "S11" in rejection(result)[1] and not result.store.findings
 

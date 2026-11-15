@@ -109,7 +109,7 @@ class Scenario:
         def add(entry_id: str, rel: str, cls: str, text: str, **fields) -> None:
             path = self.root / rel
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(text, encoding="utf-8")
+            path.write_text(text, encoding="utf-8", newline="\n")
             sha = self.tamper.get(entry_id, hashlib.sha256(text.encode("utf-8")).hexdigest())
             entries.append(
                 {
@@ -163,7 +163,7 @@ class Scenario:
         manifest = {"manifest_version": "0.2.0", "datasets": entries}
         manifest_text = self.raw.get("data/manifest.json", dump(manifest))
         (self.root / "data").mkdir(exist_ok=True)
-        (self.root / "data" / "manifest.json").write_text(manifest_text, encoding="utf-8")
+        (self.root / "data" / "manifest.json").write_text(manifest_text, encoding="utf-8", newline="\n")
         return self.root
 
 

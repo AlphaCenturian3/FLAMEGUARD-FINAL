@@ -20,7 +20,7 @@ def repo(tmp_path):
     (tmp_path / "data/curated").mkdir(parents=True)
     (tmp_path / "data/simulated").mkdir(parents=True)
     f = tmp_path / "data/curated/a.csv"
-    f.write_text("x\n1\n", encoding="utf-8")
+    f.write_text("x\n1\n", encoding="utf-8", newline="\n")
     return tmp_path, hashlib.sha256(f.read_bytes()).hexdigest()
 
 
@@ -79,7 +79,7 @@ def test_interpretation_needs_known_parent_and_method(repo):
 def test_simulation_needs_exact_label(repo):
     root, _ = repo
     f = root / "data/simulated/s.json"
-    f.write_text("{}", encoding="utf-8")
+    f.write_text("{}", encoding="utf-8", newline="\n")
     sim = {
         "id": "s",
         "path": "data/simulated/s.json",
@@ -138,7 +138,7 @@ def test_registered_json_with_nan_or_infinity_is_rejected(repo, constant):
     """Rule S0: NaN passes JSON Schema numeric bounds, so files must be parsed strictly."""
     root, _ = repo
     f = root / "data/curated/findings.json"
-    f.write_text(f'[{{"value": {constant}}}]', encoding="utf-8")
+    f.write_text(f'[{{"value": {constant}}}]', encoding="utf-8", newline="\n")
     entry = _measured(hashlib.sha256(f.read_bytes()).hexdigest(), path="data/curated/findings.json")
     errors = cdp.check_manifest({"datasets": [entry]}, root)
     assert any("non-standard JSON number" in e for e in errors), errors
@@ -146,5 +146,5 @@ def test_registered_json_with_nan_or_infinity_is_rejected(repo, constant):
 
 def test_strict_loader_accepts_normal_json(tmp_path):
     f = tmp_path / "ok.json"
-    f.write_text('[{"value": 1.5, "missing": null}]', encoding="utf-8")
+    f.write_text('[{"value": 1.5, "missing": null}]', encoding="utf-8", newline="\n")
     assert cdp.load_strict_json(f) == [{"value": 1.5, "missing": None}]

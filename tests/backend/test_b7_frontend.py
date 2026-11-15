@@ -36,10 +36,10 @@ def site_dir(tmp_path):
     root = tmp_path / "dashboard"
     (root / "static" / "js").mkdir(parents=True)
     (root / "static" / "css").mkdir(parents=True)
-    (root / "index.html").write_text(INDEX, encoding="utf-8")
-    (root / "static" / "js" / "main.js").write_text("export const ok = true;\n", encoding="utf-8")
-    (root / "static" / "css" / "app.css").write_text("body{}\n", encoding="utf-8")
-    (tmp_path / "secret.txt").write_text("SECRET OUTSIDE THE DASHBOARD", encoding="utf-8")
+    (root / "index.html").write_text(INDEX, encoding="utf-8", newline="\n")
+    (root / "static" / "js" / "main.js").write_text("export const ok = true;\n", encoding="utf-8", newline="\n")
+    (root / "static" / "css" / "app.css").write_text("body{}\n", encoding="utf-8", newline="\n")
+    (tmp_path / "secret.txt").write_text("SECRET OUTSIDE THE DASHBOARD", encoding="utf-8", newline="\n")
     return root
 
 
@@ -47,8 +47,8 @@ def site_dir(tmp_path):
 def examples_dir(tmp_path):
     d = tmp_path / "examples"
     d.mkdir()
-    (d / "health.example.json").write_text('{"fixture": true}', encoding="utf-8")
-    (tmp_path / "vocabulary.json").write_text("NOT AN EXAMPLE", encoding="utf-8")
+    (d / "health.example.json").write_text('{"fixture": true}', encoding="utf-8", newline="\n")
+    (tmp_path / "vocabulary.json").write_text("NOT AN EXAMPLE", encoding="utf-8", newline="\n")
     return d
 
 
@@ -98,8 +98,8 @@ def test_api_routes_win_and_unknown_api_paths_are_json_errors_never_the_dashboar
 
 def test_a_hostile_file_named_like_an_api_route_cannot_shadow_the_api(scenario, site_dir):
     (site_dir / "api").mkdir()
-    (site_dir / "api" / "health").write_text("HOSTILE", encoding="utf-8")
-    (site_dir / "api" / "findings").write_text("HOSTILE", encoding="utf-8")
+    (site_dir / "api" / "health").write_text("HOSTILE", encoding="utf-8", newline="\n")
+    (site_dir / "api" / "findings").write_text("HOSTILE", encoding="utf-8", newline="\n")
     client = site(scenario, site_dir)
     assert client.get("/api/health").json()["status"] == "ok"
     assert "items" in client.get("/api/findings").json()

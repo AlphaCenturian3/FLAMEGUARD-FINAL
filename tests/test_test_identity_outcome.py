@@ -24,7 +24,7 @@ SYN_A, SYN_B = "SYNTHETIC-OUTCOME-A", "SYNTHETIC-OUTCOME-B"
 
 def _write_json(path: Path, doc) -> None:
     text = json.dumps(doc)
-    path.write_text(text, encoding="utf-8")
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def _load(name):
