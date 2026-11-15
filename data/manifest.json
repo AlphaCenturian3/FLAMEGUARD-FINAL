@@ -64,6 +64,118 @@
           "quote": "Because the droplet was in the HiBMs FOV for only a short time, no burning rate constant or extinction droplet diameter is reported.",
           "retrieved": "2026-11-14",
           "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 16)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "16",
+          "quote": "In each test, there is a clear ambiguity in the droplet size during ignition",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, section-text passage (printed page 17)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "17",
+          "quote": "Disruptive extinction of heptane may be due to the presence of the contaminant.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "The droplet probably disrupted at the end of the test coincident with flame extinction.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 5 caption (Test FLEX-001)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "29",
+          "quote": "so the droplet diameter could not be measured accurately.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 6 caption (Test FLEX-002)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "30",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 7 caption (Test FLEX-003)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "31",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 8 caption (Test FLEX-004)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "32",
+          "quote": "This was a calibration test point.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 9 caption (Test FLEX-005)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "33",
+          "quote": "Because this was a calibration run",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "The droplet drifted out of the High-Bit-Depth Multispectral (HiBMs) field of view (FOV) and then drifted back in the FOV.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 10 caption (Test FLEX-006)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "34",
+          "quote": "This was a calibration test.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 11 caption (Test FLEX-007)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "35",
+          "quote": "The last part of the droplet history was obscured by the luminous flame.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 12 caption (Test FLEX-008)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "36",
+          "quote": "There is a lot of noise in the droplet diameter data because of the soot",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "38",
+          "quote": "The HiBMs produced a saturated image that influenced the droplet size measurement.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
+        },
+        {
+          "title": "NASA/TP-2015-216046, Appendix B, Figure 14 caption (Test FLEX-010)",
+          "url": "https://ntrs.nasa.gov/api/citations/20150023456/downloads/20150023456.pdf",
+          "page": "38",
+          "quote": "quickly moved west out of the fields of view (FOVs) of the High-Bit-Depth Multispectral (HiBMs), Low Light Level Ultra-Violet (LLUV), and color camera.",
+          "retrieved": "2026-11-14",
+          "archive_id": "NTRS 20150023456"
         }
       ]
     },
